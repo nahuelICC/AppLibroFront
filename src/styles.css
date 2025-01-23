@@ -3,6 +3,13 @@
 @tailwind components;
 @tailwind utilities;
 
-
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+:root{
+  --color-blanco-fondo:#f8f5f2;
+  --color-verde-boton:#078080;
+  --color-texto:#222525;
+  --color-titulo:#232323;
+  --color-blanco-secundario:#fffffe;
+  --color-rojo-resaltar:#f45d48;
+}
+html, body { height: 100%;}
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;}
