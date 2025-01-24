@@ -1,5 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {CurrencyPipe, NgForOf, NgIf, NgOptimizedImage} from '@angular/common';
+import {SplitPricePipe} from '../../split-decimals.pipe';
 
 @Component({
   selector: 'app-cuadro-producto',
@@ -7,7 +8,8 @@ import {CurrencyPipe, NgForOf, NgIf, NgOptimizedImage} from '@angular/common';
     NgForOf,
     NgIf,
     CurrencyPipe,
-    NgOptimizedImage
+    NgOptimizedImage,
+    SplitPricePipe
   ],
   templateUrl: './cuadro-producto.component.html',
   standalone: true,

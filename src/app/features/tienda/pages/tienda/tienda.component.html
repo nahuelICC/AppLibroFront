@@ -58,16 +58,13 @@
           </button>
         </div>
         <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
-          <div class="flex flex-col gap-3 pb-3">
-            <div
-              class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
-              style='background-image: url("https://cdn.usegalileo.ai/sdxl10/79397f1e-48f3-4fed-8074-e205c259ad72.png");'
-            ></div>
-            <div>
-              <p class="text-[#111818] text-base font-medium leading-normal">The Girl on the Train</p>
-              <p class="text-[#608a8a] text-sm font-normal leading-normal">Paula Hawkins</p>
-            </div>
-          </div>
+          <app-cuadro-producto
+            [bookCover]="'https://www.libreriapalas.es/imagenes/9788433/978843392970.JPG'"
+            [title]="'The Maidens'"
+            [author]="'Alex Michaelides'"
+            [price]="22.36"
+            [rating]="0">
+          </app-cuadro-producto>
           <div class="flex flex-col gap-3 pb-3">
             <div
               class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
