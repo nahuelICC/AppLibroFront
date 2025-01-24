@@ -1,16 +1,11 @@
-/* You can add global styles to this file, and also import other style files */
+@import url(colors.css);
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root{
-  --color-blanco-fondo-tarjeta:#f8f5f2;
-  --color-verde-boton:#078080;
-  --color-texto:#222525;
-  --color-titulo:#232323;
-  --color-blanco-secundario-texto:#fffffe;
-  --color-rojo-resaltar:#f45d48;
-  --color-fondo: #fafaf8;
-}
 html, body { height: 100%;}
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;}
+body {
+  margin: 0;
+  font-family: "Work Sans", serif;
+  background-color: var(--color-blanco-fondo);
+  }

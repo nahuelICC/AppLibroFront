@@ -1,0 +1,13 @@
+
+.color-titulo{
+  color: var(--color-titulo);
+}
+.color-texto{
+  color: var(--color-texto);
+}
+.color-boton{
+  background-color: var(--color-verde-boton);
+}
+.color-texto-blanco{
+  color: var(--color-blanco-secundario);
+}
