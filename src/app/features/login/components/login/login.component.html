@@ -1,0 +1,22 @@
+<div class="flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+    <h2 class="text-2xl font-bold mb-4 text-center">Inicio de sesión</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="fill" class="w-full mb-4">
+        <mat-label>Usuario</mat-label>
+        <input matInput formControlName="username" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="w-full mb-4">
+        <mat-label>Contraseña</mat-label>
+        <input matInput type="password" formControlName="password" />
+      </mat-form-field>
+
+      <button mat-button class="w-full bg-red-500 text-white py-2 rounded-lg" type="submit">
+        Entrar
+      </button>
+
+      <p *ngIf="errorMessage" class="text-red-500 text-center mt-2">{{ errorMessage }}</p>
+    </form>
+  </div>
+</div>
