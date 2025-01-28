@@ -1,5 +1,5 @@
 export class CuadroProducto{
-    bookCover?: string;
+    portada?: string;
     title?: string;
     valoracion?: number;
     precio?: number;

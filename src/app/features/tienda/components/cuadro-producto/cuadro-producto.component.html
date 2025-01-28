@@ -1,27 +1,42 @@
-<div class="flex flex-col gap-3 pb-3 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl rounded-2xl px-2">
-  <div class="w-full h-48 bg-center bg-no-repeat bg-contain rounded-xl overflow-hidden">
+<div class="flex flex-col gap-3 pb-3 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl rounded-2xl px-2 h-full bg-white">
+  <!-- Contenedor de la imagen -->
+  <div class="w-full h-48 bg-center bg-no-repeat bg-contain rounded-xl overflow-hidden flex-shrink-0">
     <img
       [src]="bookCover"
       alt="{{ title }}"
       class="w-full h-full object-contain focus:outline-2 focus:outline-offset-2"
     />
   </div>
-  <div>
-    <p class="text-[#111818] text-base font-medium leading-normal">{{ title }}</p>
-    <div class="flex items-center gap-1 text-black">
+
+  <!-- Contenido del texto -->
+  <div class="flex flex-col flex-1 px-1">
+    <!-- Título -->
+    <p class="text-[#111818] text-base font-medium leading-normal line-clamp-2 mb-2">
+      {{ title }}
+    </p>
+
+    <!-- Rating -->
+    <div class="flex items-center gap-1 text-black mb-2">
       <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
-        <!-- Full star -->
-        <svg *ngIf="rating >= star" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <svg *ngIf="rating >= star" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="flex-shrink-0">
           <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/>
         </svg>
-        <!-- Empty/white star -->
-        <svg *ngIf="rating < star" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg *ngIf="rating < star" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="flex-shrink-0">
           <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/>
         </svg>
       </ng-container>
     </div>
-    <p class="text-[#608a8a] text-sm font-normal leading-normal mt-1">{{ author }}</p>
-    <p class="text-[#F45D48] text-lg font-bold leading-normal">
+
+    <!-- Autor y Género -->
+    <p class="text-[#608a8a] text-sm font-normal leading-normal line-clamp-1 mb-1">
+      {{ author }}
+    </p>
+    <p class="text-[#608a8a] text-sm font-normal leading-normal line-clamp-1 mb-2">
+      {{ genre }}
+    </p>
+
+    <!-- Precio -->
+    <p class="text-[#F45D48] text-lg font-bold leading-normal mt-auto">
       <span class="text-2xl">{{ price | splitPrice:'integer' }}</span>
       <span class="text-base">.{{ price | splitPrice:'decimal' }}</span>
       <span class="text-2xl mx-1">€</span>
