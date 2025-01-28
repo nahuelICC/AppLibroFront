@@ -8,14 +8,19 @@ export const authInterceptorInterceptor: HttpInterceptorFn = (
   next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> => {
   console.log(request.url);
+
   const authService = inject(AuthServiceService);
   const token = authService.getToken();
-  if (token) {
+
+  // Evitar modificar las solicitudes preflight (OPTIONS)
+  if (request.method !== 'OPTIONS' && token) {
     request = request.clone({
-      setHeaders:{
+      setHeaders: {
         Authorization: `Bearer ${token}`,
       }
     });
   }
+
   return next(request);
 };
+
