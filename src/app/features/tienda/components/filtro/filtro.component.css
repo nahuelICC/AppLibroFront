@@ -11,3 +11,9 @@
 .color-texto-blanco{
   color: var(--color-blanco-secundario);
 }
+.color-fondo{
+  background-color: var(--color-blanco-fondo);
+}
+.color-resalto{
+  background-color: var(--color-rojo-resaltar);
+}
