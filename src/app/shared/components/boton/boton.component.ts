@@ -21,7 +21,7 @@ export class BotonComponent {
   getSizeClass(): string {
     switch (this.size) {
       case 'small':
-        return 'px-4 py-2 text-sm';
+        return 'px-4 py-2 text-sm md:w-48 sm:w-30';
       case 'large':
         return 'sm:w-72 py-2 text-lg';
       default:
