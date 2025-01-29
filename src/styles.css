@@ -3,9 +3,29 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body { height: 100%;}
+html, body { height: 100%;
+  background-color: var(--color-blanco-fondo);
+}
 body {
   margin: 0;
   font-family: "Work Sans", serif;
   background-color: var(--color-blanco-fondo);
   }
+.color-titulo{
+  color: var(--color-titulo);
+}
+.color-texto{
+  color: var(--color-texto);
+}
+.color-boton{
+  background-color: var(--color-verde-boton);
+}
+.color-texto-blanco{
+  color: var(--color-blanco-secundario);
+}
+.color-fondo{
+  background-color: var(--color-blanco-fondo);
+}
+.color-resalto{
+  background-color: var(--color-rojo-resaltar);
+}

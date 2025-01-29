@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { BotonComponent } from './shared/components/boton/boton.component';
-import { FooterComponent } from './shared/components/footer/footer.component';
+import {BotonComponent} from './shared/components/boton/boton.component';
+import {FooterComponent} from './shared/components/footer/footer.component';
+import {HeaderComponent} from './shared/components/header/header.component';
 import { CuadroProductoComponent } from './features/tienda/components/cuadro-producto/cuadro-producto.component';
 
 @Component({
@@ -10,7 +11,8 @@ import { CuadroProductoComponent } from './features/tienda/components/cuadro-pro
     RouterOutlet,
     FooterComponent,
     BotonComponent,
-    CuadroProductoComponent
+    CuadroProductoComponent,
+    HeaderComponent
   ],
   templateUrl: './app.component.html',
   standalone: true,

@@ -23,10 +23,12 @@ export class BotonComponent {
       case 'small':
         return 'px-4 py-2 text-sm';
       case 'large':
-        return 'px-8 py-4 text-lg';
+        return 'sm:w-72 py-2 text-lg';
       default:
-        return 'px-6 py-3 text-base';
+        return 'px-6 py-2 text-base';
     }
   }
 
-  }
+
+
+}
