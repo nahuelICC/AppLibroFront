@@ -7,7 +7,7 @@ import {CuadroProducto} from '../../../features/tienda/DTOs/CuadroProducto';
   providedIn: 'root',  // Esto hace que el servicio esté disponible globalmente, sin necesidad de importarlo en módulos
 })
 export class LibroServiceService {
-  private apiUrl = 'http://localhost:8000/api/libros';
+  private apiUrl = '/api/libros';
 
   constructor(private http: HttpClient) {}
 

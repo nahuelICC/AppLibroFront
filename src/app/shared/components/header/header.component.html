@@ -1,3 +1,4 @@
+<!-- src/app/shared/components/header/header.component.html -->
 <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f5f5] px-10 py-3">
   <div class="flex items-center gap-4 text-[#111818]">
     <div class="size-4">
@@ -24,12 +25,22 @@
       <a class="color-texto text-sm font-medium leading-normal" href="#">Sobre nosotros</a>
       <a class="color-texto text-sm font-medium leading-normal" href="#">Novedades</a>
     </div>
-    <button
-      class="border-2 border-transparent hover:border-[#078080] flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#fffffe] text-[#078080] text-sm font-bold leading-normal tracking-[0.015em]"
-      [routerLink]="['/login']"
-    >
-      <span class="truncate">Identificarse</span>
-    </button>
+    <ng-container *ngIf="isAuthenticated; else loginButton">
+      <button
+        class="border-2 border-transparent hover:border-[#078080] flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#fffffe] text-[#078080] text-sm font-bold leading-normal tracking-[0.015em]"
+        (click)="logout()"
+      >
+        <span class="truncate">Logout</span>
+      </button>
+    </ng-container>
+    <ng-template #loginButton>
+      <button
+        class="border-2 border-transparent hover:border-[#078080] flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#fffffe] text-[#078080] text-sm font-bold leading-normal tracking-[0.015em]"
+        [routerLink]="['/login']"
+      >
+        <span class="truncate">Identificarse</span>
+      </button>
+    </ng-template>
     <button
       class="border-2 border-transparent hover:border-[#000000] flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#078080] text-[#fffffe] text-sm font-bold leading-normal tracking-[0.015em]"
     >
