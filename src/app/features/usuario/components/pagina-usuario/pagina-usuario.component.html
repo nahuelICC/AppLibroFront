@@ -1,0 +1,71 @@
+<div class="max-w-2xl lg:max-w-4xl xl:max-w-6xl mx-auto p-4 md:p-6 lg:p-8" style="background-color: var(--color-blanco-fondo)">
+  <!-- Sección de perfil -->
+  <div class="mb-6 md:mb-8 lg:mb-10">
+    <div class="flex flex-col md:flex-row md:justify-between md:items-start">
+      <div class="mb-4 md:mb-0">
+        <h1 class="text-l md:text-xl lg:text-2xl font-bold mb-2" style="color: var(--color-titulo)">Luisa Gonzalez</h1>
+        <p class="text-base md:text-lg text-gray-400">Luisa.gonzalezgmail.com</p>
+        <p class="text-base md:text-lg text-gray-400">6874589654</p>
+      </div>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-3 md:gap-4 mt-3">
+      <app-boton [label]="'Cambiar Contraseña'" [size]="'large'" [color]="'#f45d48'"></app-boton>
+      <app-boton [label]="'Editar Perfil'" [size]="'large'"></app-boton>
+    </div>
+  </div>
+
+  <!-- Dirección de envío -->
+  <div class="mb-6 md:mb-8 lg:mb-10">
+    <h2 class="text-lg md:text-xl lg:text-2xl font-bold mb-3 md:mb-4" style="color: var(--color-titulo)">Dirección de envío</h2>
+    <div class="p-3 md:p-4 rounded-lg flex justify-between items-center w-full" style="background-color: var(--color-blanco-secundario)">
+      <div class="mr-2">
+      <span class="text-sm md:text-base font-medium" style="color: var(--color-texto)">
+         Calle Falsa 123, Apt 3,
+      Ciudad Flútcia, Eñado Flútcio,
+      12345
+      </span>
+      <br>
+      <span class="text-sm md:text-base text-gray-400">
+        Dirección de envío por defecto
+      </span>
+      </div>
+      <app-boton [size]="'medium'" [label]="'Editar'"></app-boton>
+    </div>
+  </div>
+
+  <!-- Historial de pedidos -->
+  <div class="mb-6 md:mb-8 lg:mb-10">
+    <h2 class="text-lg md:text-xl lg:text-2xl font-bold mb-3 md:mb-4" style="color: var(--color-titulo)">Historial de Pedidos</h2>
+
+    <div class="space-y-3 md:space-y-4">
+      <!-- Pedido repetido -->
+      <div class="p-3 md:p-4 rounded-lg border" style="border-color: var(--color-texto)">
+        <div class="flex flex-col sm:flex-row justify-between mb-2">
+          <span class="font-medium text-base md:text-lg mb-1 sm:mb-0" style="color: var(--color-texto)">Pedido #1 - Enviado</span>
+          <span class="text-sm md:text-base" style="color: var(--color-texto)">01/01/2025</span>
+        </div>
+        <p class="text-sm md:text-base" style="color: var(--color-texto)">20.00€ – Libro de Fantasía</p>
+      </div>
+
+      <!-- Segundo pedido -->
+      <div class="p-3 md:p-4 rounded-lg border" style="border-color: var(--color-texto)">
+        <div class="flex flex-col sm:flex-row justify-between mb-2">
+          <span class="font-medium text-base md:text-lg mb-1 sm:mb-0" style="color: var(--color-texto)">Pedido #1 - Enviado</span>
+          <span class="text-sm md:text-base" style="color: var(--color-texto)">01/01/2025</span>
+        </div>
+        <p class="text-sm md:text-base" style="color: var(--color-texto)">20.00€ – Libro de Fantasía</p>
+      </div>
+    </div>
+  <div class="flex justify-center mt-4">
+   <app-boton [size]="'medium'" [label]="'Ver más'"></app-boton>
+  </div>
+  </div>
+
+  <!-- Suscripciones -->
+  <div>
+    <h2 class="text-lg md:text-xl lg:text-2xl font-bold mb-3 md:mb-4" style="color: var(--color-titulo)">Suscripciones Activas</h2>
+    <div class="p-3 md:p-4 rounded-lg" style="background-color: var(--color-blanco-secundario)">
+      <span class="text-sm md:text-base font-medium" style="color: var(--color-texto)">Standard- Activa desde 01/01/2025</span>
+    </div>
+  </div>
+</div>
