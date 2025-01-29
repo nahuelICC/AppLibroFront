@@ -1,10 +1,12 @@
 import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
   selector: 'app-detalle-precio',
   imports: [
-    BotonComponent
+    BotonComponent,
+    MatIcon
   ],
   templateUrl: './detalle-precio.component.html',
   standalone: true,

@@ -1,7 +1,7 @@
 <div class="border-b border-gray-300 py-4">
   <h4 class="text-lg font-semibold">{{ nombre }} {{ apellido }}</h4>
   <div class="text-lg my-1">
-    <span *ngFor="let star of [].constructor(rating)">★</span>
+    <span class="text-2xl" *ngFor="let star of [].constructor(rating)">★</span>
   </div>
   <p class="text-gray-700">{{ comment }}</p>
 </div>
