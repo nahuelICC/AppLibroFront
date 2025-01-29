@@ -1,0 +1,29 @@
+<div class="p-6">
+  <h2 class="text-3xl font-bold text-red-500">{{ price }}€</h2>
+
+  <div class="mt-4">
+    <p class="font-bold mb-3">Tipo de tapa:</p>
+    <label class="block border rounded-xl p-4 mb-4">
+      <input type="radio" name="cover" (click)="selectCover('Tapa dura')" checked class="mr-2 w-4 h-4"> Tapa dura
+    </label>
+    <label class="block border rounded-xl p-4">
+      <input type="radio" name="cover" (click)="selectCover('Tapa blanda')" class="mr-2 w-4 h-4"> Tapa blanda
+    </label>
+  </div>
+
+
+  <div class="mt-4">
+    <p class="font-bold mb-3">Cantidad:</p>
+    <div class="flex items-center justify-between mb-4 border rounded-xl p-4">
+      <span class="text-lg font-semibold">{{ quantity }}</span>
+      <div class="flex flex-row items-end">
+        <button (click)="updateQuantity(-1)" class="mr-2 border-black border-2 px-3 py-1 rounded-full">-</button>
+        <button (click)="updateQuantity(1)" class="border-black border-2 px-3 py-1 rounded-full">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 w-full flex justify-center">
+    <app-boton [label]="'Añadir al carrito'" [color]="'#E53935'" (click)="anadirAlCarrito()" class="w-1/2 "></app-boton>
+  </div>
+</div>
