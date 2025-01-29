@@ -12,7 +12,7 @@ import { NgIf } from '@angular/common';
   ],
   templateUrl: './header.component.html',
   standalone: true,
-  styleUrl: './header.component.css'
+  styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
   constructor(public authService: AuthServiceService) {}
