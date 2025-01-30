@@ -2,7 +2,7 @@
   <!-- Sección de Bienvenida -->
   <div class="mb-6 md:mb-8 lg:mb-10">
     <div class="flex justify-start">
-      <svg class="w-24 h-24 md:w-36 md:h-36 lg:w-48 lg:h-48"
+      <svg class="w-24 h-24 md:w-24 md:h-24 lg:w-36 lg:h-36"
            viewBox="0 0 24 24"
            fill="none"
            stroke="#222525"
@@ -29,35 +29,71 @@
   <div class="mb-6 md:mb-8 lg:mb-10">
     <div class="flex flex-col md:flex-row md:justify-between md:items-start">
       <div class="mb-4 md:mb-0">
-        <h1 class="text-l md:text-xl lg:text-2xl font-bold mb-2" style="color: var(--color-titulo)">
-          {{ datosCliente.nombre }} {{ datosCliente.apellido }}
-        </h1>
-        <p class="text-base md:text-lg text-gray-400">{{ datosCliente.email }}</p>
-        <p class="text-base md:text-lg text-gray-400">{{ datosCliente.telefono }}</p>
+        <!-- Nombre y Apellido -->
+        <div *ngIf="!editandoPerfil">
+          <h1 class="text-l md:text-xl lg:text-2xl font-bold mb-2" style="color: var(--color-titulo)">
+            {{ datosCliente.nombre }} {{ datosCliente.apellido }}
+          </h1>
+        </div>
+        <div *ngIf="editandoPerfil" class="flex gap-2 mb-2">
+          <input type="text" [(ngModel)]="datosCliente.nombre"
+                 class="border rounded-xl p-2 w-1/2" placeholder="Nombre">
+          <input type="text" [(ngModel)]="datosCliente.apellido"
+                 class="border rounded-xl p-2 w-1/2" placeholder="Apellido">
+        </div>
+
+        <!-- Email -->
+        <p *ngIf="!editandoPerfil" class="text-base md:text-lg text-gray-400">
+          {{ datosCliente.email }}
+        </p>
+        <input *ngIf="editandoPerfil" type="email" [(ngModel)]="datosCliente.email"
+               class="border rounded-xl p-2 w-full mb-2" placeholder="Email" disabled>
+
+        <!-- Teléfono -->
+        <p *ngIf="!editandoPerfil" class="text-base md:text-lg text-gray-400">
+          {{ datosCliente.telefono }}
+        </p>
+        <input *ngIf="editandoPerfil" type="tel" [(ngModel)]="datosCliente.telefono"
+               class="border rounded-xl p-2 w-full" placeholder="Teléfono">
       </div>
     </div>
     <div class="flex flex-col sm:flex-row gap-3 md:gap-4 mt-3">
       <app-boton [label]="'Cambiar Contraseña'" [size]="'large'" [color]="'#f45d48'"></app-boton>
-      <app-boton [label]="'Editar Perfil'" [size]="'large'"></app-boton>
+      <app-boton
+        [label]="editandoPerfil ? 'Guardar Cambios' : 'Editar Perfil'"
+        [size]="'large'"
+        (click)="toggleEditarPerfil()">
+      </app-boton>
     </div>
   </div>
 
   <!-- Dirección de Envío -->
   <div class="mb-6 md:mb-8 lg:mb-10">
     <h2 class="text-lg md:text-xl lg:text-2xl font-bold mb-3 md:mb-4" style="color: var(--color-titulo)">Dirección de envío</h2>
+
     <div class="p-3 md:p-4 rounded-lg flex justify-between items-center w-full" style="background-color: var(--color-blanco-secundario)">
-      <div class="mr-2">
-        <span class="text-sm md:text-base font-medium" style="color: var(--color-texto)">
-          {{ datosCliente.direccion }}
-        </span>
+      <div class="mr-2" *ngIf="!editandoDireccion">
+      <span class="text-sm md:text-base font-medium" style="color: var(--color-texto)">
+        {{ datosCliente.direccion }}
+      </span>
         <br>
         <span class="text-sm md:text-base text-gray-400">
-          Dirección de envío por defecto
-        </span>
+        Dirección de envío por defecto
+      </span>
       </div>
-      <app-boton [size]="'medium'" [label]="'Editar'"></app-boton>
+
+      <!-- Inputs cuando está en edición -->
+      <div *ngIf="editandoDireccion" class="grid grid-cols-2 gap-2 w-full">
+        <input type="text" [(ngModel)]="direccionPartes[0]" class="border rounded-xl p-2" placeholder="Calle">
+        <input type="text" [(ngModel)]="direccionPartes[1]" class="border rounded-xl p-2 mr-2" placeholder="Número">
+        <input type="text" [(ngModel)]="direccionPartes[2]" class="border rounded-xl p-2" placeholder="Localidad">
+        <input type="text" [(ngModel)]="direccionPartes[3]" class="border rounded-xl p-2 mr-2" placeholder="Provincia">
+      </div>
+
+      <app-boton [color]="editandoDireccion ? '#f45d48': '#078080'"  [size]="'medium'" [label]="editandoDireccion ? 'Guardar' : 'Editar'" (click)="toggleEditarDireccion()"></app-boton>
     </div>
   </div>
+
 
   <!-- Historial de Pedidos -->
   <div class="mb-6 md:mb-8 lg:mb-10">
