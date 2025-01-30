@@ -1,42 +1,42 @@
+// src/app/core/services/auth-service.service.ts
+import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthServiceService {
-
   private tokenKey = 'token';
+  private loggedKey = 'logged';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
-  /**
-   * Método para guardar el token
-   * @param token
-   */
+  // Almacena el token en localStorage
   setToken(token: string): void {
     localStorage.setItem(this.tokenKey, token);
+    localStorage.setItem(this.loggedKey, 'true');
   }
 
-  /**
-   * Método para obtener el token
-   */
+  // Obtiene el token desde localStorage
   getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
   }
 
-  /**
-   * Método para borrar el token(logout)
-   */
+  // Elimina el token y el estado de logged
   clearToken(): void {
     localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.loggedKey);
   }
 
-  /**
-   * Método para obtener el rol del usuario
-   */
-  // public obtenerRol(): Observable<string> {
-  //   return this.http.get(`${apiUrl}/rol/`, { responseType: 'text' });
-  // }
+  // Verifica si el usuario está logueado
+  isLogged(): boolean {
+    return localStorage.getItem(this.loggedKey) === 'true';
+  }
+
+  // Cierra la sesión y redirige al usuario
+  logout(): void {
+    this.clearToken();
+    this.router.navigate(['/login']);
+  }
 }

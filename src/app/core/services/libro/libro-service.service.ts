@@ -9,7 +9,7 @@ import { LibroDetalleResponse } from '../../../features/detalles_libro/DTOs/Libr
   providedIn: 'root',  // Esto hace que el servicio esté disponible globalmente, sin necesidad de importarlo en módulos
 })
 export class LibroServiceService {
-  private apiUrl = 'http://localhost:8000/api/libros';
+  private apiUrl = '/api/libros';
 
   constructor(private http: HttpClient) {}
 
