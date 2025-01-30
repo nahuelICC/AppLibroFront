@@ -25,7 +25,10 @@
               [author]="producto.autor || ''"
               [price]="producto.precio || 0"
               [genre]="producto.genero || ''"
-              [rating]="producto.valoracion || 0">
+              [rating]="producto.mediaValoraciones || 0"
+              [routerLink]="['/detallelibro', producto.id]">
+
+
 
             </app-cuadro-producto>
           </div>
