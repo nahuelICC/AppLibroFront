@@ -37,6 +37,6 @@ export class AuthServiceService {
   // Cierra la sesión y redirige al usuario
   logout(): void {
     this.clearToken();
-    this.router.navigate(['/main']);
+    this.router.navigate(['/login']);
   }
 }
