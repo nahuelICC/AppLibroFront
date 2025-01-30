@@ -1,4 +1,5 @@
 <div class="max-w-2xl lg:max-w-4xl xl:max-w-6xl mx-auto p-4 md:p-6 lg:p-8 md:mt-10" style="background-color: var(--color-blanco-fondo)">
+  <!-- Sección de Bienvenida -->
   <div class="mb-6 md:mb-8 lg:mb-10">
     <div class="flex justify-start">
       <svg class="w-24 h-24 md:w-36 md:h-36 lg:w-48 lg:h-48"
@@ -13,26 +14,26 @@
       </svg>
     </div>
 
-    <!-- Encabezado -->
     <div class="flex items-center gap-4 mb-8">
       <h1 class="text-3xl md:text-4xl font-bold text-gray-800">
-        Bienvenido, {{ datosCliente.username}}
+        Bienvenido, {{ datosCliente.username }}
       </h1>
     </div>
 
-    <!-- Contenido -->
     <p class="text-md md:text-xl text-gray-600 mb-8">
       Aquí podrás ver tu información personal, tu historial de pedidos y tus suscripciones activas.
     </p>
   </div>
 
-  <!-- Sección de perfil -->
+  <!-- Sección de Perfil -->
   <div class="mb-6 md:mb-8 lg:mb-10">
     <div class="flex flex-col md:flex-row md:justify-between md:items-start">
       <div class="mb-4 md:mb-0">
-        <h1 class="text-l md:text-xl lg:text-2xl font-bold mb-2" style="color: var(--color-titulo)"> {{datosCliente.nombre}} {{datosCliente.apellido}} </h1>
-        <p class="text-base md:text-lg text-gray-400">{{datosCliente.email}}</p>
-        <p class="text-base md:text-lg text-gray-400">{{datosCliente.telefono}}</p>
+        <h1 class="text-l md:text-xl lg:text-2xl font-bold mb-2" style="color: var(--color-titulo)">
+          {{ datosCliente.nombre }} {{ datosCliente.apellido }}
+        </h1>
+        <p class="text-base md:text-lg text-gray-400">{{ datosCliente.email }}</p>
+        <p class="text-base md:text-lg text-gray-400">{{ datosCliente.telefono }}</p>
       </div>
     </div>
     <div class="flex flex-col sm:flex-row gap-3 md:gap-4 mt-3">
@@ -41,45 +42,42 @@
     </div>
   </div>
 
-  <!-- Dirección de envío -->
+  <!-- Dirección de Envío -->
   <div class="mb-6 md:mb-8 lg:mb-10">
     <h2 class="text-lg md:text-xl lg:text-2xl font-bold mb-3 md:mb-4" style="color: var(--color-titulo)">Dirección de envío</h2>
     <div class="p-3 md:p-4 rounded-lg flex justify-between items-center w-full" style="background-color: var(--color-blanco-secundario)">
       <div class="mr-2">
-      <span class="text-sm md:text-base font-medium" style="color: var(--color-texto)">
-         {{
-          datosCliente.direccion
-        }}
-      </span>
+        <span class="text-sm md:text-base font-medium" style="color: var(--color-texto)">
+          {{ datosCliente.direccion }}
+        </span>
         <br>
         <span class="text-sm md:text-base text-gray-400">
-        Dirección de envío por defecto
-      </span>
+          Dirección de envío por defecto
+        </span>
       </div>
       <app-boton [size]="'medium'" [label]="'Editar'"></app-boton>
     </div>
   </div>
 
-  <!-- Historial de pedidos -->
+  <!-- Historial de Pedidos -->
   <div class="mb-6 md:mb-8 lg:mb-10">
     <h2 class="text-lg md:text-xl lg:text-2xl font-bold mb-3 md:mb-4" style="color: var(--color-titulo)">Historial de Pedidos</h2>
 
     <div class="space-y-3 md:space-y-4">
-      <!-- Pedido repetido -->
       <div *ngFor="let pedido of datosCliente.pedidos" class="w-full relative group bg-white">
         <div class="p-3 md:p-4 rounded-lg transition-all duration-200 cursor-pointer"
-             (click)="toggleDropdown()"
-             (keydown.enter)="toggleDropdown()"
+             (click)="toggleDropdown(pedido)"
+             (keydown.enter)="toggleDropdown(pedido)"
              tabindex="0">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
             <div class="flex-1">
               <div class="flex justify-between items-center mb-1">
-              <span class="font-medium text-base md:text-lg" [style.color]="'var(--color-texto)'">
-                Pedido {{ pedido.referencia }}
-              </span>
+                <span class="font-medium text-base md:text-lg" [style.color]="'var(--color-texto)'">
+                  Pedido {{ pedido.referencia }}
+                </span>
                 <svg class="w-5 h-5 transform transition-transform"
                      [style.color]="'var(--color-texto)'"
-                     [class.rotate-180]="isOpen"
+                     [class.rotate-180]="pedidosAbiertos[pedido.id]"
                      fill="none"
                      stroke="currentColor"
                      viewBox="0 0 24 24">
@@ -95,25 +93,55 @@
             </div>
           </div>
 
-          <!-- Contenido desplegable -->
+          <!-- Contenido Desplegable Dinámico -->
           <div class="overflow-hidden transition-all duration-300"
-               [class.max-h-0]="!isOpen"
-               [class.max-h-[200px]]="isOpen">
+               [class.max-h-0]="!pedidosAbiertos[pedido.id]"
+               [class.max-h-[500px]]="pedidosAbiertos[pedido.id]">
             <div class="pt-4 border-t border-gray-300 mt-4">
-              <p class="text-sm md:text-base" [style.color]="'var(--color-texto)'">
-                20€ - Libro 1
-              </p>
+              <!-- Estado de Carga -->
+              <div *ngIf="!pedido.detalles" class="text-center py-2">
+                <span class="text-sm text-gray-500">Cargando detalles del pedido...</span>
+              </div>
+
+              <!-- Detalles del Pedido -->
+              <div *ngIf="pedido.detalles">
+                <div *ngFor="let producto of pedido.detalles" class="mb-3">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <p class="text-sm md:text-base font-medium" style="color: var(--color-texto)">
+                        {{ producto.titulo }}
+                      </p>
+                      <p class="text-sm text-gray-500">
+                        Cantidad: {{ producto.cantidad }}
+                      </p>
+                    </div>
+                    <p class="text-sm md:text-base" style="color: var(--color-texto)">
+                      {{ producto.precio | currency:'EUR':'symbol':'1.2-2' }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="mt-4 pt-2 border-t border-gray-200">
+                  <div class="flex justify-between items-center">
+                    <span class="font-medium text-base">Total:</span>
+                    <span class="font-medium text-base">
+      {{ calcularTotalPedido(pedido) | currency:'EUR':'symbol':'1.2-2' }}
+    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
     <div class="flex justify-center mt-4">
       <app-boton [size]="'medium'" [label]="'Ver más'"></app-boton>
     </div>
   </div>
 
-  <!-- Suscripciones -->
+  <!-- Suscripciones Activas -->
   <div>
     <h2 class="text-lg md:text-xl lg:text-2xl font-bold mb-3 md:mb-4" style="color: var(--color-titulo)">Suscripciones Activas</h2>
     <div class="p-3 md:p-4 rounded-lg" style="background-color: var(--color-blanco-secundario)">
