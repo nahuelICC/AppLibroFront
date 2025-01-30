@@ -9,6 +9,7 @@ import { NgIf } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,9 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     NgIf,
     MatInputModule,
     MatButtonModule,
-    MatSnackBarModule, // Para mostrar mensajes de error
+    MatSnackBarModule,
+    BotonComponent,
+    // Para mostrar mensajes de error
   ],
 })
 export class LoginComponent {
@@ -34,7 +37,7 @@ export class LoginComponent {
     private authService: AuthServiceService,
     private http: HttpClient,
     private router: Router,
-    private snackBar: MatSnackBar, // Para mostrar mensajes de error
+    private snackBar: MatSnackBar,
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]], // Valida que el campo no esté vacío
@@ -74,8 +77,8 @@ export class LoginComponent {
     }
 
     // Muestra el mensaje de error en un snackbar (opcional)
-    this.snackBar.open(this.errorMessage, 'Cerrar', {
-      duration: 5000, // Duración del mensaje en milisegundos
-    });
+    // this.snackBar.open(this.errorMessage, 'Cerrar', {
+    //   duration: 5000, // Duración del mensaje en milisegundos
+    // });
   }
 }

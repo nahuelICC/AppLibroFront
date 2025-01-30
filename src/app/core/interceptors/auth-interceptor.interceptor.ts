@@ -11,12 +11,8 @@ export const authInterceptorInterceptor = (
   const authService = inject(AuthServiceService);
   const token = authService.getToken();
 
-  console.log('Interceptor ejecutándose'); // Depuración
-  console.log('Token obtenido:', token); // Depuración
-
   // Evita modificar las solicitudes preflight (OPTIONS)
   if (request.method !== 'OPTIONS' && token) {
-    console.log('Token agregado a la solicitud:', token); // Depuración
     request = request.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,
