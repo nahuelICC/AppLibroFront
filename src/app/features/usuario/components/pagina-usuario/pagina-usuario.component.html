@@ -15,7 +15,6 @@
 
     <!-- Encabezado -->
     <div class="flex items-center gap-4 mb-8">
-
       <h1 class="text-3xl md:text-4xl font-bold text-gray-800">
         Bienvenido, {{ datosCliente.username}}
       </h1>
@@ -52,8 +51,8 @@
           datosCliente.direccion
         }}
       </span>
-      <br>
-      <span class="text-sm md:text-base text-gray-400">
+        <br>
+        <span class="text-sm md:text-base text-gray-400">
         Dirección de envío por defecto
       </span>
       </div>
@@ -67,7 +66,7 @@
 
     <div class="space-y-3 md:space-y-4">
       <!-- Pedido repetido -->
-      <div class="w-full relative group bg-white">
+      <div *ngFor="let pedido of datosCliente.pedidos" class="w-full relative group bg-white">
         <div class="p-3 md:p-4 rounded-lg transition-all duration-200 cursor-pointer"
              (click)="toggleDropdown()"
              (keydown.enter)="toggleDropdown()"
@@ -75,9 +74,9 @@
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
             <div class="flex-1">
               <div class="flex justify-between items-center mb-1">
-          <span class="font-medium text-base md:text-lg" [style.color]="'var(--color-texto)'">
-            Pedido 1
-          </span>
+              <span class="font-medium text-base md:text-lg" [style.color]="'var(--color-texto)'">
+                Pedido {{ pedido.referencia }}
+              </span>
                 <svg class="w-5 h-5 transform transition-transform"
                      [style.color]="'var(--color-texto)'"
                      [class.rotate-180]="isOpen"
@@ -88,7 +87,10 @@
                 </svg>
               </div>
               <p class="text-sm md:text-base mt-1" [style.color]="'var(--color-texto)'">
-                20/10/2024
+                {{ pedido.fecha | date:'dd/MM/yyyy' }}
+              </p>
+              <p class="text-sm md:text-base mt-1" [style.color]="'var(--color-texto)'">
+                {{ pedido.estadoNombre }}
               </p>
             </div>
           </div>
@@ -105,18 +107,26 @@
           </div>
         </div>
       </div>
-
     </div>
-  <div class="flex justify-center mt-4">
-   <app-boton [size]="'medium'" [label]="'Ver más'"></app-boton>
-  </div>
+    <div class="flex justify-center mt-4">
+      <app-boton [size]="'medium'" [label]="'Ver más'"></app-boton>
+    </div>
   </div>
 
   <!-- Suscripciones -->
   <div>
     <h2 class="text-lg md:text-xl lg:text-2xl font-bold mb-3 md:mb-4" style="color: var(--color-titulo)">Suscripciones Activas</h2>
     <div class="p-3 md:p-4 rounded-lg" style="background-color: var(--color-blanco-secundario)">
-      <span class="text-sm md:text-base font-medium" style="color: var(--color-texto)">Standard- Activa desde 01/01/2025</span>
+      <ng-container *ngIf="datosCliente.suscripcion && datosCliente.suscripcion.tipo; else noSuscripcion">
+        <span class="text-sm md:text-base font-medium" style="color: var(--color-texto)">
+          {{ datosCliente.suscripcion.tipo }} - Activa desde {{ datosCliente.suscripcion.fechaInicio | date:'dd/MM/yyyy' }}
+        </span>
+      </ng-container>
+      <ng-template #noSuscripcion>
+        <span class="text-sm md:text-base font-medium" style="color: var(--color-texto)">
+          No hay suscripciones activas
+        </span>
+      </ng-template>
     </div>
   </div>
 </div>

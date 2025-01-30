@@ -2,12 +2,16 @@ import {Component, Input, OnInit} from '@angular/core';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 import {MatIcon} from '@angular/material/icon';
 import {PerfilUsuarioService} from '../../services/perfil-usuario.service';
+import {DatePipe, NgForOf, NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-pagina-usuario',
   imports: [
     BotonComponent,
-    MatIcon
+    MatIcon,
+    NgIf,
+    DatePipe,
+    NgForOf
   ],
   templateUrl: './pagina-usuario.component.html',
   standalone: true,
