@@ -70,35 +70,62 @@
     <app-boton [label]="'Dejar reseña'" [color]="'#078080'" size="small" (click)="toggleFormulario()"></app-boton>
     <div *ngIf="mostrarFormulario" class="mt-4">
       <h3 class="text-lg font-semibold">Escribe tu opinión</h3>
-      <form (submit)="submitReview()" class="mt-4">
-        <!-- Textarea con ancho del 80% -->
+      <form (ngSubmit)="submitReview()" class="mt-4">
         <textarea [(ngModel)]="nuevaResenya.texto" name="texto" placeholder="Escribe tu opinión..."
-                  class="w-3/5 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                  class="w-3/5 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
 
-        <!-- Select con ancho del 80% -->
-
+        </textarea>
         <div class="flex items-center mt-4 mb-4">
           <label class="text-lg pr-2 font-semibold">Valoración</label>
-          <span class="text-2xl" *ngFor="let num of [1, 2, 3, 4, 5]; let i = index"
+          <span class="text-2xl" *ngFor="let num of starsArray"
                 (click)="nuevaResenya.valoracion = num"
                 [class]="nuevaResenya.valoracion >= num ? 'text-black cursor-pointer' : 'text-gray-400 cursor-pointer'">
-            ★
+              ★
           </span>
         </div>
+        <app-boton [label]="'Enviar Reseña'" [color]="'#078080'" size="small"></app-boton>
       </form>
-      <app-boton [label]="'Enviar Reseña'" [color]="'#078080'" size="small"></app-boton>
     </div>
   </div>
 
   <!-- 📝 Lista de Reseñas -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-8">
-    <app-resena *ngFor="let review of resenyas"
+    <app-resena *ngFor="let review of paginatedResenyas"
                 [nombre]="review.nombre"
                 [apellido]="review.apellido"
                 [date]="review.fecha"
                 [rating]="review.valoracion"
-                [comment]="review.texto">
+                [comment]="review.texto"
+                [id]="review.id"
+                (resenyaDeleted)="onResenyaDeleted()">
     </app-resena>
+
   </div>
+
+  <!-- Paginación -->
+  <div class="flex justify-center mt-6">
+    <button (click)="previousPage()" [disabled]="currentPage === 1"
+            class="px-3 py-1 rounded-lg text-[#111818] hover:bg-[#f0f5f5] disabled:opacity-50 disabled:cursor-not-allowed">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+
+    <div class="flex items-center gap-1">
+      <ng-container *ngFor="let page of displayedPages">
+        <button *ngIf="page !== '...'" (click)="setPage(page)"
+                [class.bg-[#f0f5f5]]="currentPage === page"
+                class="w-8 h-8 rounded-full flex items-center justify-center text-sm hover:bg-[#f0f5f5] transition-colors"
+                [class.font-bold]="currentPage === page">
+          {{ page }}
+        </button>
+        <span *ngIf="page === '...'" class="px-2">...</span>
+      </ng-container>
+    </div>
+
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages"
+            class="px-3 py-1 rounded-lg text-[#111818] hover:bg-[#f0f5f5] disabled:opacity-50 disabled:cursor-not-allowed">
+      <mat-icon>arrow_forward</mat-icon>
+    </button>
+  </div>
+
 
 </div>
