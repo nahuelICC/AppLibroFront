@@ -8,9 +8,9 @@ import {EditaUsuarioDTO} from '../DTOs/EditaUsuarioDTO';
 })
 export class PerfilUsuarioService {
 
-  private apiUrl = 'http://localhost:8000/api/clientes';
-  private apiUrlPedido = 'http://localhost:8000/api/lineaLibro';
-  private apiUrlUsuario = 'http://localhost:8000/api/usuario';
+  private apiUrl = '/api/clientes';
+  private apiUrlPedido = '/api/lineaLibro';
+  private apiUrlUsuario = '/api/usuario';
 
   constructor(private http: HttpClient) { }
 

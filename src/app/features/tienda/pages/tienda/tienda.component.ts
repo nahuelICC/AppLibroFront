@@ -26,7 +26,6 @@ export class TiendaComponent implements OnInit {
   ngOnInit(): void {
     this.libroService.getPrincipal().subscribe((data) => {
       this.principal = data;
-      console.log(data);
       this.totalPages = Math.ceil(data.length / this.itemsPerPage);
       this.updateDisplayedPages();
     });

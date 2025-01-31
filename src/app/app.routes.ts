@@ -9,6 +9,6 @@ export const routes: Routes = [
   { path: '', component: TiendaComponent },
   { path: 'login', component: LoginComponent },
   { path: 'main', component: TiendaComponent,canActivate:[AuthGuard] },
-  { path: 'usuario', component: PaginaUsuarioComponent },
+  { path: 'usuario', component: PaginaUsuarioComponent,canActivate:[AuthGuard] },
   { path: 'detallelibro/:id', component: DetallesComponent}
 ];
