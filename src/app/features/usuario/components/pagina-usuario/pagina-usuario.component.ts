@@ -3,7 +3,7 @@ import { PerfilUsuarioService } from '../../services/perfil-usuario.service';
 import { BotonComponent } from '../../../../shared/components/boton/boton.component';
 import { MatIcon } from '@angular/material/icon';
 import {CurrencyPipe, DatePipe, NgForOf, NgIf} from '@angular/common';
-import {FormsModule} from '@angular/forms';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {EditaUsuarioDTO} from '../../DTOs/EditaUsuarioDTO';
 
 @Component({
@@ -15,7 +15,8 @@ import {EditaUsuarioDTO} from '../../DTOs/EditaUsuarioDTO';
     DatePipe,
     NgForOf,
     CurrencyPipe,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
   templateUrl: './pagina-usuario.component.html',
   standalone: true,
@@ -30,8 +31,20 @@ export class PaginaUsuarioComponent implements OnInit {
   datosEdicion:EditaUsuarioDTO = new EditaUsuarioDTO();
   editandoDireccion = false;
   direccionPartes: string[] = ["", "", "", ""];
+  mostrandoCambioContrasena = false;
+  cambioContrasenaForm: FormGroup;
 
-  constructor(private perfilUsuarioService: PerfilUsuarioService) { }
+  constructor(private perfilUsuarioService: PerfilUsuarioService,private fb: FormBuilder) {
+    this.cambioContrasenaForm = this.fb.group({
+      actual: ['', Validators.required],
+      nueva: ['', [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.pattern(/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/)
+      ]],
+      repetir: ['', Validators.required]
+    });
+  }
 
   ngOnInit(): void {
     this.cargarDatosCliente();
@@ -130,5 +143,33 @@ export class PaginaUsuarioComponent implements OnInit {
       this.direccionPartes = this.datosCliente.direccion.split(",");
     }
     this.editandoDireccion = !this.editandoDireccion;
+  }
+
+  toggleCambioContrasena() {
+    this.mostrandoCambioContrasena = !this.mostrandoCambioContrasena;
+    if (!this.mostrandoCambioContrasena) {
+      this.cambioContrasenaForm.reset();
+    }
+  }
+
+  enviarCambioContrasena() {
+    if (this.cambioContrasenaForm.invalid) return;
+
+    if (this.cambioContrasenaForm.value.nueva !== this.cambioContrasenaForm.value.repetir) {
+      alert('Las contraseñas nuevas no coinciden');
+      return;
+    }
+
+    this.perfilUsuarioService.postCambioContrasena(this.cambioContrasenaForm.value).subscribe({
+      next: (response) => {
+        console.log('Contraseña cambiada:', response);
+      },
+      error: (err) => console.error('Error cambiando contraseña:', err)
+    });
+    this.toggleCambioContrasena();
+  }
+
+  get nuevaContrasena() {
+    return this.cambioContrasenaForm.get('nueva');
   }
 }

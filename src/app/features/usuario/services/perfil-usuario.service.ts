@@ -10,6 +10,7 @@ export class PerfilUsuarioService {
 
   private apiUrl = 'http://localhost:8000/api/clientes';
   private apiUrlPedido = 'http://localhost:8000/api/lineaLibro';
+  private apiUrlUsuario = 'http://localhost:8000/api/usuario';
 
   constructor(private http: HttpClient) { }
 
@@ -27,5 +28,9 @@ export class PerfilUsuarioService {
 
   putEdicionDireccion(datos: string): Observable<any> {
     return this.http.put(`${this.apiUrl}/direccion`, { direccion: datos });
+  }
+
+  postCambioContrasena(datos: { actual: string, nueva: string, repetir: string }): Observable<any> {
+    return this.http.post(`${this.apiUrlUsuario}/cambioContrasenya`, datos);
   }
 }
