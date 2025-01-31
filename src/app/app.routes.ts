@@ -5,6 +5,7 @@ import {TiendaComponent} from './features/tienda/pages/tienda/tienda.component';
 import {DetallesComponent} from './features/detalles_libro/pages/detalles/detalles.component';
 import {AuthGuard} from './core/guards/auth.guard';
 import {RegistroComponent} from './features/registro/componentes/registro/registro.component';
+import {CarritoComponent} from './features/carrito/carrito.component';
 
 export const routes: Routes = [
   { path: '', component: TiendaComponent },
@@ -12,5 +13,6 @@ export const routes: Routes = [
   { path: 'main', component: TiendaComponent,canActivate:[AuthGuard] },
   { path: 'usuario', component: PaginaUsuarioComponent, canActivate:[AuthGuard]},
   { path: 'detallelibro/:id', component: DetallesComponent},
-  { path: 'registro', component: RegistroComponent}
+  { path: 'registro', component: RegistroComponent},
+  { path: 'carrito', component: CarritoComponent, canActivate:[AuthGuard]}
 ];

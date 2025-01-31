@@ -152,6 +152,11 @@
     <h2 class="text-lg md:text-xl lg:text-2xl font-bold mb-3 md:mb-4 " style="color: var(--color-titulo)">Historial de Pedidos</h2>
 
     <div class="space-y-3 md:space-y-4">
+      <div  *ngIf="!pedidosMostrados.length" class="p-3 md:p-4 rounded-lg" style="background-color: var(--color-blanco-secundario)">
+      <span  class="text-sm md:text-base font-medium" style="color: var(--color-texto)">
+          No hay pedidos aún
+        </span>
+      </div>
       <div *ngFor="let pedido of pedidosMostrados" class="w-full relative group bg-white rounded-lg">
         <div class="p-3 md:p-4 rounded-lg transition-all duration-200 cursor-pointer"
              (click)="toggleDropdown(pedido)"
