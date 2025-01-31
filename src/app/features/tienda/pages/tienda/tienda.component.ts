@@ -5,10 +5,11 @@ import { CuadroProducto } from '../../DTOs/CuadroProducto';
 import {LibroServiceService} from '../../../../core/services/libro/libro-service.service';
 import {NgForOf, NgIf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-tienda',
-  imports: [FiltroComponent, CuadroProductoComponent, NgForOf, NgIf, MatIcon],
+  imports: [FiltroComponent, CuadroProductoComponent, NgForOf, NgIf, MatIcon, RouterLink],
   templateUrl: './tienda.component.html',
   standalone: true,
   styleUrl: './tienda.component.css'
@@ -25,6 +26,7 @@ export class TiendaComponent implements OnInit {
   ngOnInit(): void {
     this.libroService.getPrincipal().subscribe((data) => {
       this.principal = data;
+      console.log(data);
       this.totalPages = Math.ceil(data.length / this.itemsPerPage);
       this.updateDisplayedPages();
     });

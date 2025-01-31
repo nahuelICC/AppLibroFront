@@ -10,6 +10,8 @@ import {LibroServiceService} from "../../../../core/services/libro/libro-service
 import { LibroDetalleResponse } from '../../DTOs/LibroDetalleResponse';
 import {LibroTipoService} from '../../services/libro-tipo.service';
 import { ResenyaService } from '../../services/resenya.service';
+import {MatIcon} from '@angular/material/icon';
+import {data} from 'autoprefixer';
 
 @Component({
   selector: 'app-detalles',
@@ -19,7 +21,8 @@ import { ResenyaService } from '../../services/resenya.service';
     FormsModule,
     ResenaComponent,
     DetallePrecioComponent,
-    NgIf
+    NgIf,
+    MatIcon
   ],
   templateUrl: './detalles.component.html',
   standalone: true,
@@ -30,12 +33,20 @@ export class DetallesComponent implements OnInit{
     precioTapaBlanda: null,
     precioTapaDura: null
   };
-  cantidad: number = 1;
-  precioTotal: number = 0;
   resenyas: any[] = [];
-  nuevaResenya: { texto: string; valoracion: number } = { texto: '', valoracion: 0 };
+  nuevaResenya = {
+    id_cliente: 1,
+    id_libro: 0,
+    texto: '',
+    valoracion: 0
+  };
+  paginatedResenyas: any[] = []; // Reseñas paginadas
+  currentPage: number = 1; // Página actual
+  itemsPerPage: number = 6; // Reseñas por página
+  totalPages: number = 0; // Total de páginas
+  displayedPages: (number | string)[] = [];
+  pagesArray: number[] = [];
   tiposTapa: any[] = [];
-  tipoTapa: string = 'Tapa dura';
   libroId: number = 0;
   mostrarFormulario: boolean = false;
   averageRating: number = 0;
@@ -54,7 +65,6 @@ export class DetallesComponent implements OnInit{
   constructor(
       private route: ActivatedRoute,
       private libroService: LibroServiceService,
-      private libroTipoService: LibroTipoService,
       private resenyaService: ResenyaService,
       private cdRef: ChangeDetectorRef
   ) {}
@@ -66,7 +76,7 @@ export class DetallesComponent implements OnInit{
         this.libro = data.libro;
         this.tiposTapa = data.tiposTapa;
         this.libroId = +id;
-        // this.actualizarPrecioTotal();
+        this.nuevaResenya.id_libro = this.libroId;
         this.fetchAverageRating();
         this.fetchResenyas();
         this.fetchTotalResenyas();
@@ -78,6 +88,8 @@ export class DetallesComponent implements OnInit{
     this.resenyaService.getResenyas(this.libroId).subscribe(
       (data) => {
         this.resenyas = data;
+        this.calculateTotalPages();
+        this.updatePaginatedResenyas();
         this.calcularEstadisticas();
       },
       (error) => {
@@ -85,6 +97,7 @@ export class DetallesComponent implements OnInit{
       }
     );
   }
+
 
   fetchTotalResenyas(): void {
     this.resenyaService.countResenyas(this.libroId).subscribe(
@@ -100,72 +113,127 @@ export class DetallesComponent implements OnInit{
   calcularEstadisticas() {
     if (!this.resenyas || this.resenyas.length === 0) {
       this.ratingDistribution = this.ratingDistribution.map(entry => ({ ...entry, count: 0, percentage: 0 }));
-      this.cdRef.detectChanges(); // Forzamos la detección de cambios en Angular
+      this.cdRef.detectChanges();
       return;
     }
 
     let total = 0;
     let count = this.resenyas.length;
-    let distribution = [0, 0, 0, 0, 0]; // Distribución de 1 a 5 estrellas
+    let distribution = [0, 0, 0, 0, 0];
 
-    // Contamos cuántas reseñas hay para cada valoración
     this.resenyas.forEach(resena => {
-      total += resena.valoracion;  // Sumamos la valoración para el promedio
-      distribution[resena.valoracion - 1]++; // Corrección del índice, para que el valor 1 esté en el índice 0
+      total += resena.valoracion;
+      distribution[resena.valoracion - 1]++;
     });
 
-    // Calculamos el promedio de valoraciones
-    this.averageRating = parseFloat((total / count).toFixed(1));
+    this.averageRating = Math.round((total / count) * 10) / 10;
     this.totalReviews = count;
 
-    // Ahora calculamos el porcentaje de cada valor en base a la distribución
+
     this.ratingDistribution = distribution.map((count, index) => ({
-      stars: index + 1,  // Las estrellas son 1, 2, 3, 4, 5
+      stars: index + 1,
       count: count,
-      percentage: count > 0 ? parseFloat(((count / this.totalReviews) * 100).toFixed(1)) : 0  // Calculamos el porcentaje correctamente
+      percentage: count > 0 ? parseFloat(((count / this.totalReviews) * 100).toFixed(1)) : 0
     }));
 
     console.log("Distribución de estrellas actualizada:", this.ratingDistribution);
-    this.cdRef.detectChanges(); // Forzamos actualización de Angular
+    this.cdRef.detectChanges();
   }
-
-
-
-
-
 
   fetchAverageRating(): void {
     this.resenyaService.getMediaResenya(this.libroId).subscribe(
       (data) => {
-        this.averageRating = data.average_rating || 0;
+        this.averageRating = data.average_rating ? parseFloat(data.average_rating.toFixed(1)) : 0;
       },
       (error) => {
         console.error('Error fetching average rating:', error);
-        this.averageRating = 0; // Set to 0 in case of error
+
       }
     );
   }
 
-  // actualizarPrecioTotal(): void {
-  //   this.libroTipoService.updatePrecio(this.cantidad, this.tipoTapa).subscribe((data) => {
-  //     this.precioTotal = data.nuevoPrecio;
-  //   });
-  // }
-  //
-  // onCantidadChange(): void {
-  //   this.actualizarPrecioTotal();
-  // }
-  //
-  // onTipoTapaChange(tipoTapa: string): void {
-  //   this.tipoTapa = tipoTapa;
-  //   this.actualizarPrecioTotal();
-  // }
-
   submitReview() {
-
+    this.resenyaService.addResenya(this.nuevaResenya).subscribe(
+      response => {
+        console.log('Reseña creada con éxito', response);
+        this.fetchResenyas();
+        this.nuevaResenya.texto = '';
+        this.nuevaResenya.valoracion = 0;
+      },
+      error => {
+        console.error('Error al crear la reseña', error);
+      }
+    );
   }
 
   toggleFormulario() {
     this.mostrarFormulario = !this.mostrarFormulario;
   }
+
+  calculateTotalPages(): void {
+    this.totalPages = Math.ceil(this.resenyas.length / this.itemsPerPage);
+    this.currentPage = Math.min(this.currentPage, this.totalPages); // Evitar página inválida
+    this.updateDisplayedPages();
+  }
+
+
+  updatePaginatedResenyas(): void {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    this.paginatedResenyas = this.resenyas.slice(startIndex, startIndex + this.itemsPerPage);
+    this.cdRef.detectChanges(); // Forzar detección de cambios
+  }
+
+
+  updateDisplayedPages(): void {
+    const pages: (number | string)[] = [];
+    const total = this.totalPages;
+    const current = this.currentPage;
+    const delta = 2; // Número de páginas a mostrar alrededor de la actual
+
+    let start = Math.max(2, current - delta);
+    let end = Math.min(total - 1, current + delta);
+
+    if (current - delta < 2) end = Math.min(total - 1, 2 + delta * 2);
+    if (current + delta > total - 1) start = Math.max(2, total - 1 - delta * 2);
+
+    pages.push(1);
+    if (start > 2) pages.push('...');
+    for (let i = start; i <= end; i++) pages.push(i);
+    if (end < total - 1) pages.push('...');
+    if (total > 1) pages.push(total);
+
+    this.displayedPages = pages;
+  }
+
+  setPage(page: number | string) {
+    if (typeof page === 'number') {
+      this.currentPage = page;
+      this.updatePaginatedResenyas();
+      this.updateDisplayedPages();
+    }
+  }
+
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePaginatedResenyas();
+      this.updateDisplayedPages();
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePaginatedResenyas();
+      this.updateDisplayedPages();
+    }
+  }
+
+
+  onResenyaDeleted(): void {
+    this.fetchResenyas();
+  }
+
+
 }
