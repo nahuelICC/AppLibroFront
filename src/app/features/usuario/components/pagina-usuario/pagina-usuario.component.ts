@@ -33,6 +33,8 @@ export class PaginaUsuarioComponent implements OnInit {
   direccionPartes: string[] = ["", "", "", ""];
   mostrandoCambioContrasena = false;
   cambioContrasenaForm: FormGroup;
+  currentPage: number = 1;
+  itemsPerPage: number = 3;
 
   constructor(private perfilUsuarioService: PerfilUsuarioService,private fb: FormBuilder) {
     this.cambioContrasenaForm = this.fb.group({
@@ -49,6 +51,26 @@ export class PaginaUsuarioComponent implements OnInit {
   ngOnInit(): void {
     this.cargarDatosCliente();
   }
+
+  get pedidosMostrados() {
+    return this.datosCliente.pedidos.slice(0, this.currentPage * this.itemsPerPage);
+  }
+
+  get totalPaginas(): number {
+    return Math.ceil(this.datosCliente.pedidos.length / this.itemsPerPage);
+  }
+
+  cargarMenosPedidos() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  cargarMasPedidos() {
+    this.currentPage++;
+  }
+
+
 
   private cargarDatosCliente(): void {
     this.perfilUsuarioService.getDatosCliente().subscribe({
@@ -163,10 +185,13 @@ export class PaginaUsuarioComponent implements OnInit {
     this.perfilUsuarioService.postCambioContrasena(this.cambioContrasenaForm.value).subscribe({
       next: (response) => {
         console.log('Contraseña cambiada:', response);
+        this.toggleCambioContrasena(); // Cierra el formulario solo si fue exitoso
       },
-      error: (err) => console.error('Error cambiando contraseña:', err)
+      error: (err) => {
+        console.error('Error cambiando contraseña:', err);
+        // Opcional: mantener el formulario abierto en caso de error
+      }
     });
-    this.toggleCambioContrasena();
   }
 
   get nuevaContrasena() {
