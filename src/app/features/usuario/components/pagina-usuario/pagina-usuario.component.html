@@ -59,10 +59,10 @@
     </div>
     <div class="flex flex-col sm:flex-row gap-3 md:gap-4 mt-3">
       <app-boton
-        [label]="mostrandoCambioContrasena ? 'Guardar' : 'Cambiar Contraseña'"
+        [label]="mostrandoCambioContrasena ? 'Cerrar' : 'Cambiar Contraseña'"
         [size]="'large'"
         [color]="'#f45d48'"
-        (click)="mostrandoCambioContrasena ? enviarCambioContrasena() : toggleCambioContrasena()">
+        (click)="toggleCambioContrasena()">
       </app-boton>
 
       <app-boton
@@ -110,6 +110,13 @@
           </div>
         </div>
       </form>
+      <div class="mt-4">
+        <app-boton
+          label="Guardar"
+          [size]="'large'"
+          (click)="enviarCambioContrasena()">
+        </app-boton>
+      </div>
     </div>
   </div>
 
@@ -140,13 +147,17 @@
     </div>
   </div>
 
-
   <!-- Historial de Pedidos -->
-  <div class="mb-6 md:mb-8 lg:mb-10">
-    <h2 class="text-lg md:text-xl lg:text-2xl font-bold mb-3 md:mb-4" style="color: var(--color-titulo)">Historial de Pedidos</h2>
+  <div class="mb-6 md:mb-8 lg:mb-10 ">
+    <h2 class="text-lg md:text-xl lg:text-2xl font-bold mb-3 md:mb-4 " style="color: var(--color-titulo)">Historial de Pedidos</h2>
 
     <div class="space-y-3 md:space-y-4">
-      <div *ngFor="let pedido of datosCliente.pedidos" class="w-full relative group bg-white">
+      <div  *ngIf="!pedidosMostrados.length" class="p-3 md:p-4 rounded-lg" style="background-color: var(--color-blanco-secundario)">
+      <span  class="text-sm md:text-base font-medium" style="color: var(--color-texto)">
+          No hay pedidos aún
+        </span>
+      </div>
+      <div *ngFor="let pedido of pedidosMostrados" class="w-full relative group bg-white rounded-lg">
         <div class="p-3 md:p-4 rounded-lg transition-all duration-200 cursor-pointer"
              (click)="toggleDropdown(pedido)"
              (keydown.enter)="toggleDropdown(pedido)"
@@ -218,8 +229,19 @@
       </div>
     </div>
 
-    <div class="flex justify-center mt-4">
-      <app-boton [size]="'medium'" [label]="'Ver más'"></app-boton>
+    <div class="flex justify-center mt-4" >
+      <app-boton class="mr-1"
+                 *ngIf="currentPage > 1"
+                 [size]="'small'"
+                 [label]="'Ver menos'"
+                 [color]="'#f45d48'"
+                 (click)="cargarMenosPedidos()">
+      </app-boton>
+      <app-boton *ngIf="currentPage < totalPaginas"
+        [size]="'small'"
+        [label]="'Ver más'"
+        (click)="cargarMasPedidos()">
+      </app-boton>
     </div>
   </div>
 
