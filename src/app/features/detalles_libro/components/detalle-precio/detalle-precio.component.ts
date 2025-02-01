@@ -1,75 +1,113 @@
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 import {MatIcon} from '@angular/material/icon';
+import {NgForOf} from '@angular/common';
+import {ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {LibroDetalle} from '../../DTOs/LibroDetalle';
+import {DetallesLibroService} from '../../services/detalles-libro.service';
 
 @Component({
   selector: 'app-detalle-precio',
   imports: [
     BotonComponent,
-    MatIcon
+    MatIcon,
+    NgForOf
   ],
   templateUrl: './detalle-precio.component.html',
   standalone: true,
   styleUrl: './detalle-precio.component.css'
 })
-export class DetallePrecioComponent implements OnChanges{
+export class DetallePrecioComponent implements OnChanges, OnInit {
   @Input() precios: { blanda: number | null, dura: number | null } = { blanda: null, dura: null };
   @Input() tiposTapa: any[] = [];
   @Input() libroId: number | null = null;
+  @Input() libro: LibroDetalle | null = null;
   price: number = 0;
   quantity: number = 1;
-  coverType: string = 'Tapa dura';
+  selectedTipoTapa: any = null;
+
+  constructor(private detallesLibroService: DetallesLibroService, private cdRef: ChangeDetectorRef) {}
+
+  ngOnInit() {
+    console.log('tiposTapa en ngOnInit:', this.tiposTapa);
+    if (this.tiposTapa.length > 0) {
+      this.selectedTipoTapa = this.tiposTapa[0];
+      this.updatePrice(); // Actualizar el precio automáticamente
+      this.cdRef.detectChanges(); // Forzar la detección de cambios
+    }
+  }
+
+
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['precios']) {
+    if (changes['tiposTapa'] && this.tiposTapa.length > 0) {
+      this.selectedTipoTapa = this.tiposTapa[0]; // Seleccionar el primer tipo de tapa
       this.updatePrice();
     }
   }
 
+
   updateQuantity(amount: number) {
-    if (this.quantity + amount > 0) {
+    if (this.quantity + amount > 0 && this.quantity + amount <= 15) {
       this.quantity += amount;
-      // this.updatePrice(); // Actualiza el precio cuando cambia la cantidad
+    } else if (this.quantity + amount > 15) {
+      this.quantity = 15; // Limitar la cantidad máxima a 15
+    } else {
+      console.warn('La cantidad no puede ser menor que 1');
     }
   }
 
-  selectCover(type: string) {
-    this.coverType = type;
-    this.quantity = 1; // Reinicia la cantidad a 1
-    this.updatePrice(); // Actualiza el precio
+
+  selectCover(tipo: any) {
+    // Asigna el objeto completo del tipo de tapa al valor de selectedTipoTapa
+    this.selectedTipoTapa = tipo;
+    console.log('Tipo de tapa seleccionado:', this.selectedTipoTapa);
+    // Luego puedes llamar a updatePrice o cualquier otra función necesaria
+    this.updatePrice();
   }
+
+
 
   updatePrice() {
-    let basePrice = 0;
-    if (this.coverType === 'Tapa dura' && this.precios.dura !== null) {
-      basePrice = this.precios.dura;
-    } else if (this.coverType === 'Tapa blanda' && this.precios.blanda !== null) {
-      basePrice = this.precios.blanda;
+    if (this.selectedTipoTapa && this.selectedTipoTapa.id_tipo_tapa && this.libroId) {
+      console.log('Enviando al backend:', this.libroId, this.selectedTipoTapa.id_tipo_tapa);
+      this.detallesLibroService.getPrecioTapa(this.libroId, this.selectedTipoTapa.id_tipo_tapa).subscribe(
+        (data) => {
+          console.log('Precio recibido:', data);
+          this.price = data.precio;  // Actualiza el precio en tu interfaz
+
+          // Asegúrate de actualizar el id_tipo en selectedTipoTapa
+          this.selectedTipoTapa.id_tipo = data.id_tipo; // Asigna el id_tipo de la respuesta
+        },
+        (error) => {
+          console.error('Error al obtener el precio:', error);
+        }
+      );
+    } else {
+      console.error('selectedTipoTapa o libroId no definidos');
     }
-    this.price = basePrice;
-    // this.price = basePrice * this.quantity;// Multiplica el precio base por la cantidad
   }
 
+
   anadirAlCarrito() {
-    if (this.libroId === null) {
-      console.error('ID del libro no definido');
+    if (!this.libroId || !this.selectedTipoTapa || !this.selectedTipoTapa.id_tipo) {
+      console.error('Datos incompletos para agregar al carrito');
       return;
     }
 
-    // Crear el objeto con los datos del libro
     const cartItem = {
-      libroId: this.libroId,
-      tipoTapa: this.coverType,
+      id_tipo: this.selectedTipoTapa.id_tipo, // Asegúrate de que tienes el id_tipo aquí
       cantidad: this.quantity
     };
 
-    // Obtener el carrito actual del localStorage
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
-    // Añadir el nuevo ítem al carrito
-    cart.push(cartItem);
+    const existingItem = cart.find((item: any) => item.id_tipo === cartItem.id_tipo);
+    if (existingItem) {
+      existingItem.cantidad += cartItem.cantidad;
+    } else {
+      cart.push(cartItem);
+    }
 
-    // Guardar el carrito actualizado en el localStorage
     localStorage.setItem('cart', JSON.stringify(cart));
 
     console.log('Libro añadido al carrito:', cartItem);
