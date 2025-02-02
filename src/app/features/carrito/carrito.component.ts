@@ -4,6 +4,7 @@ import {CuadroCarritoComponent} from './components/cuadro-carrito/cuadro-carrito
 import {HttpClient} from '@angular/common/http';
 import {CurrencyPipe, NgForOf} from '@angular/common';
 import {CarritoService} from './services/carrito.service';
+import {Router, RouterOutlet} from '@angular/router';
 
 @Component({
   selector: 'app-carrito',
@@ -24,7 +25,7 @@ export class CarritoComponent implements OnInit {
   shippingCost: number = 5;
   discount: number = 0;
 
-  constructor(private http: HttpClient, private carritoService: CarritoService) {}
+  constructor(private http: HttpClient, private carritoService: CarritoService,private router:Router) {}
 
   ngOnInit(): void {
     this.loadCartFromLocalStorage();
@@ -126,5 +127,36 @@ export class CarritoComponent implements OnInit {
     } else {
       this.shippingCost = 5;
     }
+  }
+
+  clearCart() {
+    this.cartItems = [];
+    this.products = [];
+    this.totalBooksPrice = 0;
+    this.shippingCost = 5;
+    this.discount = 0;
+    localStorage.removeItem('cart');
+  }
+
+  sendOrderToBackend() {
+    if (this.cartItems.length === 0) {
+      alert('El carrito está vacío. No se puede generar un pedido.');
+      return;
+    }
+
+
+    // total: this.totalBooksPrice + this.shippingCost - this.discount
+
+    this.carritoService.postPedido(this.cartItems).subscribe({
+      next: (response: any) => {
+        alert('Pedido generado con éxito.');
+        this.clearCart();
+        this.router.navigate(['usuario']);
+      },
+      error: (error: any) => {
+        console.error('Error al enviar el pedido:', error);
+        alert('Ocurrió un error al enviar el pedido. Por favor, inténtalo de nuevo.');
+      }
+    });
   }
 }
