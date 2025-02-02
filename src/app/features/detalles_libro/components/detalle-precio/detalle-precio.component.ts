@@ -112,6 +112,7 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
 
     console.log('Libro añadido al carrito:', cartItem);
     alert('Libro añadido al carrito');
+    console.log('Carrito actualizado:', cart);
   }
 
 }
