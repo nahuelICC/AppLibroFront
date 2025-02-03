@@ -15,9 +15,6 @@ export class LibroServiceService {
 
   constructor(private http: HttpClient) {}
 
-  getLibros(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/all`);
-  }
 
   getPrincipal(): Observable<CuadroProducto[]> {
     return this.http.get<CuadroProducto[]>(`${this.apiUrl}/principal`);
@@ -29,6 +26,14 @@ export class LibroServiceService {
 
   verificarCompra(libroId: number, clienteId: number): Observable<VerificarCompraResponse> {
     return this.http.get<VerificarCompraResponse>(`${this.apiUrl}/verificarcompra/${libroId}/${clienteId}`);
+  }
+
+  getNovedades(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/novedades`);
+  }
+
+  getMasVendidos(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/masvendidos`);
   }
 
 
