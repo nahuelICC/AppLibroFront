@@ -1,0 +1,15 @@
+<div class="container mx-auto p-8 md:p-12">
+  <div class="relative h-64 md:h-96 bg-cover bg-center rounded-xl" style="background-image: url('assets/imagen_inicio.jpg');">
+    <div class="absolute inset-0 flex flex-col p-5 md:p-14 justify-end bg-black bg-opacity-50 rounded-xl">
+      <h1 class="text-xl md:text-5xl text-white font-bold pb-5">Suscríbete a nuestras mystery box desde 10€</h1>
+      <app-boton [size]="'small'" [color]="'#E53935'" [label]="'Mas información'" ></app-boton>
+    </div>
+  </div>
+  <div class="flex justify-center mt-4">
+    <app-boton [size]="'small'" [color]="'#078080'" [label]="'Entrar en la tienda'" [routerLink]="'/main'"></app-boton>
+  </div>
+</div>
+
+<app-mas-vendido></app-mas-vendido>
+<app-novedades></app-novedades>
+<app-precio-cajas></app-precio-cajas>

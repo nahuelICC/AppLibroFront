@@ -1,0 +1,36 @@
+<div class="mx-auto px-4 py-8 relative">
+  <!-- Título -->
+  <h2 class="text-2xl font-bold absolute top-0 left-0 ml-10 md:ml-48">Novedades</h2>
+
+  <!-- Contenedor de novedades -->
+  <div class="overflow-x-auto md:overflow-hidden h-full flex md:justify-center justify-start pt-10 pb-4 space-x-6 flex-nowrap snap-x snap-mandatory whitespace-nowrap" *ngIf="novedades$ | async as novedades">
+    <div
+      *ngFor="let book of novedades"
+      class="flex-none w-80 md:w-96 lg:w-[350px] xl:w-[400px] flex flex-col gap-1 cursor-pointer transition-transform transform md:hover:scale-110 md:hover:shadow-xl rounded-2xl px-3 h-full pt-4 snap-center bg-[#f4f4f4]"
+      [routerLink]="['/detallelibro', book.id]"
+    >
+      <!-- Imagen más grande que en "Lo más vendido" -->
+      <div class="w-full h-72 bg-center bg-no-repeat bg-contain rounded-xl overflow-hidden">
+        <img
+          [src]="book.portada || ''"
+          alt="{{ book.titulo || 'Título desconocido' }}"
+          class="w-full h-full object-contain focus:outline-2 focus:outline-offset-2"
+        />
+      </div>
+
+      <!-- Texto -->
+      <div class="flex flex-col flex-1 px-1 text-center">
+        <div class="min-h-[80px] flex flex-col justify-center">
+          <p class="text-[#111818] text-xl font-semibold leading-normal line-clamp-2 mb-2">
+            {{ book.titulo || 'Título desconocido' }}
+          </p>
+        </div>
+
+        <!-- Precio -->
+        <p class="text-lg font-bold leading-tight line-clamp-1 mb-2">
+          {{ book.precio?.toFixed(2) || '0.00' }}€
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
