@@ -180,11 +180,12 @@ export class DetallesComponent implements OnInit {
     this.detallesLibroService.addResenya(this.nuevaResenya).subscribe(
       response => {
         console.log('Reseña creada con éxito', response);
-        this.fetchResenyas();
-        this.nuevaResenya.texto = '';
-        this.nuevaResenya.valoracion = 0;
-        this.verificarCompra();
-        this.mostrarFormulario = false;
+        // this.fetchResenyas();
+        // this.nuevaResenya.texto = '';
+        // this.nuevaResenya.valoracion = 0;
+        // this.verificarCompra();
+        // this.mostrarFormulario = false;
+        window.location.reload(); //solucion provisional
       },
       error => {
         console.error('Error al crear la reseña', error);
