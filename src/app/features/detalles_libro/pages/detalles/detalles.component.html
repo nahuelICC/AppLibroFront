@@ -1,0 +1,146 @@
+<!-- Primer Div: Información del Libro y Detalle de Precio -->
+<div class="flex flex-col md:flex-row gap-6 p-6 mt-10 min-h-screen overflow-hidden">
+  <!-- 📖 Sección Izquierda: Información del Libro -->
+  <div class="md:w-2/3 pl-6 flex flex-col w-full">
+    <p class="text-gray-500 mb-4">{{ libro?.genero }}</p>
+    <!-- Título y Autor -->
+    <h1 class="text-2xl font-bold">{{ libro?.titulo }}</h1>
+    <p class="text-gray-500 text-lg mt-2">{{ libro?.autor }}</p>
+
+    <!-- Contenedor de la imagen y la descripción -->
+    <div class="flex flex-col md:flex-row gap-6">
+      <!-- Imagen de la Portada -->
+      <img [src]="libro?.portada || 'assets/default-cover.jpg'" alt="Portada del libro"
+           class="w-full max-w-xs mt-4 shadow-md rounded-lg">
+
+      <!-- 📄 Descripción del Libro -->
+      <div>
+        <h2 class="text-xl font-semibold mt-10">Sinopsis</h2>
+        <p class="text-gray-700">{{ libro?.descripcion }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 💰 Sección Derecha: Precio y detalles de compra -->
+  <div class="md:w-1/3 p-6 flex flex-col w-full">
+    <app-detalle-precio
+      *ngIf="libro"
+      [precios]="{
+                    blanda: libro?.precioTapaBlanda ? +libro.precioTapaBlanda : null,
+                    dura: libro?.precioTapaDura ? +libro.precioTapaDura : null
+                }"
+      [tiposTapa]="tiposTapa"
+      [libroId]="libroId">
+    </app-detalle-precio>
+  </div>
+</div>
+
+<!-- Contenedor principal de las reseñas y barras -->
+<div class="flex flex-col md:flex-row gap-8 overflow-hidden">
+
+  <!-- Barra de distribución de estrellas a la izquierda -->
+  <div class="w-full md:w-1/2 pl-6 pr-6">
+    <!-- Barra de Reseñas -->
+    <div class="mb-6">
+      <h2 class="text-xl font-semibold">Reseñas</h2>
+
+      <!-- ⭐ Puntuación promedio -->
+      <div class="mt-4 flex items-center justify-between w-full">
+        <div class="flex items-center flex-wrap">
+          <h3 class="text-3xl font-bold mr-2">{{ averageRating }}</h3>
+          <div class="flex">
+            <ng-container *ngFor="let star of starsArray">
+              <span class="text-2xl" [class]="star <= averageRating ? 'text-black' : 'text-gray-400'">★</span>
+            </ng-container>
+          </div>
+        </div>
+        <p class="text-gray-500">{{ totalReviews }} reseñas</p>
+      </div>
+
+      <!-- 📊 Barra de distribución de estrellas -->
+      <div class="mt-4 mb-4 space-y-1 w-full overflow-x-auto">
+        <div *ngFor="let rating of ratingDistribution; let i = index" class="flex items-center justify-between w-full sm:w-full">
+          <div class="flex items-center w-full">
+            <span class="w-6 text-center mr-2">{{ rating.stars }}</span>
+            <div class="flex-1 bg-gray-200 rounded-full h-2 relative">
+              <div class="bg-black h-2 rounded-full absolute top-0 left-0" [style.width.%]="rating.percentage"></div>
+            </div>
+            <span class="ml-2 text-sm">{{ rating.percentage }}%</span>
+          </div>
+        </div>
+      </div>
+
+      <app-boton
+        *ngIf="mostrarBoton"
+        [label]="mostrarFormulario ? 'Cerrar' : 'Dejar reseña'"
+        [color]="'#078080'"
+        size="small"
+        (click)="toggleFormulario()">
+      </app-boton>
+
+      <div *ngIf="mostrarFormulario" class="mt-4">
+        <h3 class="text-lg font-semibold">Escribe tu opinión</h3>
+        <form (ngSubmit)="submitReview()" class="mt-4">
+          <textarea [(ngModel)]="nuevaResenya.texto" name="texto" placeholder="Escribe tu opinión..."
+                    class="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </textarea>
+          <div class="flex items-center mt-4 mb-4">
+            <label class="text-lg pr-2 font-semibold">Valoración</label>
+            <span class="text-2xl" *ngFor="let num of starsArray"
+                  (click)="nuevaResenya.valoracion = num"
+                  [class]="nuevaResenya.valoracion >= num ? 'text-black cursor-pointer' : 'text-gray-400 cursor-pointer'">
+              ★
+            </span>
+          </div>
+          <app-boton [label]="'Enviar Reseña'" [color]="'#078080'" size="small"></app-boton>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reseñas a la derecha -->
+  <div class="w-full md:w-1/2">
+    <div class="mb-8">
+      <!-- 📝 Lista de Reseñas -->
+      <div class="grid grid-cols-1 pl-5 pr-6">
+        <div *ngFor="let review of paginatedResenyas" class="flex flex-col space-y-4">
+          <app-resena
+            [nombre]="review.nombre"
+            [apellido]="review.apellido"
+            [rating]="review.valoracion"
+            [comment]="review.texto"
+            [id]="review.id"
+            [idClienteResena]="review.id_cliente"
+            [idClienteActual]="clienteIdActual"
+            (resenyaDeleted)="onResenyaDeleted(review.id)"></app-resena>
+        </div>
+      </div>
+
+      <!-- Paginación -->
+      <div *ngIf="paginatedResenyas.length > 0" class="flex justify-center mt-6">
+        <button (click)="previousPage()" [disabled]="paginacion.currentPage === 1"
+                class="px-3 py-1 rounded-lg text-[#111818] hover:bg-[#f0f5f5] disabled:opacity-50 disabled:cursor-not-allowed">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+
+        <div class="flex items-center gap-1">
+          <ng-container *ngFor="let page of paginacion.displayedPages">
+            <button *ngIf="page !== '...'" (click)="setPage(page)"
+                    [class.bg-[#f0f5f5]]="paginacion.currentPage === page"
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-sm hover:bg-[#f0f5f5] transition-colors"
+                    [class.font-bold]="paginacion.currentPage === page">
+              {{ page }}
+            </button>
+            <span *ngIf="page === '...'" class="px-2">...</span>
+          </ng-container>
+        </div>
+
+        <button (click)="nextPage()" [disabled]="paginacion.currentPage === paginacion.totalPages"
+                class="px-3 py-1 rounded-lg text-[#111818] hover:bg-[#f0f5f5] disabled:opacity-50 disabled:cursor-not-allowed">
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

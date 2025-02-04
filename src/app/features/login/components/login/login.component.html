@@ -1,0 +1,54 @@
+<div class="flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+    <h2 class="text-2xl font-bold mb-6 text-center">Inicio de sesión</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <!-- Campo de Usuario -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Usuario</label>
+        <input
+          type="text"
+          formControlName="username"
+          placeholder="Nombre de usuario"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+        />
+        <div *ngIf="loginForm.get('username')?.hasError('required') && loginForm.get('username')?.touched" class="text-red-500 text-sm mt-1">
+          El nombre de usuario es obligatorio.
+        </div>
+      </div>
+
+      <!-- Campo de Contraseña -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700">Contraseña</label>
+        <input
+          type="password"
+          formControlName="password"
+          placeholder="Mínimo 6 caracteres"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+        />
+        <div *ngIf="loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched" class="text-red-500 text-sm mt-1">
+          La contraseña es obligatoria.
+        </div>
+        <div *ngIf="loginForm.get('password')?.hasError('minlength') && loginForm.get('password')?.touched" class="text-red-500 text-sm mt-1">
+          La contraseña debe tener al menos 6 caracteres.
+        </div>
+      </div>
+
+      <!-- Botón de Inicio de Sesión -->
+      <app-boton
+        [label]="isLoading ? 'Cargando...' : 'Entrar'"
+        [color]="'#f45d48'"
+        [disabled]="loginForm.invalid || isLoading"
+        size="medium"
+      ></app-boton>
+
+      <!-- Enlaces de Recuperación y Registro -->
+      <div class="flex justify-between text-sm mt-4">
+        <a href="/registro" class="text-indigo-600 hover:underline">¿No tienes cuenta?</a>
+        <a href="/recuperar-password" class="text-indigo-600 hover:underline">¿Has olvidado tu contraseña?</a>
+      </div>
+
+      <!-- Mensaje de Error -->
+      <p *ngIf="errorMessage" class="text-red-500 text-center mt-4">{{ errorMessage }}</p>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+<div class="flex items-center justify-between border-b pb-4 mb-2">
+  <div class="flex items-center space-x-4">
+    <img src="{{portada}}" alt="{{titulo}}" class="w-12 h-16 rounded">
+    <div>
+      <h3 class="text-lg font-semibold text-[var(--color-texto)]">{{titulo}}</h3>
+      <p class="text-sm text-gray-600">{{cantidad}} x {{precio | currency:'EUR'}}</p>
+      <p class="text-xs text-gray-500">Envíos en 3-5 días laborables</p>
+    </div>
+  </div>
+  <div class="flex items-center space-x-2">
+    <button (click)="decrementQuantity()" class="bg-gray-200 hover:bg-gray-300 hover:text-gray-700 rounded-full w-8 h-8 flex items-center justify-center font-bold">-</button>
+    <span class="font-bold">{{cantidad}}</span>
+    <button (click)="incrementQuantity()" class="bg-gray-200 hover:bg-gray-300 hover:text-gray-700 rounded-full w-8 h-8 flex items-center justify-center font-extrabold" [disabled]="cantidad >= 10">+</button>
+  </div>
+</div>

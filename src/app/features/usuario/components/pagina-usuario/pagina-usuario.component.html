@@ -1,0 +1,264 @@
+<div class="max-w-2xl lg:max-w-4xl xl:max-w-6xl mx-auto p-4 md:p-6 lg:p-8 md:mt-10" style="background-color: var(--color-blanco-fondo)">
+  <!-- Sección de Bienvenida -->
+  <div class="mb-6 md:mb-8 lg:mb-10">
+    <div class="flex justify-start">
+      <svg class="w-24 h-24 md:w-24 md:h-24 lg:w-36 lg:h-36"
+           viewBox="0 0 24 24"
+           fill="none"
+           stroke="#222525"
+           stroke-width="2"
+           preserveAspectRatio="xMidYMid meet">
+        <path stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+      </svg>
+    </div>
+
+    <div class="flex items-center gap-4 mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-800">
+        Bienvenido, {{ datosCliente.username }}
+      </h1>
+    </div>
+
+    <p class="text-md md:text-xl text-gray-600 mb-8">
+      Aquí podrás ver tu información personal, tu historial de pedidos y tus suscripciones activas.
+    </p>
+  </div>
+
+  <!-- Sección de Perfil -->
+  <div class="mb-6 md:mb-8 lg:mb-10">
+    <div class="flex flex-col md:flex-row md:justify-between md:items-start">
+      <div class="mb-4 md:mb-0">
+        <!-- Nombre y Apellido -->
+        <div *ngIf="!editandoPerfil">
+          <h1 class="text-l md:text-xl lg:text-2xl font-bold mb-2" style="color: var(--color-titulo)">
+            {{ datosCliente.nombre }} {{ datosCliente.apellido }}
+          </h1>
+        </div>
+        <div *ngIf="editandoPerfil" class="flex gap-2 mb-2">
+          <input type="text" [(ngModel)]="datosCliente.nombre"
+                 class="border rounded-xl p-2 w-1/2" placeholder="Nombre">
+          <input type="text" [(ngModel)]="datosCliente.apellido"
+                 class="border rounded-xl p-2 w-1/2" placeholder="Apellido">
+        </div>
+
+        <!-- Email -->
+        <p *ngIf="!editandoPerfil" class="text-base md:text-lg text-gray-400">
+          {{ datosCliente.email }}
+        </p>
+        <input *ngIf="editandoPerfil" type="email" [(ngModel)]="datosCliente.email"
+               class="border rounded-xl p-2 w-full mb-2" placeholder="Email" disabled>
+
+        <!-- Teléfono -->
+        <p *ngIf="!editandoPerfil" class="text-base md:text-lg text-gray-400">
+          {{ datosCliente.telefono }}
+        </p>
+        <input *ngIf="editandoPerfil" type="tel" [(ngModel)]="datosCliente.telefono"
+               class="border rounded-xl p-2 w-full" placeholder="Teléfono">
+      </div>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-3 md:gap-4 mt-3">
+      <app-boton
+        [label]="mostrandoCambioContrasena ? 'Cerrar' : 'Cambiar Contraseña'"
+        [size]="'large'"
+        [color]="'#f45d48'"
+        (click)="toggleCambioContrasena()">
+      </app-boton>
+
+      <app-boton
+        [label]="editandoPerfil ? 'Guardar Cambios' : 'Editar Perfil'"
+        [size]="'large'"
+        (click)="toggleEditarPerfil()">
+      </app-boton>
+    </div>
+
+    <div *ngIf="mostrandoCambioContrasena" class="mt-4 space-y-4 p-4 rounded-lg" style="background-color: var(--color-blanco-secundario)">
+      <form [formGroup]="cambioContrasenaForm">
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">Contraseña Actual</label>
+          <input type="password" formControlName="actual"
+                 class="w-full p-2 border rounded-xl"
+                 [class.border-red-500]="cambioContrasenaForm.get('actual')?.invalid && cambioContrasenaForm.get('actual')?.touched">
+          <div *ngIf="cambioContrasenaForm.get('actual')?.invalid && cambioContrasenaForm.get('actual')?.touched"
+               class="text-red-500 text-sm mt-1">
+            Este campo es requerido
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">Nueva Contraseña</label>
+          <input type="password" formControlName="nueva"
+                 class="w-full p-2 border rounded-xl"
+                 [class.border-red-500]="nuevaContrasena?.invalid && nuevaContrasena?.touched">
+          <div *ngIf="nuevaContrasena?.invalid && nuevaContrasena?.touched" class="text-red-500 text-sm mt-1">
+            <div *ngIf="nuevaContrasena?.errors?.['required']">Este campo es requerido</div>
+            <div *ngIf="nuevaContrasena?.errors?.['minlength']">Mínimo 6 caracteres</div>
+            <div *ngIf="nuevaContrasena?.errors?.['pattern']">
+              Debe contener al menos una mayúscula, un número y un carácter especial
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">Repetir Contraseña</label>
+          <input type="password" formControlName="repetir"
+                 class="w-full p-2 border rounded-xl"
+                 [class.border-red-500]="cambioContrasenaForm.get('repetir')?.invalid && cambioContrasenaForm.get('repetir')?.touched">
+          <div *ngIf="cambioContrasenaForm.get('repetir')?.invalid && cambioContrasenaForm.get('repetir')?.touched"
+               class="text-red-500 text-sm mt-1">
+            Este campo es requerido
+          </div>
+        </div>
+      </form>
+      <div class="mt-4">
+        <app-boton
+          label="Guardar"
+          [size]="'large'"
+          (click)="enviarCambioContrasena()">
+        </app-boton>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dirección de Envío -->
+  <div class="mb-6 md:mb-8 lg:mb-10">
+    <h2 class="text-lg md:text-xl lg:text-2xl font-bold mb-3 md:mb-4" style="color: var(--color-titulo)">Dirección de envío</h2>
+
+    <div class="p-3 md:p-4 rounded-lg flex justify-between items-center w-full" style="background-color: var(--color-blanco-secundario)">
+      <div class="mr-2" *ngIf="!editandoDireccion">
+      <span class="text-sm md:text-base font-medium" style="color: var(--color-texto)">
+        {{ datosCliente.direccion }}
+      </span>
+        <br>
+        <span class="text-sm md:text-base text-gray-400">
+        Dirección de envío por defecto
+      </span>
+      </div>
+
+      <!-- Inputs cuando está en edición -->
+      <div *ngIf="editandoDireccion" class="grid grid-cols-2 gap-2 w-full">
+        <input type="text" [(ngModel)]="direccionPartes[0]" class="border rounded-xl p-2" placeholder="Calle">
+        <input type="text" [(ngModel)]="direccionPartes[1]" class="border rounded-xl p-2 mr-2" placeholder="Número">
+        <input type="text" [(ngModel)]="direccionPartes[2]" class="border rounded-xl p-2" placeholder="Localidad">
+        <input type="text" [(ngModel)]="direccionPartes[3]" class="border rounded-xl p-2 mr-2" placeholder="Provincia">
+      </div>
+
+      <app-boton [color]="editandoDireccion ? '#f45d48': '#078080'"  [size]="'medium'" [label]="editandoDireccion ? 'Guardar' : 'Editar'" (click)="toggleEditarDireccion()"></app-boton>
+    </div>
+  </div>
+
+  <!-- Historial de Pedidos -->
+  <div class="mb-6 md:mb-8 lg:mb-10 ">
+    <h2 class="text-lg md:text-xl lg:text-2xl font-bold mb-3 md:mb-4 " style="color: var(--color-titulo)">Historial de Pedidos</h2>
+
+    <div class="space-y-3 md:space-y-4">
+      <div  *ngIf="!pedidosMostrados.length" class="p-3 md:p-4 rounded-lg" style="background-color: var(--color-blanco-secundario)">
+      <span  class="text-sm md:text-base font-medium" style="color: var(--color-texto)">
+          No hay pedidos aún
+        </span>
+      </div>
+      <div *ngFor="let pedido of pedidosMostrados" class="w-full relative group bg-white rounded-lg">
+        <div class="p-3 md:p-4 rounded-lg transition-all duration-200 cursor-pointer"
+             (click)="toggleDropdown(pedido)"
+             (keydown.enter)="toggleDropdown(pedido)"
+             tabindex="0">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <div class="flex-1">
+              <div class="flex justify-between items-center mb-1">
+                <span class="font-medium text-base md:text-lg" [style.color]="'var(--color-texto)'">
+                  Pedido {{ pedido.referencia }}
+                </span>
+                <svg class="w-5 h-5 transform transition-transform"
+                     [style.color]="'var(--color-texto)'"
+                     [class.rotate-180]="pedidosAbiertos[pedido.id]"
+                     fill="none"
+                     stroke="currentColor"
+                     viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </div>
+              <p class="text-sm md:text-base mt-1" [style.color]="'var(--color-texto)'">
+                {{ pedido.fecha | date:'dd/MM/yyyy' }}
+              </p>
+              <p class="text-sm md:text-base mt-1" [style.color]="'var(--color-texto)'">
+                {{ pedido.estadoNombre }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Contenido Desplegable Dinámico -->
+          <div class="overflow-hidden transition-all duration-300"
+               [class.max-h-0]="!pedidosAbiertos[pedido.id]"
+               [class.max-h-[500px]]="pedidosAbiertos[pedido.id]">
+            <div class="pt-4 border-t border-gray-300 mt-4">
+              <!-- Estado de Carga -->
+              <div *ngIf="!pedido.detalles" class="text-center py-2">
+                <span class="text-sm text-gray-500">Cargando detalles del pedido...</span>
+              </div>
+
+              <!-- Detalles del Pedido -->
+              <div *ngIf="pedido.detalles">
+                <div *ngFor="let producto of pedido.detalles" class="mb-3">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <p class="text-sm md:text-base font-medium" style="color: var(--color-texto)">
+                        {{ producto.titulo }}
+                      </p>
+                      <p class="text-sm text-gray-500">
+                        Cantidad: {{ producto.cantidad }}
+                      </p>
+                    </div>
+                    <p class="text-sm md:text-base" style="color: var(--color-texto)">
+                      {{ producto.precio | currency:'EUR':'symbol':'1.2-2' }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="mt-4 pt-2 border-t border-gray-200">
+                  <div class="flex justify-between items-center">
+                    <span class="font-medium text-base">Total:</span>
+                    <span class="font-medium text-base">
+      {{ calcularTotalPedido(pedido) | currency:'EUR':'symbol':'1.2-2' }}
+    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-center mt-4" >
+      <app-boton class="mr-1"
+                 *ngIf="currentPage > 1"
+                 [size]="'small'"
+                 [label]="'Ver menos'"
+                 [color]="'#f45d48'"
+                 (click)="cargarMenosPedidos()">
+      </app-boton>
+      <app-boton *ngIf="currentPage < totalPaginas"
+        [size]="'small'"
+        [label]="'Ver más'"
+        (click)="cargarMasPedidos()">
+      </app-boton>
+    </div>
+  </div>
+
+  <!-- Suscripciones Activas -->
+  <div>
+    <h2 class="text-lg md:text-xl lg:text-2xl font-bold mb-3 md:mb-4" style="color: var(--color-titulo)">Suscripciones Activas</h2>
+    <div class="p-3 md:p-4 rounded-lg" style="background-color: var(--color-blanco-secundario)">
+      <ng-container *ngIf="datosCliente.suscripcion && datosCliente.suscripcion.tipo; else noSuscripcion">
+        <span class="text-sm md:text-base font-medium" style="color: var(--color-texto)">
+          {{ datosCliente.suscripcion.tipo }} - Activa desde {{ datosCliente.suscripcion.fechaInicio | date:'dd/MM/yyyy' }}
+        </span>
+      </ng-container>
+      <ng-template #noSuscripcion>
+        <span class="text-sm md:text-base font-medium" style="color: var(--color-texto)">
+          No hay suscripciones activas
+        </span>
+      </ng-template>
+    </div>
+  </div>
+</div>

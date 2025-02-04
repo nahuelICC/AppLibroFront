@@ -1,54 +1,61 @@
-<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f5f5] px-6 md:px-10 py-3">
-  <div class="flex items-center gap-4 text-[#111818]">
-    <div class="size-4">
-      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <g clip-path="url(#clip0_6_319)">
-          <path d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z" fill="currentColor"></path>
-        </g>
-        <defs>
-          <clipPath id="clip0_6_319"><rect width="48" height="48" fill="white"></rect></clipPath>
-        </defs>
-      </svg>
+<header class="w-full border-b border-solid shadow-xl border-b-[#000000] bg-[#fafaf8]">
+  <div class="container mx-auto flex items-center justify-between whitespace-nowrap px-2 md:px-1 py-3">
+    <div class="flex items-center gap-4 text-[#111818]">
+      <div class="w-6 h-6">
+        <svg class="w-full h-full" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g clip-path="url(#clip0_6_319)">
+            <path
+              d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z"
+              fill="currentColor"
+            ></path>
+          </g>
+          <defs>
+            <clipPath id="clip0_6_319"><rect width="48" height="48" fill="white"></rect></clipPath>
+          </defs>
+        </svg>
+      </div>
+      <a [routerLink]="['/main']">
+        <h2 class="text-[#111818] text-lg font-bold leading-tight tracking-[-0.015em]">Tinteka</h2>
+      </a>
     </div>
-    <h2 class="text-[#111818] text-lg font-bold leading-tight tracking-[-0.015em]">Tinteka</h2>
-  </div>
 
-  <div class="hidden md:flex flex-1 justify-end gap-8">
-    <div class="flex items-center gap-9">
-      <a class="color-texto font-bold text-sm leading-normal" href="#">Tienda</a>
-      <a class="text-[#f45d48] text-sm font-medium leading-normal" href="#">Suscripcciones</a>
-      <a class="color-texto text-sm font-medium leading-normal" href="#">Sobre nosotros</a>
-      <a class="color-texto text-sm font-medium leading-normal" href="#">Novedades</a>
-    </div>
-    <button class="border-2 border-transparent hover:border-[#078080] flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#fffffe] text-[#078080] text-sm font-bold leading-normal tracking-[0.015em]">
-      <span class="truncate">Identificarse</span>
-    </button>
-    <button class="border-2 border-transparent hover:border-[#000000] flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#078080] text-[#fffffe] text-sm font-bold leading-normal tracking-[0.015em]">
-      <span class="truncate">Registrarse</span>
-    </button>
-  </div>
+    <div class="flex flex-1 justify-end gap-4 sm:gap-6 md:gap-8">
+      <div class="hidden sm:flex items-center gap-4 md:gap-6">
+        <a class="color-texto font-bold text-sm leading-normal hover:text-[#078080] ml-1" href="#">Tienda</a>
+        <a class="text-[#f45d48] text-sm font-medium leading-normal hover:text-[#ff7562]" href="#">Suscripciones</a>
+        <a class="color-texto text-sm font-medium leading-normal hover:text-[#078080]" href="#">Sobre nosotros</a>
+        <a class="color-texto text-sm font-medium leading-normal hover:text-[#078080]" href="#">Novedades</a>
+      </div>
 
-  <div class="md:hidden">
-    <button id="menu-toggle" class="text-[#111818] focus:outline-none">
-      ☰
-    </button>
-    <div id="mobile-menu" class="hidden absolute top-full left-0 w-full bg-white shadow-md p-4 flex flex-col items-start gap-4">
-      <a class="color-texto font-bold text-sm leading-normal" href="#">Tienda</a>
-      <a class="text-[#f45d48] text-sm font-medium leading-normal" href="#">Suscripcciones</a>
-      <a class="color-texto text-sm font-medium leading-normal" href="#">Sobre nosotros</a>
-      <a class="color-texto text-sm font-medium leading-normal" href="#">Novedades</a>
-      <button class="border-2 border-transparent hover:border-[#078080] w-full rounded-xl h-10 px-4 bg-[#fffffe] text-[#078080] text-sm font-bold leading-normal tracking-[0.015em]">
-        Identificarse
-      </button>
-      <button class="border-2 border-transparent hover:border-[#000000] w-full rounded-xl h-10 px-4 bg-[#078080] text-[#fffffe] text-sm font-bold leading-normal tracking-[0.015em]">
-        Registrarse
-      </button>
+      <ng-container *ngIf="isAuthenticated; else loginRegisterButtons">
+        <button
+          class="border-2 border-transparent hover:border-[#000000] flex min-w-[64px] sm:min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-2 sm:px-4 bg-[#078080] text-[#fffffe] text-xs sm:text-sm font-bold leading-normal tracking-[0.015em]"
+          [routerLink]="['/usuario']"
+        >
+          <span class="truncate">Usuario</span>
+        </button>
+        <button
+          class="border-2 border-transparent hover:border-[#000000] flex min-w-[64px] sm:min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-2 sm:px-4 bg-[#078080] text-[#fffffe] text-xs sm:text-sm font-bold leading-normal tracking-[0.015em]"
+          (click)="logout()"
+        >
+          <span class="truncate">Logout</span>
+        </button>
+      </ng-container>
+
+      <ng-template #loginRegisterButtons>
+        <button
+          class="border-2 border-transparent hover:border-[#078080] flex min-w-[64px] sm:min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-2 sm:px-4 bg-[#fffffe] text-[#078080] text-xs sm:text-sm font-bold leading-normal tracking-[0.015em]"
+          [routerLink]="['/login']"
+        >
+          <span class="truncate">Identificarse</span>
+        </button>
+        <button
+          class="border-2 border-transparent hover:border-[#000000] flex min-w-[64px] sm:min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-2 sm:px-4 bg-[#078080] text-[#fffffe] text-xs sm:text-sm font-bold leading-normal tracking-[0.015em]"
+          [routerLink]="['/registro']"
+        >
+          <span class="truncate">Registrarse</span>
+        </button>
+      </ng-template>
     </div>
   </div>
 </header>
-
-<script>
-  document.getElementById('menu-toggle').addEventListener('click', function () {
-    document.getElementById('mobile-menu').classList.toggle('hidden');
-  });
-</script>
