@@ -10,7 +10,6 @@ import {EditaUsuarioDTO} from '../../DTOs/EditaUsuarioDTO';
   selector: 'app-pagina-usuario',
   imports: [
     BotonComponent,
-    MatIcon,
     NgIf,
     DatePipe,
     NgForOf,

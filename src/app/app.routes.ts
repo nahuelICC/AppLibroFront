@@ -8,15 +8,16 @@ import {RegistroComponent} from './features/registro/componentes/registro/regist
 import {CarritoComponent} from './features/carrito/carrito.component';
 import {InicioComponent} from './features/inicio/pages/inicio/inicio.component';
 import {PasarelaPagoComponent} from './shared/components/pasarela-pago/pasarela-pago.component';
+import {ActivacionComponent} from './features/registro/componentes/activacion/activacion.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: 'main', component: TiendaComponent,canActivate:[AuthGuard] },
+  { path: 'tienda', component: TiendaComponent },
   { path: 'usuario', component: PaginaUsuarioComponent, canActivate:[AuthGuard]},
   { path: 'detallelibro/:id', component: DetallesComponent},
   { path: 'registro', component: RegistroComponent},
   { path: 'carrito', component: CarritoComponent, canActivate:[AuthGuard]},
-  { path: '', component: InicioComponent },
-  { path: 'carrito', component: CarritoComponent, canActivate:[AuthGuard]},
-  { path: 'pago', component: PasarelaPagoComponent}
+  { path: 'main', component: InicioComponent },
+  { path: 'pago', component: PasarelaPagoComponent},
+  { path: 'activar/:token', component: ActivacionComponent }
 ];

@@ -4,7 +4,7 @@ import { NgStyle } from '@angular/common';
 
 @Component({
   selector: 'app-rango-precio',
-  imports: [FormsModule, NgStyle],
+  imports: [FormsModule],
   templateUrl: './rango-precio.component.html',
   standalone: true,
   styleUrl: './rango-precio.component.css',

@@ -5,7 +5,6 @@ import {NgClass, NgStyle} from '@angular/common';
 @Component({
   selector: 'app-boton',
   imports: [
-    NgClass,
     NgStyle
   ],
   templateUrl: './boton.component.html',
