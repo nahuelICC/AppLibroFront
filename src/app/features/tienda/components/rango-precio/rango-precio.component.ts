@@ -1,36 +1,40 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { NgStyle } from '@angular/common';
+// rango-precio.component.ts
+import { Component, Output, EventEmitter } from '@angular/core';
+import {MatSlider, MatSliderModule} from '@angular/material/slider';
+import {FormsModule} from '@angular/forms';
+import {NgxSliderModule} from '@angular-slider/ngx-slider';
+import {Options} from '@angular-slider/ngx-slider';
+
 
 @Component({
   selector: 'app-rango-precio',
-  imports: [FormsModule, NgStyle],
   templateUrl: './rango-precio.component.html',
   standalone: true,
-  styleUrl: './rango-precio.component.css',
+  imports: [
+    MatSliderModule,
+    FormsModule,
+    NgxSliderModule
+  ],
+  styleUrls: ['./rango-precio.component.css']
 })
 export class RangoPrecioComponent {
-  // Valores límite del rango
-  min: number = 10;
-  max: number = 50;
+  minValue: number = 0;
+  maxValue: number = 100;
+  @Output() priceChange = new EventEmitter<{ min: number; max: number }>();
+  currentMinValue: number = this.minValue;
+  currentMaxValue: number = this.maxValue;
 
-  // Valores seleccionados
-  selectedMin: number = 15;
-  selectedMax: number = 45;
+  options: Options = {
+    floor: 0,
+    ceil: 250,
+    step: 1,
+    animate: false,
+  };
 
-  // Método llamado al mover el slider mínimo
-  onMinInput(): void {
-    if (this.selectedMin >= this.selectedMax - 1) {
-      // Evitar colisión
-      this.selectedMin = this.selectedMax - 1;
-    }
-  }
-
-  // Método llamado al mover el slider máximo
-  onMaxInput(): void {
-    if (this.selectedMax <= this.selectedMin + 1) {
-      // Evitar colisión
-      this.selectedMax = this.selectedMin + 1;
-    }
+  onUserChangeEnd(): void {
+    this.priceChange.emit({
+      min: this.minValue,
+      max: this.maxValue
+    });
   }
 }

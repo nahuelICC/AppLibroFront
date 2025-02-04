@@ -1,0 +1,23 @@
+::ng-deep .ngx-slider .ngx-slider-pointer {
+  background-color: #000000 !important;
+  width: 14px !important;
+  height: 14px !important;
+  top: -6px !important;/* Cambia el color del thumb */
+}
+
+::ng-deep .ngx-slider .ngx-slider-selection{
+  background-color: black !important;
+}
+
+::ng-deep .ngx-slider-pointer:before {
+  display: none !important;
+  background-color: white !important; /* Cambia el color interno */
+  width: 12px !important;
+  height: 12px !important;
+}
+::ng-deep .ngx-slider-pointer:after {
+  display: none !important;
+  background-color: white !important; /* Cambia el color interno */
+  width: 12px !important;
+  height: 12px !important;
+}
