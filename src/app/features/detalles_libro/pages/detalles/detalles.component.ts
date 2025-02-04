@@ -116,8 +116,11 @@ export class DetallesComponent implements OnInit {
           resena.nombre,
           resena.apellido
         ));
+
+        // Recalcular la paginación
         this.calculateTotalPages();
-        this.updatePaginatedResenyas();
+
+        // Recalcular estadísticas
         this.calcularEstadisticas();
       },
       (error) => {
@@ -180,12 +183,30 @@ export class DetallesComponent implements OnInit {
     this.detallesLibroService.addResenya(this.nuevaResenya).subscribe(
       response => {
         console.log('Reseña creada con éxito', response);
-        // this.fetchResenyas();
-        // this.nuevaResenya.texto = '';
-        // this.nuevaResenya.valoracion = 0;
-        // this.verificarCompra();
-        // this.mostrarFormulario = false;
-        window.location.reload(); //solucion provisional
+
+        // Recargar las reseñas desde el servidor
+        this.fetchResenyas();
+
+        // Limpiar el formulario de la nueva reseña
+        this.nuevaResenya.texto = '';
+        this.nuevaResenya.valoracion = 0;
+
+        // Verificar si el cliente ha comprado el libro y dejado la reseña
+        this.verificarCompra();
+
+        // Reiniciar la paginación
+        this.paginacion.currentPage = 1; // Volver a la primera página
+        this.calculateTotalPages(); // Recalcular el número total de páginas
+        this.updatePaginatedResenyas(); // Actualizar las reseñas mostradas
+
+        // Recalcular estadísticas
+        this.calcularEstadisticas();
+
+        // Cerrar el formulario
+        this.mostrarFormulario = false;
+
+        // Forzar la actualización de la vista
+        this.cdRef.detectChanges();
       },
       error => {
         console.error('Error al crear la reseña', error);
@@ -193,20 +214,36 @@ export class DetallesComponent implements OnInit {
     );
   }
 
+
+
+
   toggleFormulario() {
     this.mostrarFormulario = !this.mostrarFormulario;
   }
 
   calculateTotalPages(): void {
+    if (!this.resenyas || this.resenyas.length === 0) {
+      this.paginacion.totalPages = 0;
+      this.paginacion.currentPage = 1;
+      this.paginatedResenyas = [];
+      this.updateDisplayedPages();
+      return;
+    }
+
     this.paginacion.totalPages = Math.ceil(this.resenyas.length / this.paginacion.itemsPerPage);
     this.paginacion.currentPage = Math.min(this.paginacion.currentPage, this.paginacion.totalPages);
+    this.updatePaginatedResenyas();
     this.updateDisplayedPages();
   }
 
   updatePaginatedResenyas(): void {
+    if (!this.resenyas || this.resenyas.length === 0) {
+      this.paginatedResenyas = [];
+      return;
+    }
+
     const startIndex = (this.paginacion.currentPage - 1) * this.paginacion.itemsPerPage;
     this.paginatedResenyas = this.resenyas.slice(startIndex, startIndex + this.paginacion.itemsPerPage);
-    this.cdRef.detectChanges();
   }
 
   updateDisplayedPages(): void {
@@ -255,26 +292,33 @@ export class DetallesComponent implements OnInit {
   }
 
   onResenyaDeleted(id: number): void {
-    // Eliminar la reseña
+    // Eliminar la reseña localmente
     this.resenyas = this.resenyas.filter(resena => resena.id !== id);
+
+    // Recargar las reseñas desde el servidor
+    this.fetchResenyas();
+
+    // Reiniciar la paginación
+    this.paginacion.currentPage = 1; // Volver a la primera página
+    this.calculateTotalPages(); // Recalcular el número total de páginas
+    this.updatePaginatedResenyas(); // Actualizar las reseñas mostradas
 
     // Recalcular estadísticas
     this.calcularEstadisticas();
 
-    // Volver a calcular las páginas y la paginación
-    this.calculateTotalPages();
-    this.updatePaginatedResenyas();
-
-    // Actualizar la media de las reseñas y el total
+    // Actualizar la media y el total de reseñas
     this.fetchAverageRating();
     this.fetchTotalResenyas();
 
-    // Verificar si el usuario puede volver a dejar una reseña
+    // Verificar si el usuario puede dejar otra reseña
     this.verificarCompra();
 
-    // Actualizar la vista
+    // Forzar la actualización de la vista
     this.cdRef.detectChanges();
   }
+
+
+
 
 
 }
