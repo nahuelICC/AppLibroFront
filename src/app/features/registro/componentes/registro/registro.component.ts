@@ -78,13 +78,15 @@ export class RegistroComponent {
   private handleError(error: HttpErrorResponse) {
     if (error.status === 400) {
       this.errorMessage = 'Datos inválidos. Por favor, revisa el formulario.';
+    } else if (error.status === 409) {
+      this.errorMessage = error.error.message;
     } else if (error.status === 0) {
       this.errorMessage = 'No se pudo conectar al servidor. Verifica tu conexión a Internet.';
     } else {
       this.errorMessage = 'Ocurrió un error inesperado. Inténtalo de nuevo más tarde.';
     }
 
-    this.snackBar.open(this.errorMessage, 'Cerrar', {
+    this.snackBar.open(this.errorMessage ?? 'Ocurrió un error inesperado.', 'Cerrar', {
       duration: 5000,
     });
   }
