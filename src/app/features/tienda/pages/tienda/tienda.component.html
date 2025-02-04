@@ -1,69 +1,107 @@
-<body>
-<div
-  class="relative flex size-full min-h-screen flex-col group/design-root overflow-x-hidden"
-  style=' font-family: "Work Sans", "Noto Sans", sans-serif;'
->
-  <div class="layout-container flex h-full grow flex-col">
-    <div class="gap-1 px-6 flex flex-1 justify-center py-5 color-fondo">
-      <app-filtro></app-filtro>
-      <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-        <div class="flex flex-wrap justify-between gap-3 p-4">
-          <p class="text-[#111818] tracking-light text-[32px] font-bold leading-tight min-w-72">Libros</p>
-          <button
-            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#f0f5f5] text-[#111818] text-sm font-medium leading-normal"
-          >
-            <span class="truncate">View all</span>
-          </button>
-        </div>
-        <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
+  <body>
+  <div
+    class="relative flex size-full min-h-screen flex-col group/design-root overflow-x-hidden"
+    style=' font-family: "Work Sans", "Noto Sans", sans-serif;'
+  >
+    <div class="layout-container flex h-full grow flex-col">
+      <div class="gap-1 px-6 flex flex-1 justify-center py-5 color-fondo">
+        <div class="layout-content-container flex flex-col w-80">
 
-          <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
-            <app-cuadro-producto
-              *ngFor="let producto of paginatedItems"
-              [bookCover]="producto.portada || ''"
-              [title]="producto.title || ''"
-              [author]="producto.autor || ''"
-              [price]="producto.precio || 0"
-              [genre]="producto.genero || ''"
-              [rating]="producto.valoracion || 0">
-
-            </app-cuadro-producto>
+          <app-buscador (searchChange)="onSearchChange($event)"></app-buscador>
+          <h2 class="color-titulo text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Rango de precio</h2>
+          <div class="@container">
+            <div class="relative flex w-full flex-col items-start justify-between gap-3 p-4 @[480px]:flex-row">
+              <div class="w-full max-w-[300px]"> <!-- Contenedor para el slider -->
+                <app-rango-precio (priceChange)="onPriceChange($event)"></app-rango-precio>
+              </div>
+            </div>
+          </div>
+          <h2 class="color-titulo text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Categorías</h2>
+          <app-categorias [categories]="generos"  [categoriaSeleccionada]="filters.category" (categorySelected)="onCategoria($event)"></app-categorias>
+          <div class="flex px-4 py-3">
+            <button
+              (click)="clearFilters()"
+              class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 flex-1 color-resalto color-texto-blanco text-sm font-bold leading-normal tracking-[0.015em]"
+            >
+              <span class="truncate">Limpiar filtros</span>
+            </button>
           </div>
         </div>
+
+        <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+          <div class="flex flex-wrap justify-between gap-3 p-4">
+            <p class="text-[#111818] tracking-light text-[32px] font-bold leading-tight min-w-72">Libros</p>
+            <button
+              class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#f0f5f5] text-[#111818] text-sm font-medium leading-normal"
+            >
+              <span class="truncate">View all</span>
+            </button>
+          </div>
+
+          <!-- Contenedor de libros con posición relativa -->
+          <div class="relative min-h-96"> <!-- Añade min-h para evitar colapso cuando está vacío -->
+            <!-- Loading dentro de este contenedor -->
+            <div *ngIf="loading" class="absolute inset-0 flex items-center justify-center z-10">
+              <div class="text-center">
+                <mat-spinner diameter="50" class="mx-auto"></mat-spinner>
+                <p class="mt-4 text-blue-600 font-medium">Cargando libros...</p>
+              </div>
+            </div>
+
+            <!-- Listado de libros -->
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
+              <div *ngIf="allLibros.length === 0 && !loading" class="text-center py-4 col-span-full">
+                <p class="text-gray-600">No se encontraron libros.</p>
+              </div>
+
+              <app-cuadro-producto
+                *ngFor="let producto of paginatedItems"
+                [bookCover]="producto.portada || ''"
+                [title]="producto.title || ''"
+                [author]="producto.autor || ''"
+                [price]="producto.precio || 0"
+                [genre]="producto.genero || ''"
+                [rating]="producto.valoracion || 0">
+              </app-cuadro-producto>
+            </div>
+          </div>
+        </div>
+
       </div>
 
     </div>
+    <div class="flex justify-center items-center gap-2 py-6">
+      <button
+        (click)="previousPage()"
+        [disabled]="currentPage === 1"
+        class="px-3 py-1 rounded-lg text-[#111818] hover:bg-[#f0f5f5] disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <mat-icon>arrow_back</mat-icon>
+      </button>
 
-  </div>
-  <div class="flex justify-center items-center gap-2 py-6">
-    <button
-      (click)="previousPage()"
-      [disabled]="currentPage === 1"
-      class="px-3 py-1 rounded-lg text-[#111818] hover:bg-[#f0f5f5] disabled:opacity-50 disabled:cursor-not-allowed">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
+      <div class="flex items-center gap-1">
+        <ng-container *ngFor="let page of displayedPages">
+          <button
+            *ngIf="page !== '...'"
+            (click)="setPage(page)"
+            [class.bg-[#f0f5f5]]="currentPage === page"
+            class="w-8 h-8 rounded-full flex items-center justify-center text-sm hover:bg-[#f0f5f5] transition-colors"
+            [class.font-bold]="currentPage === page"
+          >
+            {{ page }}
+          </button>
+          <span *ngIf="page === '...'" class="px-2">...</span>
+        </ng-container>
+      </div>
 
-    <div class="flex items-center gap-1">
-      <ng-container *ngFor="let page of displayedPages">
-        <button
-          *ngIf="page !== '...'"
-          (click)="setPage(page)"
-          [class.bg-[#f0f5f5]]="currentPage === page"
-          class="w-8 h-8 rounded-full flex items-center justify-center text-sm hover:bg-[#f0f5f5] transition-colors"
-          [class.font-bold]="currentPage === page">
-          {{ page }}
-        </button>
-        <span *ngIf="page === '...'" class="px-2">...</span>
-      </ng-container>
+      <button
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages"
+        class="px-3 py-1 rounded-lg text-[#111818] hover:bg-[#f0f5f5] disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
     </div>
 
-    <button
-      (click)="nextPage()"
-      [disabled]="currentPage === totalPages"
-      class="px-3 py-1 rounded-lg text-[#111818] hover:bg-[#f0f5f5] disabled:opacity-50 disabled:cursor-not-allowed">
-      <mat-icon>arrow_forward</mat-icon>
-    </button>
   </div>
-
-</div>
-</body>
+  </body>

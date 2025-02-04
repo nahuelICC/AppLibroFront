@@ -2,37 +2,131 @@ import {Component, OnInit} from '@angular/core';
 import { FiltroComponent } from '../../components/filtro/filtro.component';
 import { CuadroProductoComponent } from '../../components/cuadro-producto/cuadro-producto.component';
 import { CuadroProducto } from '../../DTOs/CuadroProducto';
-import {LibroServiceService} from '../../../../core/services/libro/libro-service.service';
+import {LibroServiceService} from '../../services/libro-service.service';
 import {NgForOf, NgIf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
+import {BuscadorComponent} from '../../components/buscador/buscador.component';
+import {GeneroDTO} from '../../DTOs/GeneroDTO';
+import {CategoriasComponent} from '../../components/categorias/categorias.component';
+import {RangoPrecioComponent} from '../../components/rango-precio/rango-precio.component';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-tienda',
-  imports: [FiltroComponent, CuadroProductoComponent, NgForOf, NgIf, MatIcon],
+  imports: [FiltroComponent, CuadroProductoComponent, NgForOf, NgIf, MatIcon, BuscadorComponent, CategoriasComponent, RangoPrecioComponent, MatProgressSpinner],
   templateUrl: './tienda.component.html',
   standalone: true,
   styleUrl: './tienda.component.css'
 })
 export class TiendaComponent implements OnInit {
-  principal: CuadroProducto[] = [];
+  libros: CuadroProducto[] = [];
   currentPage: number = 1;
   itemsPerPage: number = 10;
   totalPages: number = 1;
   displayedPages: (number | string)[] = [];
+  filters: any = {
+    search: '',
+    category: '',
+    minPrice: null,
+    maxPrice: null
+  };
+  generos: GeneroDTO[] = [];
+  allLibros: CuadroProducto[] = [];
+  loading: boolean = false;
 
   constructor(private libroService: LibroServiceService) {}
 
   ngOnInit(): void {
-    this.libroService.getPrincipal().subscribe((data) => {
-      this.principal = data;
-      this.totalPages = Math.ceil(data.length / this.itemsPerPage);
-      this.updateDisplayedPages();
+    this.libroService.loading$.subscribe(loading => {
+      this.loading = loading;
+    });
+    this.cargaLibros();
+    this.cargaGenero();
+  }
+
+  cargaGenero(): void{
+    this.libroService.getGeneros().subscribe({
+      next: (data) => this.generos = data,
+      error: (err) => console.error('Error al cargar los géneros:', err)
     });
   }
 
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.cargaLibros();
+
+      // Precarga solo si la nueva página no es la última
+      if (this.currentPage < this.totalPages) {
+        this.libroService.getLibrosTienda(this.currentPage + 1, this.itemsPerPage, this.filters).subscribe();
+      }
+    }
+  }
+
+  cargaLibros(): void {
+    this.libroService.getLibrosTienda(this.currentPage, this.itemsPerPage, this.filters).subscribe({
+      next: (response) => {
+        // Si no hay libros en la respuesta, no actualizar el listado
+        if (response.libros.length === 0 && this.currentPage > 1) {
+          this.currentPage--;
+          return;
+        }
+
+        this.allLibros = [...this.allLibros, ...response.libros];
+        this.totalPages = Math.ceil(response.total / this.itemsPerPage);
+        this.updateDisplayedPages();
+      },
+      error: (err) => {
+        console.error('Error al cargar libros:', err);
+        if (this.currentPage > 1) this.currentPage--; // Retrocede si hay error
+      }
+    });
+  }
+
+  // Modifica los métodos que cambian los filtros
+  onCategoria(numeroCategoria: number | null): void {
+    this.libroService.resetCache();
+    this.allLibros = []; // Limpia libros acumulados
+    this.filters.category = numeroCategoria;
+    this.currentPage = 1;
+    this.cargaLibros();
+  }
+
+  onSearchChange(searchTerm: string): void {
+    this.libroService.resetCache();
+    this.allLibros = [];
+    this.filters.search = searchTerm;
+    this.currentPage = 1;
+    this.cargaLibros();
+  }
+
+  // tienda.component.ts
+  onPriceChange(priceRange: { min: number; max: number }): void {
+    this.libroService.resetCache();
+    this.allLibros = [];
+    this.filters.minPrice = priceRange.min;
+    this.filters.maxPrice = priceRange.max;
+    this.currentPage = 1;
+    this.cargaLibros();
+  }
+
+  // Actualiza el getter para usar allLibros
   get paginatedItems(): CuadroProducto[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
-    return this.principal.slice(start, start + this.itemsPerPage);
+    return this.allLibros.slice(start, start + this.itemsPerPage);
+  }
+
+  setPage(page: number | string): void {
+    if (typeof page === 'number') {
+      this.currentPage = page;
+      this.cargaLibros();
+    }
+  }
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.cargaLibros();
+    }
   }
 
   updateDisplayedPages() {
@@ -66,24 +160,16 @@ export class TiendaComponent implements OnInit {
     this.displayedPages = pages;
   }
 
-  setPage(page: number | string) {
-    if (typeof page === 'number') {
-      this.currentPage = page;
-      this.updateDisplayedPages();
-    }
-  }
-
-  previousPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-      this.updateDisplayedPages();
-    }
-  }
-
-  nextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-      this.updateDisplayedPages();
-    }
+  clearFilters() {
+    this.libroService.resetCache();
+    this.allLibros = [];
+    this.filters = {
+      search: '',
+      category: '',
+      minPrice: null,
+      maxPrice: null
+    };
+    this.currentPage = 1;
+    this.cargaLibros();
   }
 }
