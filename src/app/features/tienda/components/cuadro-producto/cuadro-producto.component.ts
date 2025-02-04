@@ -11,7 +11,8 @@ import {NombreGeneroPipe} from '../../pipes/nombre-genero.pipe';
     CurrencyPipe,
     NgOptimizedImage,
     SplitPricePipe,
-    NombreGeneroPipe
+    NombreGeneroPipe,
+    SplitPricePipe
   ],
   templateUrl: './cuadro-producto.component.html',
   standalone: true,

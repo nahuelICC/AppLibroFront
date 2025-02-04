@@ -1,123 +1,157 @@
 <div class="flex items-center justify-center min-h-screen mt-10">
   <div class="bg-white p-8 rounded-lg shadow-lg w-96">
     <h2 class="text-2xl font-bold mb-6 text-center">Crea tu cuenta</h2>
+
+    <!-- Barra de progreso -->
+    <div class="flex items-center mb-6">
+      <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div class="bg-black h-full" [style.width]="(currentStep / 2) * 100 + '%'"></div>
+      </div>
+    </div>
+
     <form [formGroup]="registroForm" (ngSubmit)="onSubmit()">
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700">Nombre de usuario</label>
-        <input
-          type="text"
-          formControlName="username"
-          placeholder="Nombre de usuario"
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-        />
-        <div *ngIf="registroForm.get('username')?.hasError('required') && registroForm.get('username')?.touched" class="text-red-500 text-sm mt-1">
-          El nombre de usuario es obligatorio.
+      <div *ngIf="currentStep === 1">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700">Nombre</label>
+          <input
+            type="text"
+            formControlName="nombre"
+            placeholder="Nombre"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+          <div *ngIf="registroForm.get('nombre')?.hasError('required') && registroForm.get('nombre')?.touched" class="text-red-500 text-sm mt-1">
+            El nombre es obligatorio.
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700">Apellido</label>
+          <input
+            type="text"
+            formControlName="apellido"
+            placeholder="Apellido"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+          <div *ngIf="registroForm.get('apellido')?.hasError('required') && registroForm.get('apellido')?.touched" class="text-red-500 text-sm mt-1">
+            Los apellidos son obligatorios.
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700">Dirección</label>
+          <input
+            type="text"
+            formControlName="direccion"
+            placeholder="Dirección"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+          <div *ngIf="registroForm.get('direccion')?.hasError('required') && registroForm.get('direccion')?.touched" class="text-red-500 text-sm mt-1">
+            La dirección es obligatoria.
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700">Teléfono</label>
+          <input
+            type="text"
+            formControlName="telefono"
+            placeholder="Teléfono (9 dígitos)"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+          <div *ngIf="registroForm.get('telefono')?.hasError('required') && registroForm.get('telefono')?.touched" class="text-red-500 text-sm mt-1">
+            El teléfono es obligatorio.
+          </div>
+          <div *ngIf="registroForm.get('telefono')?.hasError('pattern') && registroForm.get('telefono')?.touched" class="text-red-500 text-sm mt-1">
+            El teléfono debe tener exactamente 9 dígitos numéricos.
+          </div>
         </div>
       </div>
 
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700">Contraseña</label>
-        <input
-          type="password"
-          formControlName="password"
-          placeholder="Mínimo 6 caracteres"
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-        />
-        <div *ngIf="registroForm.get('password')?.hasError('required') && registroForm.get('password')?.touched" class="text-red-500 text-sm mt-1">
-          La contraseña es obligatoria.
+      <div *ngIf="currentStep === 2">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700">Nombre de usuario</label>
+          <input
+            type="text"
+            formControlName="username"
+            placeholder="Nombre de usuario"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+          <div *ngIf="registroForm.get('username')?.hasError('required') && registroForm.get('username')?.touched" class="text-red-500 text-sm mt-1">
+            El nombre de usuario es obligatorio.
+          </div>
         </div>
-        <div *ngIf="registroForm.get('password')?.hasError('minlength') && registroForm.get('password')?.touched" class="text-red-500 text-sm mt-1">
-          La contraseña debe tener al menos 6 caracteres.
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700">Email</label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="Correo electrónico"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+          <div *ngIf="registroForm.get('email')?.hasError('required') && registroForm.get('email')?.touched" class="text-red-500 text-sm mt-1">
+            El email es obligatorio.
+          </div>
+          <div *ngIf="registroForm.get('email')?.hasError('email') && registroForm.get('email')?.touched" class="text-red-500 text-sm mt-1">
+            El email no es válido.
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700">Contraseña</label>
+          <input
+            type="password"
+            formControlName="password"
+            placeholder="Mínimo 6 caracteres"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+          <div *ngIf="registroForm.get('password')?.hasError('required') && registroForm.get('password')?.touched" class="text-red-500 text-sm mt-1">
+            La contraseña es obligatoria.
+          </div>
+          <div *ngIf="registroForm.get('password')?.hasError('minlength') && registroForm.get('password')?.touched" class="text-red-500 text-sm mt-1">
+            La contraseña debe tener al menos 8 caracteres.
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700">Repetir contraseña</label>
+          <input
+            type="password"
+            formControlName="confirmPassword"
+            placeholder="Repite la contraseña"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+          <div *ngIf="registroForm.hasError('mismatch') && registroForm.get('confirmPassword')?.touched" class="text-red-500 text-sm mt-1">
+            Las contraseñas no coinciden.
+          </div>
         </div>
       </div>
 
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700">Repetir contraseña</label>
-        <input
-          type="password"
-          formControlName="confirmPassword"
-          placeholder="Repite la contraseña"
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-        />
-        <div *ngIf="registroForm.hasError('mismatch') && registroForm.get('confirmPassword')?.touched" class="text-red-500 text-sm mt-1">
-          Las contraseñas no coinciden.
-        </div>
+      <div class="flex flex-col sm:flex-row justify-center mt-6 gap-2">
+        <app-boton
+          *ngIf="currentStep > 1"
+          (click)="prevStep()"
+          [label]="'Anterior'"
+          [color]="'#f45d48'"
+          [size]="'medium'">
+        </app-boton>
+        <app-boton
+          *ngIf="currentStep < 2"
+          (click)="nextStep()"
+          [color]="'#f45d48'"
+          [label]="'Continuar'"
+          [size]="'medium'"
+          [disabled]="!isStepValid(currentStep)">
+        </app-boton>
+        <app-boton
+          *ngIf="currentStep === 2"
+          (click)="onSubmit()"
+          [label]="isLoading ? 'Cargando...' : 'Registrar'"
+          [color]="'#078080'"
+          [disabled]="registroForm.invalid || isLoading"
+          [size]="'medium'">
+        </app-boton>
       </div>
-
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700">Email</label>
-        <input
-          type="email"
-          formControlName="email"
-          placeholder="Correo electrónico"
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-        />
-        <div *ngIf="registroForm.get('email')?.hasError('required') && registroForm.get('email')?.touched" class="text-red-500 text-sm mt-1">
-          El email es obligatorio.
-        </div>
-        <div *ngIf="registroForm.get('email')?.hasError('email') && registroForm.get('email')?.touched" class="text-red-500 text-sm mt-1">
-          El email no es válido.
-        </div>
-      </div>
-
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700">Nombre</label>
-        <input
-          type="text"
-          formControlName="nombre"
-          placeholder="Nombre"
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-        />
-        <div *ngIf="registroForm.get('nombre')?.hasError('required') && registroForm.get('nombre')?.touched" class="text-red-500 text-sm mt-1">
-          El nombre es obligatorio.
-        </div>
-      </div>
-
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700">Apellido</label>
-        <input
-          type="text"
-          formControlName="apellido"
-          placeholder="Apellido"
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-        />
-        <div *ngIf="registroForm.get('apellido')?.hasError('required') && registroForm.get('apellido')?.touched" class="text-red-500 text-sm mt-1">
-          El apellido es obligatorio.
-        </div>
-      </div>
-
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700">Dirección</label>
-        <input
-          type="text"
-          formControlName="direccion"
-          placeholder="Dirección"
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-        />
-        <div *ngIf="registroForm.get('direccion')?.hasError('required') && registroForm.get('direccion')?.touched" class="text-red-500 text-sm mt-1">
-          La dirección es obligatoria.
-        </div>
-      </div>
-
-      <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-700">Teléfono</label>
-        <input
-          type="text"
-          formControlName="telefono"
-          placeholder="Teléfono"
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-        />
-        <div *ngIf="registroForm.get('telefono')?.hasError('required') && registroForm.get('telefono')?.touched" class="text-red-500 text-sm mt-1">
-          El teléfono es obligatorio.
-        </div>
-      </div>
-
-      <app-boton
-        [label]="isLoading ? 'Cargando...' : 'Registrar'"
-        [color]="'#078080'"
-        [disabled]="registroForm.invalid || isLoading"
-        size="medium"
-      ></app-boton>
 
       <p *ngIf="errorMessage" class="text-red-500 text-center mt-4">{{ errorMessage }}</p>
     </form>

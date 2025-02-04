@@ -10,7 +10,6 @@ import {RouterLink} from '@angular/router';
 @Component({
   selector: 'app-mas-vendido',
   imports: [
-    CuadroProductoComponent,
     NgForOf,
     NgIf,
     AsyncPipe,
