@@ -1,7 +1,7 @@
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 import {MatIcon} from '@angular/material/icon';
 import {NgForOf} from '@angular/common';
-import {ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {LibroDetalle} from '../../DTOs/LibroDetalle';
 import {DetallesLibroService} from '../../services/detalles-libro.service';
 import {AlertInfoComponent, AlertType} from '../../../../shared/components/alert-info/alert-info.component';
@@ -30,7 +30,7 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
   alertType: AlertType = 'success';
   isAlertVisible: boolean = false;
 
-  constructor(private detallesLibroService: DetallesLibroService, private cdRef: ChangeDetectorRef) {}
+  constructor(private detallesLibroService: DetallesLibroService, private cdRef: ChangeDetectorRef, private zone: NgZone) {}
 
   ngOnInit() {
     console.log('tiposTapa en ngOnInit:', this.tiposTapa);
@@ -114,39 +114,38 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
     };
 
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-
     const existingItem = cart.find((item: any) => item.id_tipo === cartItem.id_tipo);
 
     if (existingItem) {
       const newQuantity = existingItem.cantidad + cartItem.cantidad;
-
       if (newQuantity > 10) {
         this.alertMessage = 'No se puede añadir más de 10 unidades del mismo libro.';
-        this.alertType = 'warning';  // Tipo de alerta 'error'
-        this.isAlertVisible = true;
-
-        setTimeout(() => {
-          this.isAlertVisible = false;
-        }, 2000);
-
-        return;
+        this.alertType = 'warning'; // Tipo de alerta 'warning'
       } else {
         existingItem.cantidad = newQuantity;
-
         this.alertMessage = 'Libro añadido al carrito correctamente';
-        this.alertType = 'success';  // Tipo de alerta 'success'
+        this.alertType = 'success'; // Tipo de alerta 'success'
       }
     } else {
       cart.push(cartItem);
-
       this.alertMessage = 'Libro añadido al carrito correctamente';
-      this.alertType = 'success';  // Tipo de alerta 'success'
+      this.alertType = 'success'; // Tipo de alerta 'success'
     }
 
     localStorage.setItem('cart', JSON.stringify(cart));
 
+    // Mostrar la alerta
+    this.isAlertVisible = true;
+
+    // Forzar la detección de cambios
+    this.cdRef.detectChanges();
+
+    // Ocultar la alerta después de 2 segundos
     setTimeout(() => {
-      this.isAlertVisible = false;
+      this.zone.run(() => {
+        this.isAlertVisible = false;
+        this.cdRef.detectChanges(); // Asegura que Angular detecte el cambio
+      });
     }, 2000);
   }
 

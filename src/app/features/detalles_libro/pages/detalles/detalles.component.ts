@@ -180,10 +180,16 @@ export class DetallesComponent implements OnInit {
     this.detallesLibroService.addResenya(this.nuevaResenya).subscribe(
       response => {
         console.log('Reseña creada con éxito', response);
+
+        // Recargar las reseñas después de agregar una nueva reseña
         this.fetchResenyas();
-        this.nuevaResenya.texto = '';
+        this.nuevaResenya.texto = '';  // Limpiar el formulario
         this.nuevaResenya.valoracion = 0;
+
+        // Verificar si el cliente ha comprado el libro y dejar la reseña
         this.verificarCompra();
+
+        // Cerrar el formulario
         this.mostrarFormulario = false;
       },
       error => {
@@ -191,6 +197,7 @@ export class DetallesComponent implements OnInit {
       }
     );
   }
+
 
   toggleFormulario() {
     this.mostrarFormulario = !this.mostrarFormulario;
