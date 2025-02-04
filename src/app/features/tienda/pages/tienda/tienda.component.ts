@@ -11,10 +11,11 @@ import {CategoriasComponent} from '../../components/categorias/categorias.compon
 import {RangoPrecioComponent} from '../../components/rango-precio/rango-precio.component';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-tienda',
-  imports: [FiltroComponent, CuadroProductoComponent, NgForOf, NgIf, MatIcon, BuscadorComponent, CategoriasComponent, RangoPrecioComponent, MatProgressSpinner, NgClass, BotonComponent],
+  imports: [FiltroComponent, CuadroProductoComponent, NgForOf, NgIf, MatIcon, BuscadorComponent, CategoriasComponent, RangoPrecioComponent, MatProgressSpinner, NgClass, BotonComponent, RouterLink],
   templateUrl: './tienda.component.html',
   standalone: true,
   styleUrl: './tienda.component.css'
@@ -32,7 +33,7 @@ export class TiendaComponent implements OnInit {
     maxPrice: null
   };
   minValue: number = 0;
-  maxValue: number = 200;
+  maxValue: number = 100;
   generos: GeneroDTO[] = [];
   allLibros: CuadroProducto[] = [];
   loading: boolean = false;
@@ -179,7 +180,7 @@ export class TiendaComponent implements OnInit {
       maxPrice: null
     };
     this.minValue = 0;  // Reseteamos el valor mínimo
-    this.maxValue = 200;
+    this.maxValue = 100;
     this.cdRef.detectChanges();
     this.currentPage = 1;
     this.cargaLibros();

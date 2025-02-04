@@ -68,17 +68,19 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
-            <div *ngIf="allLibros.length === 0 && !loading" class="text-center py-4 col-span-full">
-              <p class="text-gray-600">No se encontraron libros.</p>
-            </div>
-            <app-cuadro-producto *ngFor="let producto of paginatedItems"
-                                 [bookCover]="producto.portada || ''"
-                                 [title]="producto.title || ''"
-                                 [author]="producto.autor || ''"
-                                 [price]="producto.precio || 0"
-                                 [genre]="producto.genero || ''"
-                                 [rating]="producto.valoracion || 0">
+          <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
+            <app-cuadro-producto
+              *ngFor="let producto of paginatedItems"
+              [bookCover]="producto.portada || ''"
+              [titulo]="producto.titulo || ''"
+              [author]="producto.autor || ''"
+              [price]="producto.precio || 0"
+              [genre]="producto.genero || ''"
+              [rating]="producto.mediaValoraciones || 0"
+              [routerLink]="['/detallelibro', producto.id]">
+
+
+
             </app-cuadro-producto>
           </div>
         </div>

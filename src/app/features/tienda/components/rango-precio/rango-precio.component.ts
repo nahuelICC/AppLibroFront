@@ -19,7 +19,7 @@ import {Options} from '@angular-slider/ngx-slider';
 })
 export class RangoPrecioComponent {
   private _minValue: number = 0;
-  private _maxValue: number = 200;
+  private _maxValue: number = 100;
 
   @Input()
   set minValue(val: number) {
@@ -43,7 +43,7 @@ export class RangoPrecioComponent {
 
   options: Options = {
     floor: 0,
-    ceil: 250,
+    ceil: 100,
     step: 1,
     animate: false,
   };
