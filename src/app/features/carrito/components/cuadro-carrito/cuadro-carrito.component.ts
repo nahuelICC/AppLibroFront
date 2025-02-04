@@ -16,6 +16,8 @@ export class CuadroCarritoComponent {
   @Input() idTipo: number = 0;
   @Input() cantidad: number = 0;
   @Input() precio: number = 0;
+  @Input() tipoTapa: string = '';
+
 
   @Output() quantityUpdated = new EventEmitter<{ idTipo: number; cantidad: number }>();
 

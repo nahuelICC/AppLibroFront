@@ -2,9 +2,11 @@ import {Component, OnInit} from '@angular/core';
 import {BotonComponent} from '../../shared/components/boton/boton.component';
 import {CuadroCarritoComponent} from './components/cuadro-carrito/cuadro-carrito.component';
 import {HttpClient} from '@angular/common/http';
-import {CurrencyPipe, NgForOf} from '@angular/common';
+import {CurrencyPipe, NgForOf, NgIf} from '@angular/common';
 import {CarritoService} from './services/carrito.service';
 import {Router, RouterLink, RouterOutlet} from '@angular/router';
+import {MatIcon} from '@angular/material/icon';
+import {MatTooltip} from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-carrito',
@@ -13,7 +15,10 @@ import {Router, RouterLink, RouterOutlet} from '@angular/router';
     CuadroCarritoComponent,
     CurrencyPipe,
     NgForOf,
-    RouterLink
+    RouterLink,
+    NgIf,
+    MatIcon,
+    MatTooltip
   ],
   templateUrl: './carrito.component.html',
   standalone: true,

@@ -4,13 +4,15 @@ import {NgForOf} from '@angular/common';
 import {ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {LibroDetalle} from '../../DTOs/LibroDetalle';
 import {DetallesLibroService} from '../../services/detalles-libro.service';
+import {AlertInfoComponent, AlertType} from '../../../../shared/components/alert-info/alert-info.component';
 
 @Component({
   selector: 'app-detalle-precio',
   imports: [
     BotonComponent,
     MatIcon,
-    NgForOf
+    NgForOf,
+    AlertInfoComponent
   ],
   templateUrl: './detalle-precio.component.html',
   standalone: true,
@@ -24,6 +26,9 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
   price: number = 0;
   quantity: number = 1;
   selectedTipoTapa: any = null;
+  alertMessage: string = '';
+  alertType: AlertType = 'success';
+  isAlertVisible: boolean = false;
 
   constructor(private detallesLibroService: DetallesLibroService, private cdRef: ChangeDetectorRef) {}
 
@@ -47,10 +52,10 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
 
 
   updateQuantity(amount: number) {
-    if (this.quantity + amount > 0 && this.quantity + amount <= 15) {
+    if (this.quantity + amount > 0 && this.quantity + amount <= 10) {
       this.quantity += amount;
-    } else if (this.quantity + amount > 15) {
-      this.quantity = 15; // Limitar la cantidad máxima a 15
+    } else if (this.quantity + amount > 10) {
+      this.quantity = 10; // Limitar la cantidad máxima a 15
     } else {
       console.warn('La cantidad no puede ser menor que 1');
     }
@@ -61,9 +66,14 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
     // Asigna el objeto completo del tipo de tapa al valor de selectedTipoTapa
     this.selectedTipoTapa = tipo;
     console.log('Tipo de tapa seleccionado:', this.selectedTipoTapa);
+
+    // Reinicia la cantidad a 1 cuando se cambia el tipo de tapa
+    this.quantity = 1;
+
     // Luego puedes llamar a updatePrice o cualquier otra función necesaria
     this.updatePrice();
   }
+
 
 
 
@@ -88,6 +98,10 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
   }
 
 
+
+    // Nueva propiedad para el tipo de alerta
+
+
   anadirAlCarrito() {
     if (!this.libroId || !this.selectedTipoTapa || !this.selectedTipoTapa.id_tipo) {
       console.error('Datos incompletos para agregar al carrito');
@@ -95,24 +109,48 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
     }
 
     const cartItem = {
-      id_tipo: this.selectedTipoTapa.id_tipo, // Asegúrate de que tienes el id_tipo aquí
+      id_tipo: this.selectedTipoTapa.id_tipo,
       cantidad: this.quantity
     };
 
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
     const existingItem = cart.find((item: any) => item.id_tipo === cartItem.id_tipo);
+
     if (existingItem) {
-      existingItem.cantidad += cartItem.cantidad;
+      const newQuantity = existingItem.cantidad + cartItem.cantidad;
+
+      if (newQuantity > 10) {
+        this.alertMessage = 'No se puede añadir más de 10 unidades del mismo libro.';
+        this.alertType = 'warning';  // Tipo de alerta 'error'
+        this.isAlertVisible = true;
+
+        setTimeout(() => {
+          this.isAlertVisible = false;
+        }, 2000);
+
+        return;
+      } else {
+        existingItem.cantidad = newQuantity;
+
+        this.alertMessage = 'Libro añadido al carrito correctamente';
+        this.alertType = 'success';  // Tipo de alerta 'success'
+      }
     } else {
       cart.push(cartItem);
+
+      this.alertMessage = 'Libro añadido al carrito correctamente';
+      this.alertType = 'success';  // Tipo de alerta 'success'
     }
 
     localStorage.setItem('cart', JSON.stringify(cart));
 
-    console.log('Libro añadido al carrito:', cartItem);
-    alert('Libro añadido al carrito');
-    console.log('Carrito actualizado:', cart);
+    setTimeout(() => {
+      this.isAlertVisible = false;
+    }, 2000);
   }
+
+
+
 
 }

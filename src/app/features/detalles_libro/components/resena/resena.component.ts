@@ -1,18 +1,20 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {NgForOf, NgIf} from '@angular/common';
-import {MatIcon} from '@angular/material/icon';
-import {DetallesLibroService} from '../../services/detalles-libro.service';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { NgForOf, NgIf } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
+import { DetallesLibroService } from '../../services/detalles-libro.service';
+import {AlertConfirmarComponent} from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
 
 @Component({
   selector: 'app-resena',
   imports: [
     NgForOf,
     MatIcon,
-    NgIf
+    NgIf,
+    AlertConfirmarComponent
   ],
   templateUrl: './resena.component.html',
   standalone: true,
-  styleUrl: './resena.component.css'
+  styleUrls: ['./resena.component.css']
 })
 export class ResenaComponent {
   @Input() nombre: string = '';
@@ -25,16 +27,20 @@ export class ResenaComponent {
   @Input() idClienteActual!: number;
   @Output() resenyaDeleted: EventEmitter<number> = new EventEmitter<number>();
 
+  // Variable para mostrar la alerta de confirmación
+  showConfirmDelete: boolean = false;
 
   constructor(private detallesLibroService: DetallesLibroService) {}
 
+  // Función para eliminar la reseña
   deleteResenya(): void {
     console.log('ID de la reseña:', this.id);
     if (this.id !== undefined && this.id !== null) {
       this.detallesLibroService.deleteResenya(this.id).subscribe(
         response => {
           console.log('Reseña eliminada con éxito', response);
-          this.resenyaDeleted.emit(this.id); // Solo emitir el ID, sin volver a llamar al servicio
+          this.resenyaDeleted.emit(this.id); // Emitir el ID después de la eliminación
+          this.showConfirmDelete = false; // Cerrar la alerta
         },
         error => {
           console.error('Error al eliminar la reseña', error);
@@ -45,6 +51,8 @@ export class ResenaComponent {
     }
   }
 
-
-
+  // Función para cancelar la eliminación y cerrar la alerta
+  cancelDelete(): void {
+    this.showConfirmDelete = false; // Cerrar la alerta
+  }
 }

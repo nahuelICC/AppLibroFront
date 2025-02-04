@@ -17,6 +17,9 @@ export class PasarelaPagoComponent implements OnInit {
   // Estado actual del paso
   currentStep = 1;
   cartItems: any[] = [];
+  submitted = false;
+  stepsValidity: boolean[] = [false, false, false];
+
 
   constructor( private carritoService: CarritoService,private router:Router) {
   }
@@ -33,18 +36,21 @@ export class PasarelaPagoComponent implements OnInit {
     step4: '',
     step5: '',
     step6: '',
-    step7: ''
+    step7: '',
+    cardholder: '',
+    cardNumber: '',
+    expiry: '',
+    cvv: '',
+    paypalEmail: '',
+    paypalPassword: '',
+    phone: ''
   };
 
   // Método seleccionado
   selectedPaymentMethod: string | null = null;
 
   // Función para avanzar al siguiente paso
-  nextStep() {
-    if (this.currentStep < 4) {
-      this.currentStep++;
-    }
-  }
+
 
   // Función para retroceder al paso anterior
   prevStep() {
@@ -84,7 +90,6 @@ export class PasarelaPagoComponent implements OnInit {
       return;
     }
 
-
     // total: this.totalBooksPrice + this.shippingCost - this.discount
 
     this.carritoService.postPedido(this.cartItems).subscribe({
@@ -103,6 +108,44 @@ export class PasarelaPagoComponent implements OnInit {
   clearCart() {
     this.cartItems = [];
     localStorage.removeItem('cart');
+  }
+
+  isCurrentStepValid(): boolean {
+    this.submitted = true;
+
+    switch(this.currentStep) {
+      case 1:
+        return !!this.formData.step1 && !!this.formData.step2 &&
+          !!this.formData.step3 && !!this.formData.step4;
+
+      case 3:
+        if(this.selectedPaymentMethod === 'credit-card') {
+          return /^\d{13,19}$/.test(this.formData.cardNumber) &&
+            /^(0[1-9]|1[0-2])\/[0-9]{2}$/.test(this.formData.expiry) &&
+            /^\d{3,4}$/.test(this.formData.cvv) &&
+            !!this.formData.cardholder;
+        }
+        if(this.selectedPaymentMethod === 'paypal') {
+          return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(this.formData.paypalEmail) &&
+            !!this.formData.paypalPassword;
+        }
+        if(this.selectedPaymentMethod === 'other') {
+          return /^[0-9]{9,12}$/.test(this.formData.phone);
+        }
+        return false;
+
+      default:
+        return true;
+    }
+  }
+
+  nextStep() {
+    if (!this.isCurrentStepValid()) return;
+
+    this.submitted = false;
+    if (this.currentStep < 4) {
+      this.currentStep++;
+    }
   }
 
 

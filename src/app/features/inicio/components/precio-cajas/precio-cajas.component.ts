@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { SuscripcionInicio } from '../../DTOs/SuscripcionInicio';
 import { InicioService } from '../../services/inicio.service';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
@@ -16,7 +16,7 @@ import {MatIcon} from '@angular/material/icon';
   standalone: true,
   styleUrl: './precio-cajas.component.css'
 })
-export class PrecioCajasComponent {
+export class PrecioCajasComponent implements OnInit{
   suscripciones: SuscripcionInicio[] = [];
 
   constructor(private inicioService: InicioService) {}
@@ -36,6 +36,16 @@ export class PrecioCajasComponent {
     // Dividimos por puntos y los dejamos al final de cada frase
     return descripcion.split('.').map(part => part.trim() + '.').filter(part => part !== '.');
   }
+
+  getEtiqueta(nombre: string): string {
+    const etiquetas: { [key: string]: string } = {
+      'Estandar': 'Económico',
+      'Plus': 'Recomendado',
+      'Pro': 'Más vendido'
+    };
+    return etiquetas[nombre] || 'Destacado';
+  }
+
 
 
 }
