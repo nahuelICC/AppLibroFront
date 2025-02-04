@@ -1,36 +1,57 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { NgStyle } from '@angular/common';
+// rango-precio.component.ts
+import {Component, Output, EventEmitter, input, Input, SimpleChanges} from '@angular/core';
+import {MatSlider, MatSliderModule} from '@angular/material/slider';
+import {FormsModule} from '@angular/forms';
+import {NgxSliderModule} from '@angular-slider/ngx-slider';
+import {Options} from '@angular-slider/ngx-slider';
+
 
 @Component({
   selector: 'app-rango-precio',
-  imports: [FormsModule],
   templateUrl: './rango-precio.component.html',
   standalone: true,
-  styleUrl: './rango-precio.component.css',
+  imports: [
+    MatSliderModule,
+    FormsModule,
+    NgxSliderModule
+  ],
+  styleUrls: ['./rango-precio.component.css']
 })
 export class RangoPrecioComponent {
-  // Valores límite del rango
-  min: number = 10;
-  max: number = 50;
+  private _minValue: number = 0;
+  private _maxValue: number = 100;
 
-  // Valores seleccionados
-  selectedMin: number = 15;
-  selectedMax: number = 45;
-
-  // Método llamado al mover el slider mínimo
-  onMinInput(): void {
-    if (this.selectedMin >= this.selectedMax - 1) {
-      // Evitar colisión
-      this.selectedMin = this.selectedMax - 1;
-    }
+  @Input()
+  set minValue(val: number) {
+    this._minValue = val;
+    // Si es necesario, puedes agregar lógica para reiniciar el slider aquí
+    // Por ejemplo, actualizar alguna variable interna o llamar a una función de reinicialización
+  }
+  get minValue(): number {
+    return this._minValue;
   }
 
-  // Método llamado al mover el slider máximo
-  onMaxInput(): void {
-    if (this.selectedMax <= this.selectedMin + 1) {
-      // Evitar colisión
-      this.selectedMax = this.selectedMin + 1;
-    }
+  @Input()
+  set maxValue(val: number) {
+    this._maxValue = val;
+    // Lógica similar para maxValue
+  }
+  get maxValue(): number {
+    return this._maxValue;
+  }
+  @Output() priceChange = new EventEmitter<{ min: number; max: number }>();
+
+  options: Options = {
+    floor: 0,
+    ceil: 100,
+    step: 1,
+    animate: false,
+  };
+
+  onUserChangeEnd(): void {
+    this.priceChange.emit({
+      min: this.minValue,
+      max: this.maxValue
+    });
   }
 }

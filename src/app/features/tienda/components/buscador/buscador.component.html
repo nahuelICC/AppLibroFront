@@ -1,0 +1,12 @@
+<div class="flex justify-center p-4">
+  <div class="relative w-full max-w-lg sm:max-w-md md:max-w-lg lg:max-w-xl">
+    <input
+      type="text"
+      placeholder="Título, autor o ISBN"
+      class="w-full rounded-full border border-gray-300 bg-white py-2 pl-10 pr-4 text-gray-700 focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-200 text-sm md:text-base lg:text-lg"
+      [(ngModel)]="searchText"
+      (input)="onSearchInput(searchText)"
+    />
+    <mat-icon class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400">search</mat-icon>
+  </div>
+</div>

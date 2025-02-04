@@ -8,7 +8,7 @@ html, body { height: 100%;
 }
 body {
   margin: 0;
-  font-family: "Work Sans", serif;
+  font-family: "Work Sans", "Noto-serif", sans-serif;
   background-color: var(--color-blanco-fondo);
   }
 .color-titulo{

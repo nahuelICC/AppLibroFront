@@ -1,3 +1,39 @@
-.color-fondo{
-  background-color: var(--color-blanco-fondo);
+.range-slider-container {
+  position: relative;
+  height: 48px;
+  margin: 20px 16px;
+}
+
+.slider-min, .slider-max {
+  position: absolute;
+  width: 100%;
+}
+
+/* Track común */
+::ng-deep .mat-slider-track-background {
+  background-color: #e0e0e0 !important;
+}
+
+/* Track activo entre los thumbs */
+::ng-deep .slider-min .mat-slider-track-fill,
+::ng-deep .slider-max .mat-slider-track-fill {
+  background-color: #3f51b5 !important;
+}
+
+/* Thumb mínimo */
+::ng-deep .slider-min .mat-slider-thumb {
+  z-index: 2 !important;
+  right: -16px !important;
+}
+
+/* Thumb máximo */
+::ng-deep .slider-max .mat-slider-thumb {
+  z-index: 3 !important;
+  left: -16px !important;
+}
+
+.values-display {
+  text-align: center;
+  margin-top: 30px;
+  font-weight: bold;
 }
