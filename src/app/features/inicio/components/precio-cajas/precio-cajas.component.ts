@@ -1,3 +1,5 @@
+
+
 import {Component, OnInit} from '@angular/core';
 import { SuscripcionInicio } from '../../DTOs/SuscripcionInicio';
 import { InicioService } from '../../services/inicio.service';
@@ -41,7 +43,7 @@ export class PrecioCajasComponent implements OnInit{
     const etiquetas: { [key: string]: string } = {
       'Estandar': 'Económico',
       'Plus': 'Recomendado',
-      'Pro': 'Más vendido'
+      'Pro': 'Popular'
     };
     return etiquetas[nombre] || 'Destacado';
   }
