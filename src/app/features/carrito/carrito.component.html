@@ -1,8 +1,12 @@
 <div class="flex flex-col md:flex-row gap-4 p-4">
   <!-- Cart Items -->
   <div class="w-full md:w-2/3 sm:p-4 p-0">
+    <div class="flex justify-between">
     <h2 class="text-xl md:text-3xl font-bold mb-4 text-[var(--color-titulo)]">Carrito</h2>
+    <mat-icon matTooltip="Pulsa para vaciar el carrito" (click)="clearCart()" class="hover:cursor-pointer">delete</mat-icon>
+    </div>
     <div class="p-4 bg-white rounded-lg">
+      <p *ngIf="cartItems.length === 0" class=" lg:text-lg text-md font-semibold">Aún no has añadido productos a tu carrito</p>
       <!-- Iterar sobre los productos -->
       <app-cuadro-carrito
         *ngFor="let product of products"
@@ -11,6 +15,7 @@
         [idTipo]="product.id_tipo"
         [cantidad]="product.cantidad"
         [precio]="product.precio"
+        [tipoTapa]="product.tipoTapa"
         (quantityUpdated)="updateCartItem($event)"
       ></app-cuadro-carrito>
     </div>
@@ -30,11 +35,11 @@
       </div>
       <div class="flex justify-between mb-4 md:mb-8">
         <span class="text-gray-500">Envío</span>
-        <span class="text-gray-500">{{ shippingCost | currency:'€' }}</span>
+        <span class="text-gray-500">{{ cartItems.length === 0 ? '€0.00' :shippingCost | currency:'€' }}</span>
       </div>
       <div class="flex justify-between font-bold md:mb-4 mb-2">
         <span class="text-gray-500">Total</span>
-        <span class="text-gray-500">{{ (totalBooksPrice - discount + shippingCost) | currency:'€' }}</span>
+        <span class="text-gray-500">{{ cartItems.length === 0 ? '€0.00' : (totalBooksPrice - discount + shippingCost) | currency:'€' }}</span>
       </div>
       <p class="text-sm md:text-md text-[var(--color-rojo-resaltar)] mb-2 md:mb-4">
         Nota: envío gratis con suscripción, con compras superiores a 50€
