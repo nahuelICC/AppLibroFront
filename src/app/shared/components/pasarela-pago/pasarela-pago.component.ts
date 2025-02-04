@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BotonComponent } from '../boton/boton.component';
+import {CarritoService} from '../../../features/carrito/services/carrito.service';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -11,9 +13,17 @@ import { BotonComponent } from '../boton/boton.component';
   standalone: true,
   styleUrl: './pasarela-pago.component.css'
 })
-export class PasarelaPagoComponent {
+export class PasarelaPagoComponent implements OnInit {
   // Estado actual del paso
   currentStep = 1;
+  cartItems: any[] = [];
+
+  constructor( private carritoService: CarritoService,private router:Router) {
+  }
+
+  ngOnInit(): void {
+    this.loadCartFromLocalStorage();
+  }
 
   // Datos ficticios para cada paso
   formData = {
@@ -54,9 +64,46 @@ export class PasarelaPagoComponent {
     this.nextStep(); // Avanza al siguiente paso
   }
 
-  // Función para mostrar una alerta cuando se complete el proceso
-  finishProcess() {
-    alert('Proceso completado!');
-    console.log('Datos finales:', this.formData);
+
+  loadCartFromLocalStorage() {
+    const cartData = localStorage.getItem('cart');
+    if (cartData) {
+      try {
+        this.cartItems = JSON.parse(cartData);
+      } catch (error) {
+        console.error('Error parsing cart data:', error);
+      }
+    } else {
+      console.warn('El carrito está vacío.');
+    }
   }
+
+  sendOrderToBackend() {
+    if (this.cartItems.length === 0) {
+      alert('El carrito está vacío. No se puede generar un pedido.');
+      return;
+    }
+
+
+    // total: this.totalBooksPrice + this.shippingCost - this.discount
+
+    this.carritoService.postPedido(this.cartItems).subscribe({
+      next: (response: any) => {
+        alert('Pedido generado con éxito.');
+        this.clearCart();
+        this.router.navigate(['usuario']);
+      },
+      error: (error: any) => {
+        console.error('Error al enviar el pedido:', error);
+        alert('Ocurrió un error al enviar el pedido. Por favor, inténtalo de nuevo.');
+      }
+    });
+  }
+
+  clearCart() {
+    this.cartItems = [];
+    localStorage.removeItem('cart');
+  }
+
+
 }
