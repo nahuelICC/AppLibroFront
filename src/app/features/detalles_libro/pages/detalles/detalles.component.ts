@@ -257,18 +257,23 @@ export class DetallesComponent implements OnInit {
     // Eliminar la reseña
     this.resenyas = this.resenyas.filter(resena => resena.id !== id);
 
-    // Recalcular la media de las valoraciones y las estadísticas de la barra
+    // Recalcular estadísticas
     this.calcularEstadisticas();
 
     // Volver a calcular las páginas y la paginación
     this.calculateTotalPages();
     this.updatePaginatedResenyas();
 
+    // Actualizar la media de las reseñas y el total
     this.fetchAverageRating();
     this.fetchTotalResenyas();
+
+    // Verificar si el usuario puede volver a dejar una reseña
+    this.verificarCompra();
 
     // Actualizar la vista
     this.cdRef.detectChanges();
   }
+
 
 }
