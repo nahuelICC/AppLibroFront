@@ -69,16 +69,15 @@ export class LoginComponent {
 
   private handleError(error: HttpErrorResponse) {
     if (error.status === 401) {
-      this.errorMessage = 'Usuario o contraseña incorrectos.';
+      if (error.error.message === 'Tu cuenta no está activa.') {
+        this.errorMessage = 'Tu cuenta no está activa. Revisa tu correo para activarla.';
+      } else {
+        this.errorMessage = 'Usuario o contraseña incorrectos.';
+      }
     } else if (error.status === 0) {
       this.errorMessage = 'No se pudo conectar al servidor. Verifica tu conexión a Internet.';
     } else {
       this.errorMessage = 'Ocurrió un error inesperado. Inténtalo de nuevo más tarde.';
     }
-
-    // Muestra el mensaje de error en un snackbar (opcional)
-    // this.snackBar.open(this.errorMessage, 'Cerrar', {
-    //   duration: 5000, // Duración del mensaje en milisegundos
-    // });
   }
 }

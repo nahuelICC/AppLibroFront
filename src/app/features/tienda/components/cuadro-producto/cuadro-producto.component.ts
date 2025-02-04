@@ -7,8 +7,6 @@ import {SplitPricePipe} from '../../split-decimals.pipe';
   imports: [
     NgForOf,
     NgIf,
-    CurrencyPipe,
-    NgOptimizedImage,
     SplitPricePipe
   ],
   templateUrl: './cuadro-producto.component.html',
