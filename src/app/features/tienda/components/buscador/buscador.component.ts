@@ -1,11 +1,13 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {debounceTime, distinctUntilChanged, Subject} from 'rxjs';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
   selector: 'app-buscador',
   imports: [
-    FormsModule
+    FormsModule,
+    MatIcon
   ],
   templateUrl: './buscador.component.html',
   standalone: true,
