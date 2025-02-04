@@ -11,6 +11,7 @@ import {PasarelaPagoComponent} from './shared/components/pasarela-pago/pasarela-
 import {ActivacionComponent} from './features/registro/componentes/activacion/activacion.component';
 
 export const routes: Routes = [
+  {path : '', redirectTo: '/main', pathMatch: 'full'},
   { path: 'login', component: LoginComponent },
   { path: 'tienda', component: TiendaComponent },
   { path: 'usuario', component: PaginaUsuarioComponent, canActivate:[AuthGuard]},
