@@ -1,22 +1,24 @@
-<div class="container mx-auto max-w-7xl p-6">
-  <h2 class="text-2xl font-bold mb-6">Suscríbete</h2>
+<div class="container mx-auto max-w-7xl p-4">
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     <div *ngFor="let suscripcion of suscripciones" class="bg-white rounded-lg shadow-md relative p-6">
-      <!-- Cuadro verde -->
+      <!-- Etiqueta diferente según el tipo de suscripción -->
       <div class="absolute top-0 right-0 bg-[#078080] text-white px-2 py-1 rounded-3xl mt-8 mr-8">
-        Popular
+        {{ getEtiqueta(suscripcion.nombre ?? '') }}
       </div>
+
       <h5 class="text-xl font-semibold mb-2">{{ suscripcion.nombre }}</h5>
       <p class="text-2xl font-bold mb-4">{{ suscripcion.precio }}€ /mes</p>
+
       <div class="flex justify-center mb-4">
-        <app-boton [label]="'Contratar'" [color]="'#e74c3c'" [size]="'small'"></app-boton>
+        <app-boton [label]="'Más información'" [color]="'#e74c3c'" [size]="'small'"></app-boton>
       </div>
-      <ul class="list-none mt-4 space-y-2">
-        <li class="flex items-center" *ngFor="let parte of getDescripcionParts(suscripcion.descripcion ?? '')">
-          <mat-icon class="mr-2 text-green-500">check</mat-icon> {{ parte }}
+
+      <ul class="list-none mt-4">
+        <li class="flex items-center gap-3" *ngFor="let parte of getDescripcionParts(suscripcion.descripcion ?? '')">
+          <mat-icon class="text-green-500 text-sm">check</mat-icon>
+          <span class="text-sm md:text-base">{{ parte }}</span>
         </li>
       </ul>
-
     </div>
   </div>
 </div>

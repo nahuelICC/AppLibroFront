@@ -20,4 +20,11 @@ import {PrecioCajasComponent} from '../../components/precio-cajas/precio-cajas.c
 })
 export class InicioComponent {
 
+  scrollToSection(id: string): void {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
 }
