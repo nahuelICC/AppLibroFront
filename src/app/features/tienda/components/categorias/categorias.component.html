@@ -1,12 +1,12 @@
-<div class="flex gap-3 p-3 flex-wrap justify-center sm:justify-start">
-  <app-boton
+<div class="flex gap-3 p-3 flex-wrap pr-4">
+  <div
     *ngFor="let categoria of categories"
-    [label]="categoria.nombre | nombreGenero"
+    class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-xl color-boton pl-4 pr-4 cursor-pointer"
     [class.selected]="categoriaSeleccionada === categoria.numero"
     (click)="onCategoria(categoria.numero)"
-    [size]="'small'"
-    [color]="'#078080'"
-
   >
-  </app-boton>
+    <b class="color-texto-blanco text-sm font-medium leading-normal">
+      {{ categoria.nombre | nombreGenero}}
+    </b>
+  </div>
 </div>
