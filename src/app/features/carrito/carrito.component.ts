@@ -4,7 +4,7 @@ import {CuadroCarritoComponent} from './components/cuadro-carrito/cuadro-carrito
 import {HttpClient} from '@angular/common/http';
 import {CurrencyPipe, NgForOf} from '@angular/common';
 import {CarritoService} from './services/carrito.service';
-import {Router, RouterOutlet} from '@angular/router';
+import {Router, RouterLink, RouterOutlet} from '@angular/router';
 
 @Component({
   selector: 'app-carrito',
@@ -12,7 +12,8 @@ import {Router, RouterOutlet} from '@angular/router';
     BotonComponent,
     CuadroCarritoComponent,
     CurrencyPipe,
-    NgForOf
+    NgForOf,
+    RouterLink
   ],
   templateUrl: './carrito.component.html',
   standalone: true,
@@ -138,25 +139,5 @@ export class CarritoComponent implements OnInit {
     localStorage.removeItem('cart');
   }
 
-  sendOrderToBackend() {
-    if (this.cartItems.length === 0) {
-      alert('El carrito está vacío. No se puede generar un pedido.');
-      return;
-    }
 
-
-    // total: this.totalBooksPrice + this.shippingCost - this.discount
-
-    this.carritoService.postPedido(this.cartItems).subscribe({
-      next: (response: any) => {
-        alert('Pedido generado con éxito.');
-        this.clearCart();
-        this.router.navigate(['usuario']);
-      },
-      error: (error: any) => {
-        console.error('Error al enviar el pedido:', error);
-        alert('Ocurrió un error al enviar el pedido. Por favor, inténtalo de nuevo.');
-      }
-    });
-  }
 }
