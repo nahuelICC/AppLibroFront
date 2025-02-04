@@ -1,0 +1,41 @@
+<div class="mx-auto px-4 py-8 relative">
+  <!-- Título posicionado sobre el primer cuadro -->
+  <h2 class="text-2xl font-bold absolute top-0 left-0 ml-10 md:ml-48">Lo más vendido</h2>
+
+  <!-- Contenedor principal -->
+  <div class="overflow-x-auto md:overflow-hidden h-full flex md:justify-center justify-start pt-10 pb-4 space-x-4 flex-nowrap snap-x snap-mandatory whitespace-nowrap" *ngIf="masVendidos$ | async as masVendidos">
+    <!-- Contenedor de los libros -->
+    <div
+      *ngFor="let book of masVendidos"
+      class="flex-none w-64 flex flex-col gap-1.5 cursor-pointer transition-transform transform md:hover:scale-105 md:hover:shadow-xl rounded-2xl px-2 h-full pt-3 snap-center bg-[#f4f4f4]"
+      [routerLink]="['/detallelibro', book.id]"
+    >
+      <!-- Contenedor de la imagen -->
+      <div class="w-full h-48 bg-center bg-no-repeat bg-contain rounded-xl overflow-hidden">
+        <img
+          [src]="book.portada || ''"
+          alt="{{ book.titulo || 'Título desconocido' }}"
+          class="w-full h-full object-contain focus:outline-2 focus:outline-offset-2"
+        />
+      </div>
+
+      <!-- Contenido del texto -->
+      <div class="flex flex-col flex-1 px-1 text-center">
+        <!-- Contenedor con altura fija para mantener alineación -->
+        <div class="min-h-[60px] flex flex-col justify-center">
+          <p class="text-[#111818] text-base font-medium leading-normal line-clamp-2 mb-1">
+            {{ book.titulo || 'Título desconocido' }}
+          </p>
+        </div>
+
+        <!-- Autor y Género con menor espacio -->
+        <p class="text-[#608a8a] text-sm font-normal leading-tight line-clamp-1 mb-1">
+          {{ book.autor || 'Autor desconocido' }}
+        </p>
+        <p class="text-[#608a8a] text-sm font-normal leading-tight line-clamp-1 mb-1">
+          {{ book.genero || 'Género desconocido' }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

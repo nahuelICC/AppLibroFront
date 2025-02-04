@@ -17,7 +17,7 @@ import {SplitPricePipe} from '../../split-decimals.pipe';
 })
 export class CuadroProductoComponent {
   @Input() bookCover: string = '';
-  @Input() title: string = '';
+  @Input() titulo: string = '';
   @Input() author: string = '';
   @Input() price: number = 0;
   @Input() rating: number = 0

@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {NgForOf, NgIf} from '@angular/common';
-import { ResenyaService } from '../../services/resenya.service';
 import {MatIcon} from '@angular/material/icon';
+import {DetallesLibroService} from '../../services/detalles-libro.service';
 
 @Component({
   selector: 'app-resena',
@@ -21,21 +21,30 @@ export class ResenaComponent {
   @Input() rating: number = 5;
   @Input() comment: string = '';
   @Input() id: number = 0;
-  @Output() resenyaDeleted: EventEmitter<void> = new EventEmitter<void>();
+  @Input() idClienteResena!: number; // ID del cliente que publicó la reseña
+  @Input() idClienteActual!: number;
+  @Output() resenyaDeleted: EventEmitter<number> = new EventEmitter<number>();
 
 
-  constructor(private resenyaService: ResenyaService) {}
+  constructor(private detallesLibroService: DetallesLibroService) {}
 
   deleteResenya(): void {
-    this.resenyaService.deleteResenya(this.id).subscribe(
-      response => {
-        console.log('Reseña eliminada con éxito', response);
-        this.resenyaDeleted.emit();
-      },
-      error => {
-        console.error('Error al eliminar la reseña', error);
-      }
-    );
+    console.log('ID de la reseña:', this.id);
+    if (this.id !== undefined && this.id !== null) {
+      this.detallesLibroService.deleteResenya(this.id).subscribe(
+        response => {
+          console.log('Reseña eliminada con éxito', response);
+          this.resenyaDeleted.emit(this.id); // Solo emitir el ID, sin volver a llamar al servicio
+        },
+        error => {
+          console.error('Error al eliminar la reseña', error);
+        }
+      );
+    } else {
+      console.error('ID de reseña no válido');
+    }
   }
+
+
 
 }

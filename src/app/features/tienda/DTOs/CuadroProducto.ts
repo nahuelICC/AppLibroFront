@@ -1,6 +1,6 @@
 export class CuadroProducto{
     portada?: string;
-    title?: string;
+    titulo?: string;
     mediaValoraciones?: number;
     precio?: number;
     autor?: string;

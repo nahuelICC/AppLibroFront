@@ -21,7 +21,7 @@
             <app-cuadro-producto
               *ngFor="let producto of paginatedItems"
               [bookCover]="producto.portada || ''"
-              [title]="producto.title || ''"
+              [titulo]="producto.titulo || ''"
               [author]="producto.autor || ''"
               [price]="producto.precio || 0"
               [genre]="producto.genero || ''"
