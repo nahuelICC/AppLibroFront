@@ -1,19 +1,20 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import { FiltroComponent } from '../../components/filtro/filtro.component';
 import { CuadroProductoComponent } from '../../components/cuadro-producto/cuadro-producto.component';
 import { CuadroProducto } from '../../DTOs/CuadroProducto';
 import {LibroServiceService} from '../../services/libro-service.service';
-import {NgForOf, NgIf} from '@angular/common';
+import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {BuscadorComponent} from '../../components/buscador/buscador.component';
 import {GeneroDTO} from '../../DTOs/GeneroDTO';
 import {CategoriasComponent} from '../../components/categorias/categorias.component';
 import {RangoPrecioComponent} from '../../components/rango-precio/rango-precio.component';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 
 @Component({
   selector: 'app-tienda',
-  imports: [FiltroComponent, CuadroProductoComponent, NgForOf, NgIf, MatIcon, BuscadorComponent, CategoriasComponent, RangoPrecioComponent, MatProgressSpinner],
+  imports: [FiltroComponent, CuadroProductoComponent, NgForOf, NgIf, MatIcon, BuscadorComponent, CategoriasComponent, RangoPrecioComponent, MatProgressSpinner, NgClass, BotonComponent],
   templateUrl: './tienda.component.html',
   standalone: true,
   styleUrl: './tienda.component.css'
@@ -30,11 +31,16 @@ export class TiendaComponent implements OnInit {
     minPrice: null,
     maxPrice: null
   };
+  minValue: number = 0;
+  maxValue: number = 200;
   generos: GeneroDTO[] = [];
   allLibros: CuadroProducto[] = [];
   loading: boolean = false;
-
-  constructor(private libroService: LibroServiceService) {}
+  showFilters:boolean = false;
+  toggleFilters() {
+    this.showFilters = !this.showFilters;
+  }
+  constructor(private libroService: LibroServiceService, private cdRef: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.libroService.loading$.subscribe(loading => {
@@ -100,8 +106,9 @@ export class TiendaComponent implements OnInit {
     this.cargaLibros();
   }
 
-  // tienda.component.ts
   onPriceChange(priceRange: { min: number; max: number }): void {
+    this.minValue = priceRange.min;
+    this.maxValue = priceRange.max;
     this.libroService.resetCache();
     this.allLibros = [];
     this.filters.minPrice = priceRange.min;
@@ -111,6 +118,8 @@ export class TiendaComponent implements OnInit {
   }
 
   // Actualiza el getter para usar allLibros
+
+
   get paginatedItems(): CuadroProducto[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     return this.allLibros.slice(start, start + this.itemsPerPage);
@@ -169,6 +178,9 @@ export class TiendaComponent implements OnInit {
       minPrice: null,
       maxPrice: null
     };
+    this.minValue = 0;  // Reseteamos el valor mínimo
+    this.maxValue = 200;
+    this.cdRef.detectChanges();
     this.currentPage = 1;
     this.cargaLibros();
   }
