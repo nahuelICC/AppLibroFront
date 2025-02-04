@@ -1,5 +1,4 @@
-import {Component, EventEmitter, Output} from '@angular/core';
-import {Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {NgClass, NgStyle} from '@angular/common';
 
 @Component({
@@ -23,7 +22,7 @@ export class BotonComponent {
       case 'small':
         return 'px-4 py-2 text-sm md:w-48 sm:w-30';
       case 'large':
-        return 'sm:w-72 py-2 text-lg';
+        return 'sm:w-72 py-2 px-3 text-lg';
       default:
         return 'px-6 py-2 text-base';
     }
