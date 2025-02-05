@@ -42,6 +42,7 @@ export class PaginaUsuarioComponent implements OnInit {
   alertMessage: string = '';
   alertType: AlertType = 'success';
   isAlertVisible: boolean = false;
+  provincias:string[] = ['Álava','Albacete','Alicante','Almería','Asturias','Ávila','Badajoz','Barcelona','Burgos','Cáceres','Cádiz','Cantabria','Castellón','Ciudad Real','Córdoba','Cuenca','Gerona','Granada','Guadalajara','Guipúzcoa','Huelva','Huesca','Islas Baleares','Jaén','La Coruña','La Rioja','Las Palmas','León','Lérida','Lugo','Madrid','Málaga','Murcia','Navarra','Orense','Palencia','Pontevedra','Salamanca','Santa Cruz de Tenerife','Segovia','Sevilla','Soria','Tarragona','Teruel','Toledo','Valencia','Valladolid','Vizcaya','Zamora','Zaragoza'];
 
   constructor(private perfilUsuarioService: PerfilUsuarioService,private fb: FormBuilder,private cdRef: ChangeDetectorRef, private zone: NgZone) {
     this.cambioContrasenaForm = this.fb.group({
@@ -169,22 +170,35 @@ export class PaginaUsuarioComponent implements OnInit {
 
   toggleEditarDireccion() {
     if (this.editandoDireccion) {
-
+      // Verifica que todos los campos estén completos
       if (this.direccionPartes.some(part => part === "")) {
         console.log('Todos los campos son obligatorios');
         return;
       }
 
-      this.datosCliente.direccion = this.direccionPartes.join(",");
+      this.datosCliente.direccion = this.direccionPartes.join(", ");
       this.perfilUsuarioService.putEdicionDireccion(this.datosCliente.direccion).subscribe({
         next: (response) => {
           console.log('Dirección actualizada:', response);
+          this.alertMessage = 'Dirección actualizada correctamente';
+          this.alertType = 'success';
+          this.isAlertVisible = true;
         },
-        error: (err) => console.error('Error actualizando dirección:', err)
+        error: (err) => {
+          console.error('Error actualizando dirección:', err);
+          this.alertMessage = 'Error al actualizar la dirección';
+          this.alertType = 'warning';
+          this.isAlertVisible = true;
+        }
       });
+      setTimeout(() => {
+        this.zone.run(() => {
+          this.isAlertVisible = false;
+          this.cdRef.detectChanges(); // Asegura que Angular detecte el cambio
+        });
+      }, 5000);
     } else {
-      // Dividir la dirección en partes
-      this.direccionPartes = this.datosCliente.direccion.split(",");
+      this.direccionPartes = this.datosCliente.direccion.split(", ");
     }
     this.editandoDireccion = !this.editandoDireccion;
   }

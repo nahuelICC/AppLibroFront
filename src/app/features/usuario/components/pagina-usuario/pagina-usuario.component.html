@@ -140,7 +140,9 @@
         <input type="text" [(ngModel)]="direccionPartes[0]" class="border rounded-xl p-2" placeholder="Calle">
         <input type="text" [(ngModel)]="direccionPartes[1]" class="border rounded-xl p-2 mr-2" placeholder="Código Postal">
         <input type="text" [(ngModel)]="direccionPartes[2]" class="border rounded-xl p-2" placeholder="Localidad">
-        <input type="text" [(ngModel)]="direccionPartes[3]" class="border rounded-xl p-2 mr-2" placeholder="Provincia">
+        <select [(ngModel)]="direccionPartes[3]" class="border rounded-xl p-2 mr-2">
+          <option *ngFor="let provincia of provincias" [value]="provincia">{{provincia}}</option>
+        </select>
       </div>
 
       <app-boton [color]="editandoDireccion ? '#f45d48': '#078080'"  [size]="'medium'" [label]="editandoDireccion ? 'Guardar' : 'Editar'" (click)="toggleEditarDireccion()"></app-boton>
