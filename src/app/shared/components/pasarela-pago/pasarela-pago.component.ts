@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { BotonComponent } from '../boton/boton.component';
 import {CarritoService} from '../../../features/carrito/services/carrito.service';
 import {Router} from '@angular/router';
+import {PasarelaPagoService} from '../../services/pasarela-pago.service';
 
 
 @Component({
@@ -19,21 +20,36 @@ export class PasarelaPagoComponent implements OnInit {
   cartItems: any[] = [];
   submitted = false;
   stepsValidity: boolean[] = [false, false, false];
+  datos: any;
 
 
-  constructor( private carritoService: CarritoService,private router:Router) {
+  constructor( private carritoService: CarritoService,private router:Router, private pasarelaPagoService: PasarelaPagoService) {
   }
 
   ngOnInit(): void {
     this.loadCartFromLocalStorage();
+    this.pasarelaPagoService.getDireccionTelefono().subscribe({
+      next: (response: any) => {
+        this.datos = response;
+        this.formData.phone = this.datos.telefono;
+        const direccionArray = this.datos['direccion'].split(',');
+        this.formData.calle = direccionArray[0];
+        this.formData.codigoPostal = direccionArray[1];
+        this.formData.localidad = direccionArray[2];
+        this.formData.provincia = direccionArray[3];
+        console.log('Datos obtenidos:', this.datos);
+      },
+      error: (error: any) => {
+        console.error('Error al obtener los datos:', error);
+      }
+    });
   }
 
-  // Datos ficticios para cada paso
   formData = {
-    step1: '',
-    step2: '',
-    step3: '',
-    step4: '',
+    calle: '',
+    codigoPostal: '',
+    localidad: '',
+    provincia: '',
     step5: '',
     step6: '',
     step7: '',
@@ -115,8 +131,8 @@ export class PasarelaPagoComponent implements OnInit {
 
     switch(this.currentStep) {
       case 1:
-        return !!this.formData.step1 && !!this.formData.step2 &&
-          !!this.formData.step3 && !!this.formData.step4;
+        return !!this.formData.calle && !!this.formData.codigoPostal &&
+          !!this.formData.localidad && !!this.formData.provincia;
 
       case 3:
         if(this.selectedPaymentMethod === 'credit-card') {

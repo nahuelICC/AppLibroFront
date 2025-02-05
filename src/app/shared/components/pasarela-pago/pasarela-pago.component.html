@@ -29,7 +29,7 @@
     <form #step1Form="ngForm">
       <input
         type="text"
-        [(ngModel)]="formData.step1"
+        [(ngModel)]="formData.calle"
         name="calle"
         required
         placeholder="Calle*"
@@ -40,7 +40,7 @@
 
       <input
         type="text"
-        [(ngModel)]="formData.step2"
+        [(ngModel)]="formData.codigoPostal"
         name="numero"
         required
         placeholder="Número*"
@@ -51,7 +51,7 @@
 
       <input
         type="text"
-        [(ngModel)]="formData.step3"
+        [(ngModel)]="formData.localidad"
         name="localidad"
         required
         placeholder="Localidad*"
@@ -62,7 +62,7 @@
 
       <input
         type="text"
-        [(ngModel)]="formData.step4"
+        [(ngModel)]="formData.provincia"
         name="provincia"
         required
         placeholder="Provincia*"
@@ -164,6 +164,7 @@
         class="w-full border rounded-lg p-2 mb-5"
         [class.border-red-500]="(submitted && paypalForm.controls['paypalEmail']?.errors?.['required'])"
       />
+
 
 
       <input
