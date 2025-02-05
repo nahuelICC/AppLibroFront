@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, OnInit, Output} from '@angular/core';
 import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BotonComponent } from '../boton/boton.component';
@@ -27,7 +27,6 @@ export class PasarelaPagoComponent implements OnInit {
   alertMessage: string = '';
   alertType: AlertType = 'success';
   isAlertVisible: boolean = false;
-  @Output() pedidoCompletado = new EventEmitter<void>();
 
 
   constructor( private carritoService: CarritoService,private router:Router, private pasarelaPagoService: PasarelaPagoService) {

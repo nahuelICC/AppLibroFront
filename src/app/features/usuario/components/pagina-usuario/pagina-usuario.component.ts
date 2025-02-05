@@ -59,7 +59,6 @@ export class PaginaUsuarioComponent implements OnInit {
     this.cargarDatosCliente();
   }
 
-
   get pedidosMostrados() {
     return this.datosCliente.pedidos.slice(0, this.currentPage * this.itemsPerPage);
   }
@@ -180,23 +179,9 @@ export class PaginaUsuarioComponent implements OnInit {
       this.perfilUsuarioService.putEdicionDireccion(this.datosCliente.direccion).subscribe({
         next: (response) => {
           console.log('Dirección actualizada:', response);
-          this.alertMessage = 'Dirección actualizada correctamente';
-          this.alertType = 'success';
-          this.isAlertVisible = true;
         },
-        error: (err) => {
-          console.error('Error actualizando dirección:', err)
-          this.alertMessage = 'Error al editar la dirección';
-          this.alertType = 'warning';
-          this.isAlertVisible = true;
-        }
+        error: (err) => console.error('Error actualizando dirección:', err)
       });
-      setTimeout(() => {
-        this.zone.run(() => {
-          this.isAlertVisible = false;
-          this.cdRef.detectChanges(); // Asegura que Angular detecte el cambio
-        });
-      }, 5000);
     } else {
       // Dividir la dirección en partes
       this.direccionPartes = this.datosCliente.direccion.split(",");
