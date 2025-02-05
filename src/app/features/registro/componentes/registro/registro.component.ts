@@ -134,9 +134,13 @@ export class RegistroComponent implements OnInit {
         console.error('Error al registrar el usuario:', error);
 
         if (error.status === 409) {
-          this.errorMessage = 'El usuario ya está registrado.';
+          if (error.error.message.includes('correo electrónico')) {
+            this.errorMessage = 'El correo electrónico ya está en uso.';
+          } else if (error.error.message.includes('nombre de usuario')) {
+            this.errorMessage = 'El nombre de usuario ya está registrado.';
+          }
           this.isLoading = false;
-          this.showAlert(this.errorMessage, 'error');
+          this.showAlert(this.errorMessage ?? 'Ocurrió un error inesperado.', 'error');
           return;
         }
 
