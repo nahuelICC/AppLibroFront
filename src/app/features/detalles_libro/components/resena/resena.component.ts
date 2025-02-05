@@ -51,7 +51,6 @@ export class ResenaComponent {
     }
   }
 
-  // Función para cancelar la eliminación y cerrar la alerta
   cancelDelete(): void {
     this.showConfirmDelete = false; // Cerrar la alerta
   }
