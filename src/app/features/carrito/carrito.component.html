@@ -45,12 +45,23 @@
         Nota: envío gratis con suscripción, con compras superiores a 50€
       </p>
       <!-- Botón para enviar el pedido -->
-      <app-boton
-        [size]="'medium'"
-        [label]="'Ir al pago'"
-        [color]="'#f45d48'"
-        [routerLink]=" ['/pago']"
-      ></app-boton>
+      <ng-container *ngIf="cartItems.length > 0; else desactivado">
+        <app-boton
+          [size]="'medium'"
+          [label]="'Ir al pago'"
+          [color]="'#f45d48'"
+          [routerLink]=" ['/pago']"
+          *ngIf="cartItems.length > 0"
+        ></app-boton>
+      </ng-container>
+      <ng-template #desactivado>
+        <app-boton
+          [size]="'medium'"
+          [label]="'Ir al pago'"
+          [color]="'rgba(244,93,72,0.68)'"
+          [disabled]="true"
+        ></app-boton>
+      </ng-template>
     </div>
   </div>
 </div>

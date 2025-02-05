@@ -1,15 +1,17 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, Output} from '@angular/core';
 import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BotonComponent } from '../boton/boton.component';
 import {CarritoService} from '../../../features/carrito/services/carrito.service';
 import {Router} from '@angular/router';
 import {PasarelaPagoService} from '../../services/pasarela-pago.service';
+import {AlertConfirmarComponent} from '../alert-confirmar/alert-confirmar.component';
+import {AlertInfoComponent, AlertType} from '../alert-info/alert-info.component';
 
 
 @Component({
   selector: 'app-pasarela-pago',
-  imports: [NgIf, FormsModule, BotonComponent],
+  imports: [NgIf, FormsModule, BotonComponent, AlertConfirmarComponent, AlertInfoComponent],
   templateUrl: './pasarela-pago.component.html',
   standalone: true,
   styleUrl: './pasarela-pago.component.css'
@@ -21,6 +23,10 @@ export class PasarelaPagoComponent implements OnInit {
   submitted = false;
   stepsValidity: boolean[] = [false, false, false];
   datos: any;
+  showConfirmEdit: boolean = false;
+  alertMessage: string = '';
+  alertType: AlertType = 'success';
+  isAlertVisible: boolean = false;
 
 
   constructor( private carritoService: CarritoService,private router:Router, private pasarelaPagoService: PasarelaPagoService) {
@@ -102,7 +108,10 @@ export class PasarelaPagoComponent implements OnInit {
 
   sendOrderToBackend() {
     if (this.cartItems.length === 0) {
-      alert('El carrito está vacío. No se puede generar un pedido.');
+      this.showConfirmEdit = false;
+      this.alertMessage = 'No hay productos en el carrito.';
+      this.alertType = 'warning';
+      this.isAlertVisible = true;
       return;
     }
 
@@ -110,13 +119,16 @@ export class PasarelaPagoComponent implements OnInit {
 
     this.carritoService.postPedido(this.cartItems).subscribe({
       next: (response: any) => {
-        alert('Pedido generado con éxito.');
+        this.showConfirmEdit = false;
         this.clearCart();
         this.router.navigate(['usuario']);
       },
       error: (error: any) => {
         console.error('Error al enviar el pedido:', error);
-        alert('Ocurrió un error al enviar el pedido. Por favor, inténtalo de nuevo.');
+        this.showConfirmEdit = false;
+        this.alertMessage = 'Error al enviar el pedido.';
+        this.alertType = 'warning';
+        this.isAlertVisible = true;
       }
     });
   }
