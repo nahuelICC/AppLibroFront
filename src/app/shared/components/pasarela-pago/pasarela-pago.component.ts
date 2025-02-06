@@ -38,7 +38,7 @@ export class PasarelaPagoComponent implements OnInit {
       next: (response: any) => {
         this.datos = response;
         this.formData.phone = this.datos.telefono;
-        const direccionArray = this.datos['direccion'].split(',');
+        const direccionArray = this.datos['direccion'].split(', ');
         this.formData.calle = direccionArray[0];
         this.formData.codigoPostal = direccionArray[1];
         this.formData.localidad = direccionArray[2];

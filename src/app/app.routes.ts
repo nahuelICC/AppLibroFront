@@ -9,6 +9,8 @@ import {CarritoComponent} from './features/carrito/carrito.component';
 import {InicioComponent} from './features/inicio/pages/inicio/inicio.component';
 import {PasarelaPagoComponent} from './shared/components/pasarela-pago/pasarela-pago.component';
 import {ActivacionComponent} from './features/registro/componentes/activacion/activacion.component';
+import {InfoCajasComponent} from './features/info-caja/pages/info-cajas/info-cajas.component';
+import {CarritoSuscripcionComponent} from './features/info-caja/carrito-suscripcion/carrito-suscripcion.component';
 
 export const routes: Routes = [
   {path : '', redirectTo: '/main', pathMatch: 'full'},
@@ -20,5 +22,7 @@ export const routes: Routes = [
   { path: 'carrito', component: CarritoComponent, canActivate:[AuthGuard]},
   { path: 'main', component: InicioComponent },
   { path: 'pago', component: PasarelaPagoComponent},
-  { path: 'activar/:token', component: ActivacionComponent }
+  { path: 'activar/:token', component: ActivacionComponent },
+  { path: 'infocajas/:id', component: InfoCajasComponent },
+  { path: 'carritosuscripcion', component: CarritoSuscripcionComponent },
 ];

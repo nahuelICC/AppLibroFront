@@ -11,8 +11,9 @@
       <h5 class="text-xl font-semibold mb-2 mt-8 lg:mt-0">{{ suscripcion.nombre }}</h5>
       <p class="text-2xl font-bold mb-4">{{ suscripcion.precio }}€ /mes</p>
       <div class="flex justify-center mb-4">
-        <app-boton [label]="'Más información'" [color]="'#e74c3c'" [size]="'small'"></app-boton>
+        <app-boton [label]="'Más información'" [routerLink]="['/infocajas', suscripcion.id_tipo]" [color]="'#e74c3c'" [size]="'small'"></app-boton>
       </div>
+
       <ul class="list-none mt-4">
         <li class="flex items-center gap-2" *ngFor="let parte of getDescripcionParts(suscripcion.descripcion ?? '')">
           <mat-icon class="text-green-500 text-base">check</mat-icon>
