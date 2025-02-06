@@ -1,0 +1,25 @@
+<div class="flex h-screen">
+  <!-- Sidebar: slider izquierdo -->
+  <aside class="w-64 bg-white shadow-md ms-4 mt-4 rounded-lg">
+    <nav class="p-4">
+      <ul>
+        <li>
+          <button id="btnUsuarios"
+                  class="w-full text-left p-2 rounded-2xl bg-gray-200 px-4 mb-2 hover:bg-gray-200 transition"
+                  (click)="showTable('clientes', $event.target)">Usuarios</button>
+        </li>
+        <li>
+          <button id="btnPedidos"
+                  class="w-full text-left p-2 px-4 mb-2 rounded-2xl hover:bg-gray-200 transition"
+                  (click)="showTable('pedidos', $event.target)">Pedidos</button>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+  <!-- Contenido principal -->
+  <main class="flex-1 p-6">
+    <h1 id="tituloSeccion" class="text-2xl font-bold mb-4">{{ titulo }}</h1>
+    <!-- Componente de tabla que recibe data y configuración -->
+    <app-tabla [datos]="datos" [columnas]="configColumnas" (actualizarFila)="onActualizarFila($event)"></app-tabla>
+  </main>
+</div>
