@@ -133,6 +133,7 @@ export class CarritoComponent implements OnInit {
     } else {
       this.shippingCost = 5;
     }
+    localStorage.setItem('total', JSON.stringify(this.totalBooksPrice));
   }
 
   clearCart() {

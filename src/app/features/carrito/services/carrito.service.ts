@@ -16,7 +16,7 @@ export class CarritoService {
     return this.http.get(`${this.apiUrl}/getCarrito/${id}`);
   }
 
-  postPedido(pedido: any): Observable<any> {
-    return this.http.post(this.apiPedidoUrl, pedido);
+  postPedido(pedido: any, total:number,direccion:string): Observable<any> {
+    return this.http.post(this.apiPedidoUrl, {total: total.toString(), direccion: direccion, pedido: pedido});
   }
 }

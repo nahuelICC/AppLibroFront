@@ -183,6 +183,9 @@
                 {{ pedido.fecha | date:'dd/MM/yyyy' }}
               </p>
               <p class="text-sm md:text-base mt-1" [style.color]="'var(--color-texto)'">
+                {{ pedido.direccion }}
+              </p>
+              <p class="text-sm md:text-base mt-1" [style.color]="'var(--color-texto)'">
                 {{ pedido.estadoNombre }}
               </p>
             </div>
@@ -220,7 +223,7 @@
                   <div class="flex justify-between items-center">
                     <span class="font-medium text-base">Total:</span>
                     <span class="font-medium text-base">
-      {{ calcularTotalPedido(pedido) | currency:'EUR':'symbol':'1.2-2' }}
+      {{ pedido.total | currency:'EUR':'symbol':'1.2-2' }}
     </span>
                   </div>
                 </div>

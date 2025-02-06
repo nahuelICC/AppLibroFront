@@ -194,7 +194,7 @@ export class PaginaUsuarioComponent implements OnInit {
       setTimeout(() => {
         this.zone.run(() => {
           this.isAlertVisible = false;
-          this.cdRef.detectChanges(); // Asegura que Angular detecte el cambio
+          this.cdRef.detectChanges();
         });
       }, 5000);
     } else {
