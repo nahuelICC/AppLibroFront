@@ -139,6 +139,7 @@ export class PasarelaPagoComponent implements OnInit {
   clearCart() {
     this.cartItems = [];
     localStorage.removeItem('cart');
+    localStorage.removeItem('total');
   }
 
   isCurrentStepValid(): boolean {
