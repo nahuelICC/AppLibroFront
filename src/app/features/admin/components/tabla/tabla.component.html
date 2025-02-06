@@ -1,0 +1,86 @@
+<div class="bg-white p-4 rounded-lg shadow-md max-w-[calc(100vw-16rem)]"> <!-- Contenedor principal limitado -->
+  <!-- Barra de búsqueda -->
+  <div class="flex items-center border rounded-lg p-2 mb-4">
+    <span class="text-gray-500 mr-2">🔍</span>
+    <input type="text" placeholder="Buscar" class="w-full outline-none bg-transparent">
+  </div>
+
+  <!-- Contenedor de tabla con scroll controlado -->
+  <div class="relative rounded-lg border border-gray-200 overflow-x-auto max-w-full"> <!-- Scroll horizontal aquí -->
+    <table class="w-full border-collapse border border-gray-300 rounded-lg table-fixed"> <!-- Mantenemos fixed -->
+      <thead class="bg-gray-50 border-b-2 border-gray-200">
+      <tr>
+        <!-- Columnas principales -->
+        <th *ngFor="let col of columnas"
+            class="p-3 text-sm font-semibold text-gray-600 text-left whitespace-nowrap w-[200px] min-w-[200px]"> <!-- Anchos fijos -->
+          {{ col.titulo }}
+        </th>
+        <!-- Columna de acciones -->
+        <th class="p-3 text-sm font-semibold text-gray-600 text-left whitespace-nowrap w-[180px] min-w-[180px]">Acciones</th>
+      </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+      <tr *ngFor="let item of datos; let i = index" class="hover:bg-gray-50 transition-colors">
+        <td *ngFor="let col of columnas"
+            class="p-3 text-sm text-gray-700 whitespace-nowrap w-[200px] min-w-[200px] max-w-[200px] overflow-hidden text-ellipsis"> <!-- Tripe control de ancho -->
+          <ng-container *ngIf="editingRow !== i; else editField">
+            <ng-container *ngIf="isBoolean(item[col.campo]); else textField">
+              <span class="flex items-center">
+                  <mat-icon
+                    [ngClass]="item[col.campo] ? 'text-green-500' : 'text-red-500'"
+                  >
+                  {{ item[col.campo] ? 'check_circle' : 'cancel' }}
+                  </mat-icon>
+                </span>
+            </ng-container>
+            <ng-template #textField>
+              <span class="truncate">{{ item[col.campo] }}</span>
+            </ng-template>
+          </ng-container>
+          <ng-template #editField>
+            <ng-container *ngIf="isBoolean(item[col.campo]); else textField">
+                <input id="custom-checkbox" type="checkbox" [(ngModel)]="item[col.campo]"
+                        class="hidden" (change)="toggleCheck(item, col.campo)">
+                <label class="flex items-center cursor-pointer">
+                <span class="flex items-center">
+                  <mat-icon
+                  [ngClass]="item[col.campo] ? 'text-green-500' : 'text-red-500'"
+                  (click)="toggleCheck(item, col.campo)"
+                  >
+                  {{ item[col.campo] ? 'check_circle' : 'cancel' }}
+                  </mat-icon>
+                </span>
+              </label>
+
+            </ng-container>
+            <ng-template #textField>
+              <input type="text" [(ngModel)]="item[col.campo]"
+                     class="border p-1 rounded focus:outline-none focus:border-blue-500 w-full"
+                     [disabled]="!col.editable">
+            </ng-template>
+          </ng-template>
+        </td>
+        <!-- Botones de acción -->
+        <td class="p-3 text-sm text-gray-700 whitespace-nowrap w-[150px] min-w-[150px] space-x-2">
+          <ng-container *ngIf="editingRow !== i; else editButtons">
+            <button (click)="editRow(i)"
+                    class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded">
+              Editar
+            </button>
+          </ng-container>
+          <ng-template #editButtons>
+            <button (click)="saveRow(i)"
+                    class="bg-green-500 hover:bg-green-600 text-white py-1 px-2 rounded">
+              Guardar
+            </button>
+            <button (click)="cancelEdit(i)"
+                    class="bg-gray-500 hover:bg-gray-600 text-white py-1 px-2 rounded">
+              Cancelar
+            </button>
+          </ng-template>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
