@@ -25,11 +25,11 @@
         </div>
 
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700">Apellido</label>
+          <label class="block text-sm font-medium text-gray-700">Apellidos</label>
           <input
             type="text"
             formControlName="apellido"
-            placeholder="Apellido"
+            placeholder="Apellidos"
             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
           <div *ngIf="registroForm.get('apellido')?.hasError('required') && registroForm.get('apellido')?.touched" class="text-red-500 text-sm mt-1">
@@ -38,15 +38,58 @@
         </div>
 
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700">Dirección</label>
+          <label class="block text-sm font-medium text-gray-700">Dirección completa</label>
           <input
             type="text"
-            formControlName="direccion"
-            placeholder="Dirección"
+            formControlName="direccionCompleta"
+            placeholder="Dirección completa"
             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
-          <div *ngIf="registroForm.get('direccion')?.hasError('required') && registroForm.get('direccion')?.touched" class="text-red-500 text-sm mt-1">
-            La dirección es obligatoria.
+          <div *ngIf="registroForm.get('direccionCompleta')?.hasError('required') && registroForm.get('direccionCompleta')?.touched" class="text-red-500 text-sm mt-1">
+            La dirección completa es obligatoria.
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700">Código postal</label>
+          <input
+            type="text"
+            formControlName="codigoPostal"
+            placeholder="Código postal"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+          <div *ngIf="registroForm.get('codigoPostal')?.hasError('required') && registroForm.get('codigoPostal')?.touched" class="text-red-500 text-sm mt-1">
+            El código postal es obligatorio.
+          </div>
+          <div *ngIf="registroForm.get('codigoPostal')?.hasError('pattern') && registroForm.get('codigoPostal')?.touched" class="text-red-500 text-sm mt-1">
+            El código postal debe tener exactamente 5 dígitos.
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700">Localidad</label>
+          <input
+            type="text"
+            formControlName="localidad"
+            placeholder="Localidad"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+          <div *ngIf="registroForm.get('localidad')?.hasError('required') && registroForm.get('localidad')?.touched" class="text-red-500 text-sm mt-1">
+            La localidad es obligatoria.
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700">Provincia</label>
+          <select
+            formControlName="provincia"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <option value="" disabled selected>Selecciona una provincia</option>
+            <option *ngFor="let provincia of provincias" [value]="provincia">{{ provincia }}</option>
+          </select>
+          <div *ngIf="registroForm.get('provincia')?.hasError('required') && registroForm.get('provincia')?.touched" class="text-red-500 text-sm mt-1">
+            La provincia es obligatoria.
           </div>
         </div>
 
@@ -102,7 +145,7 @@
           <input
             type="password"
             formControlName="password"
-            placeholder="Mínimo 6 caracteres"
+            placeholder="Mínimo 8 caracteres"
             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
           <div *ngIf="registroForm.get('password')?.hasError('required') && registroForm.get('password')?.touched" class="text-red-500 text-sm mt-1">
@@ -156,4 +199,12 @@
       <p *ngIf="errorMessage" class="text-red-500 text-center mt-4">{{ errorMessage }}</p>
     </form>
   </div>
+  <app-alert-confirmar
+    *ngIf="showAlertConfirmar"
+    [message]="alertMessage"
+    (confirm)="onConfirm()"
+    [confirmLabel]="'Aceptar'"
+    [showCancelButton]="false"
+    [showIcon]="false">
+  </app-alert-confirmar>
 </div>

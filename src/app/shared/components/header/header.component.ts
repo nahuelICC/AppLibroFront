@@ -3,18 +3,21 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthServiceService } from '../../../core/services/auth-service.service';
 import { NgIf } from '@angular/common';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
   selector: 'app-header',
   imports: [
     RouterLink,
-    NgIf
+    NgIf,
+    MatIcon
   ],
   templateUrl: './header.component.html',
   standalone: true,
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
+  mobileMenuOpen = false;
   constructor(public authService: AuthServiceService) {}
 
   logout(): void {

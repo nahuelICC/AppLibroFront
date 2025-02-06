@@ -29,7 +29,7 @@
     <form #step1Form="ngForm">
       <input
         type="text"
-        [(ngModel)]="formData.step1"
+        [(ngModel)]="formData.calle"
         name="calle"
         required
         placeholder="Calle*"
@@ -40,7 +40,7 @@
 
       <input
         type="text"
-        [(ngModel)]="formData.step2"
+        [(ngModel)]="formData.codigoPostal"
         name="numero"
         required
         placeholder="Número*"
@@ -51,7 +51,7 @@
 
       <input
         type="text"
-        [(ngModel)]="formData.step3"
+        [(ngModel)]="formData.localidad"
         name="localidad"
         required
         placeholder="Localidad*"
@@ -62,7 +62,7 @@
 
       <input
         type="text"
-        [(ngModel)]="formData.step4"
+        [(ngModel)]="formData.provincia"
         name="provincia"
         required
         placeholder="Provincia*"
@@ -166,6 +166,7 @@
       />
 
 
+
       <input
         type="password"
         name="paypalPassword"
@@ -225,9 +226,19 @@
 
     <app-boton
       *ngIf="currentStep === 4"
-      (click)="sendOrderToBackend()"
+      (click)="showConfirmEdit = true"
       [label]="'Finalizar'"
       [size]="'medium'">
     </app-boton>
   </div>
+  <app-alert-confirmar
+    *ngIf="showConfirmEdit" [message]="'¿Estás seguro de que quieres realizar el pedido?'"
+    (confirm)="sendOrderToBackend()" (cancel)="showConfirmEdit = false">
+  </app-alert-confirmar>
+
+  <app-alert-info
+    [message]="alertMessage"
+    [isVisible]="isAlertVisible"
+    [type]="alertType">
+  </app-alert-info>
 </div>
