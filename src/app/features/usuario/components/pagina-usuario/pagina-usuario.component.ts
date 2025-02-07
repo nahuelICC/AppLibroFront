@@ -84,6 +84,7 @@ export class PaginaUsuarioComponent implements OnInit {
     this.perfilUsuarioService.getDatosCliente().subscribe({
       next: (data) => {
         this.datosCliente = data;
+        console.log((data))
         if (this.datosCliente.pedidos) {
           this.datosCliente.pedidos.forEach((pedido: any) => {
             this.pedidosAbiertos[pedido.id] = false;
