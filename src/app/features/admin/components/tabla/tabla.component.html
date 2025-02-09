@@ -2,7 +2,7 @@
   <!-- Barra de búsqueda -->
   <div class="flex items-center border rounded-lg p-2 mb-4">
     <span class="text-gray-500 mr-2">🔍</span>
-    <input type="text" placeholder="Buscar" class="w-full outline-none bg-transparent">
+    <input type="text" placeholder="Buscar" [(ngModel)]="buscador"  class="w-full outline-none bg-transparent">
   </div>
 
   <!-- Contenedor de tabla con scroll controlado -->
@@ -20,7 +20,7 @@
       </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
-      <tr *ngFor="let item of datos; let i = index" class="hover:bg-gray-50 transition-colors">
+      <tr *ngFor="let item of datos | filtroBuscador: buscador; let i = index" class="hover:bg-gray-50 transition-colors">
         <td *ngFor="let col of columnas"
             class="p-3 text-sm text-gray-700 whitespace-nowrap w-[200px] min-w-[200px] max-w-[200px] overflow-hidden text-ellipsis"> <!-- Tripe control de ancho -->
           <ng-container *ngIf="editingRow !== i; else editField">

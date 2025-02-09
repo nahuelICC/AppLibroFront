@@ -4,6 +4,7 @@ import {UsuarioTablaDTO} from '../../DTO/UsuarioTablaDTO';
 import {UsuarioService} from '../../services/usuario.service';
 import {FormsModule} from '@angular/forms';
 import {MatIcon} from '@angular/material/icon';
+import {FiltroBuscadorPipe} from '../../pipes/filtro-buscador.pipe';
 
 @Component({
   selector: 'app-tabla',
@@ -12,7 +13,8 @@ import {MatIcon} from '@angular/material/icon';
     FormsModule,
     NgIf,
     NgClass,
-    MatIcon
+    MatIcon,
+    FiltroBuscadorPipe
   ],
   templateUrl: './tabla.component.html',
   standalone: true,
@@ -23,6 +25,7 @@ export class TablaComponent {
   // Configuración de columnas: un array de objetos con título y campo
   @Input() columnas: { titulo: string; campo: string; editable: boolean}[] = [];
   @Output() actualizarFila = new EventEmitter<any>();
+  buscador: any;
 
   // Índice de la fila en edición. Si es null, ninguna está en edición.
   editingRow: number | null = null;
@@ -48,6 +51,7 @@ export class TablaComponent {
   }
 
   // Método para eliminar la fila (opcional)
+
   deleteRow(index: number): void {
     if (confirm('¿Estás seguro de eliminar este registro?')) {
       // Lógica para eliminar el usuario en el backend
