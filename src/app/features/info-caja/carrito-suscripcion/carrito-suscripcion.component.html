@@ -1,0 +1,41 @@
+<div class="flex justify-center mt-10">
+  <div class="w-full max-w-4xl bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-2xl font-bold text-center mb-6">Resumen de tu Suscripción</h2>
+
+    <!-- Nombre de la Suscripción -->
+    <div class="flex justify-between items-center border-b pb-4 mb-4">
+      <span class="text-lg font-semibold">Tipo de Caja:</span>
+      <span class="text-lg">{{ nombre }}</span>
+    </div>
+
+    <!-- Precio -->
+    <div class="flex justify-between items-center border-b pb-4 mb-4">
+      <span class="text-lg font-semibold">Precio:</span>
+      <span class="text-lg">{{ precio }}€ /mes</span>
+    </div>
+
+    <!-- Selección de Género -->
+    <div class="mb-6 relative">
+      <label class="block text-lg font-semibold mb-2">Selecciona el género:</label>
+      <div class="relative">
+        <select [(ngModel)]="generoSeleccionado"
+                class="w-full border rounded-lg p-2 text-gray-700 appearance-none bg-white focus:ring-2 focus:ring-[#E53935] focus:border-[#E53935] relative z-10">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option *ngFor="let genero of generos" [value]="genero.numero">{{ genero.nombre | nombreGenero}}</option>
+        </select>
+        <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Botón de Confirmar Compra -->
+    <div class="flex justify-center mt-6">
+      <button (click)="confirmarCompra()"
+              [disabled]="!generoSeleccionado"
+              class="bg-[#E53935] text-white px-6 py-3 rounded-lg font-bold disabled:bg-gray-400 transition-all duration-300 hover:bg-red-700">
+        Confirmar Compra
+      </button>
+    </div>
+  </div>
+</div>

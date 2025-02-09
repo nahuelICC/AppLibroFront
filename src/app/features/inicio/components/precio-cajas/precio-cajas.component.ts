@@ -6,13 +6,15 @@ import { InicioService } from '../../services/inicio.service';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 import {NgForOf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-precio-cajas',
   imports: [
     BotonComponent,
     NgForOf,
-    MatIcon
+    MatIcon,
+    RouterLink
   ],
   templateUrl: './precio-cajas.component.html',
   standalone: true,
@@ -43,7 +45,7 @@ export class PrecioCajasComponent implements OnInit{
     const etiquetas: { [key: string]: string } = {
       'Estandar': 'Económico',
       'Plus': 'Recomendado',
-      'Pro': 'Popular'
+      'Familiar': 'Popular'
     };
     return etiquetas[nombre] || 'Destacado';
   }

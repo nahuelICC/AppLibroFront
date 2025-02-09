@@ -86,7 +86,7 @@ export class DetallesComponent implements OnInit {
         }
 
         this.fetchAverageRating();
-        this.fetchResenyas();
+        this.fetchResenyas(); // Obtener reseñas
         this.fetchTotalResenyas();
         this.verificarCompra();
       });
@@ -230,8 +230,13 @@ export class DetallesComponent implements OnInit {
       return;
     }
 
+    // Calcula el número total de páginas
     this.paginacion.totalPages = Math.ceil(this.resenyas.length / this.paginacion.itemsPerPage);
+
+    // Ajusta la página actual si excede el número total de páginas
     this.paginacion.currentPage = Math.min(this.paginacion.currentPage, this.paginacion.totalPages);
+
+    // Actualiza las reseñas paginadas y los números de página visibles
     this.updatePaginatedResenyas();
     this.updateDisplayedPages();
   }

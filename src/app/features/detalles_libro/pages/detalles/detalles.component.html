@@ -112,8 +112,10 @@
             (resenyaDeleted)="onResenyaDeleted(review.id)"></app-resena>
         </div>
       </div>
-      <!-- Paginación -->
-      <div *ngIf="paginatedResenyas.length > 0" class="flex justify-center mt-6">
+
+      <!-- Paginación solo si hay más de 3 reseñas -->
+      <!-- Paginación solo si hay más de 3 reseñas -->
+      <div *ngIf="paginacion.totalPages > 1" class="flex justify-center mt-6">
         <button (click)="previousPage()" [disabled]="paginacion.currentPage === 1"
                 class="px-3 py-1 rounded-lg text-[#111818] hover:bg-[#f0f5f5] disabled:opacity-50 disabled:cursor-not-allowed">
           <mat-icon>arrow_back</mat-icon>
@@ -136,4 +138,6 @@
       </div>
     </div>
   </div>
+
+
 </div>
