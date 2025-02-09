@@ -1,12 +1,14 @@
 import {ChangeDetectorRef, Component, NgZone, OnInit} from '@angular/core';
-import { PerfilUsuarioService } from '../../services/perfil-usuario.service';
-import { BotonComponent } from '../../../../shared/components/boton/boton.component';
-import { MatIcon } from '@angular/material/icon';
+import {PerfilUsuarioService} from '../../services/perfil-usuario.service';
+import {BotonComponent} from '../../../../shared/components/boton/boton.component';
+import {MatIcon} from '@angular/material/icon';
 import {CurrencyPipe, DatePipe, NgForOf, NgIf} from '@angular/common';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {EditaUsuarioDTO} from '../../DTOs/EditaUsuarioDTO';
 import {AlertConfirmarComponent} from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
 import {AlertInfoComponent, AlertType} from '../../../../shared/components/alert-info/alert-info.component';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-pagina-usuario',
@@ -19,7 +21,8 @@ import {AlertInfoComponent, AlertType} from '../../../../shared/components/alert
     FormsModule,
     ReactiveFormsModule,
     AlertConfirmarComponent,
-    AlertInfoComponent
+    AlertInfoComponent,
+    MatIcon
   ],
   templateUrl: './pagina-usuario.component.html',
   standalone: true,
@@ -85,7 +88,6 @@ export class PaginaUsuarioComponent implements OnInit {
     this.perfilUsuarioService.getDatosCliente().subscribe({
       next: (data) => {
         this.datosCliente = data;
-        console.log((data))
         if (this.datosCliente.pedidos) {
           this.datosCliente.pedidos.forEach((pedido: any) => {
             pedido.genero = pedido.genero.replace("_", " ");
@@ -119,6 +121,157 @@ export class PaginaUsuarioComponent implements OnInit {
         }
       },
       error: (err) => console.error('Error cargando detalles:', err)
+    });
+  }
+
+  descargarDetalles(pedidoId: number): void {
+    this.perfilUsuarioService.getDetallesPedido(pedidoId).subscribe({
+      next: (detalles) => {
+        const pedidoIndex = this.datosCliente.pedidos.findIndex((p: any) => p.id === pedidoId);
+        const pedido = this.datosCliente.pedidos[pedidoIndex];
+        if (pedidoIndex > -1) {
+          this.datosCliente.pedidos[pedidoIndex].detalles = detalles;
+
+          // Generar el PDF
+          this.generarPDF(detalles,pedido,this.datosCliente);
+        }
+      },
+      error: (err) => console.error('Error al descargar detalles:', err)
+    });
+  }
+
+  generarPDF(detalles: any, pedido: any,datosCliente:any): void {
+    const isMistery = pedido.esMistery && ![5, 6].includes(pedido.estado);
+
+    console.log('Pedido:', pedido);
+    console.log(datosCliente);
+
+    // Crear elemento HTML temporal
+    const div = document.createElement('div');
+
+    // Plantilla condicional
+    div.innerHTML = isMistery ? `
+    <div class="container">
+      <div class="header">
+        <img src="assets/Logo.png" alt="Tinteka">
+        <h1>TIENES UN NUEVO ENVÍO MISTERY</h1>
+        <h2>Detalles del Pedido Mistery</h2>
+        <p>Pedido: ${pedido.referencia}</p>
+        <p>Cliente: ${datosCliente.nombre} ${datosCliente.apellido}</p>
+        <p>Fecha: ${new Date(pedido.fecha).toLocaleString()}</p>
+      </div>
+      <div class="details">
+        <p>Suscripción: <b>${datosCliente.suscripcion.tipo}</b></p>
+        <p>Libros enviados: ${detalles.length}</p>
+        <p>Género: ${pedido.genero}</p>
+      </div>
+      <div class="footer">
+        <p>Si tienes alguna pregunta, contacta en <a href="mailto:contacto.tinteka@gmail.com">contacto.tinteka@gmail.com</a>.</p>
+      </div>
+    </div>
+  ` : `
+    <div class="container">
+      <div class="header">
+        <img src="assets/Logo.png" alt="Tinteka">
+        <h1>Detalles del Pedido</h1>
+        <p>Referencia: ${pedido.referencia}</p>
+        <p>Cliente: ${datosCliente.nombre} ${datosCliente.apellido}</p>
+        <p>Fecha: ${new Date(pedido.fecha).toLocaleString()}</p>
+        <p>Dirección: ${pedido.direccion}</p>
+      </div>
+      <div class="details">
+        <table>
+          <thead>
+            <tr><th>Libro</th><th>Cantidad</th><th>Precio</th></tr>
+          </thead>
+          <tbody>
+            ${detalles.map((linea: any) => `
+              <tr>
+                <td>${linea.titulo}</td>
+                <td>${linea.cantidad}</td>
+                <td>${linea.precio} €</td>
+              </tr>
+            `).join('')}
+            <tr>
+              <td class="total-label" colspan="2">Gastos Envío:</td>
+              <td class="total-value">${pedido.total < 5 ? 5 : 0} €</td>
+            </tr>
+            <tr>
+              <td class="total-label" colspan="2">Total:</td>
+              <td class="total-value">${pedido.total} €</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="footer">
+        <p>Para consultas: <a href="mailto:contacto.tinteka@gmail.com">contacto.tinteka@gmail.com</a></p>
+      </div>
+    </div>
+  `;
+
+    // Configuración común
+    div.style.width = '190mm';
+    div.style.margin = '0 auto';
+
+    // Estilos condicionales
+    const styles = document.createElement('style');
+    styles.innerHTML = isMistery ? `
+    body { font-family: 'Arial', sans-serif; background: #f4f4f9; padding: 20px; }
+    .container { max-width: 600px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); margin-left: auto;
+    margin-right: auto;box-sizing: border-box; }
+    .header { text-align: center; margin-bottom: 25px; }
+    .header img { height: 50px; margin: 0 auto 20px; display: block; }
+    .header h1 { font-size: 24px; color: #232323; font-weight: bold; }
+    .header h2 { font-size: 20px; color: #555; margin: 5px 0; }
+    .details { margin: 25px 0; padding: 20px; background: #f9f9f9; border-radius: 8px; border: 1px solid #e0e0e0; }
+    .details p { font-size: 16px; color: #444; margin: 10px 0; }
+    .footer { text-align: center; font-size: 14px; color: #666; margin-top: 25px; }
+    .footer a { color: #007BFF; text-decoration: none; font-weight: 500; }
+  ` : `
+    body { font-family: 'Work Sans', sans-serif; background: #f0f0e8; padding: 20px; }
+    .container { max-width: 600px; background: #fffffe; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-left: auto;
+    margin-right: auto; box-sizing: border-box;}
+    .header { text-align: center; }
+    .header img { height: 50px; margin: 0 auto 20px; display: block; }
+    .header h1 { font-size: 24px; color: #232323; font-weight: bold; }
+    .details { margin: 20px 0; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 8px; border: 1px solid #ddd; }
+    th { background: #f4f4f4; }
+    .total-label { text-align: right; font-weight: bold; width: 80%; border: none; }
+    .total-value { font-weight: bold; width: 20%; border: none; }
+    .footer { text-align: center; font-size: 14px; color: #222525; }
+    .footer a { color: #007BFF; text-decoration: none; }
+  `;
+
+    div.appendChild(styles);
+    document.body.appendChild(div);
+
+    // Generación del PDF
+    // Generación del PDF
+    html2canvas(div, {
+      scale: 2,
+      windowWidth: 190 * 3.78,
+      useCORS: true
+    }).then((canvas) => {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const imgWidth = pageWidth - 20; // Ancho de contenido con márgenes
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      // Calcular posición horizontal centrada
+      const horizontalPosition = (pageWidth - imgWidth) / 2;
+
+      let currentHeight = 10;
+      if (currentHeight + imgHeight > pdf.internal.pageSize.getHeight()) {
+        pdf.addPage();
+        currentHeight = 10;
+      }
+
+      // Aplicar posición horizontal centrada
+      pdf.addImage(canvas, 'PNG', horizontalPosition, currentHeight, imgWidth, imgHeight);
+      pdf.save(`detalles_pedido_${pedido.referencia}.pdf`);
+      document.body.removeChild(div);
     });
   }
 

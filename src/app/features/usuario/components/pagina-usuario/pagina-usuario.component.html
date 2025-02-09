@@ -185,10 +185,14 @@
               <p class="text-sm md:text-base mt-1" [style.color]="'var(--color-texto)'">
                 {{ pedido.direccion }}
               </p>
+              <div class="flex justify-between">
               <p class="text-sm md:text-base mt-1" [style.color]="'var(--color-texto)'">
                 Estado de pedido: <b>{{ pedido.estadoNombre }}</b>
               </p>
+              <mat-icon  (click)="descargarDetalles(pedido.id); $event.stopPropagation()">download</mat-icon>
+              </div>
             </div>
+
           </div>
 
           <!-- Contenido Desplegable Dinámico -->
@@ -229,9 +233,11 @@
                           Cantidad: {{ producto.cantidad }}
                         </p>
                       </div>
-                      <p class="text-sm md:text-base" style="color: var(--color-texto)">
-                        {{ producto.precio | currency:'EUR':'symbol':'1.2-2' }}
-                      </p>
+                      <div class="flex items-center gap-2">
+                        <p class="text-sm md:text-base" style="color: var(--color-texto)">
+                          {{ producto.precio | currency:'EUR':'symbol':'1.2-2' }}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
