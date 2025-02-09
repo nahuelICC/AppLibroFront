@@ -43,6 +43,7 @@ export class PaginaUsuarioComponent implements OnInit {
   alertType: AlertType = 'success';
   isAlertVisible: boolean = false;
   provincias:string[] = ['Álava','Albacete','Alicante','Almería','Asturias','Ávila','Badajoz','Barcelona','Burgos','Cáceres','Cádiz','Cantabria','Castellón','Ciudad Real','Córdoba','Cuenca','Gerona','Granada','Guadalajara','Guipúzcoa','Huelva','Huesca','Islas Baleares','Jaén','La Coruña','La Rioja','Las Palmas','León','Lérida','Lugo','Madrid','Málaga','Murcia','Navarra','Orense','Palencia','Pontevedra','Salamanca','Santa Cruz de Tenerife','Segovia','Sevilla','Soria','Tarragona','Teruel','Toledo','Valencia','Valladolid','Vizcaya','Zamora','Zaragoza'];
+  estadoSuscripcion:string = 'true';
 
   constructor(private perfilUsuarioService: PerfilUsuarioService,private fb: FormBuilder,private cdRef: ChangeDetectorRef, private zone: NgZone) {
     this.cambioContrasenaForm = this.fb.group({
@@ -87,6 +88,7 @@ export class PaginaUsuarioComponent implements OnInit {
         console.log((data))
         if (this.datosCliente.pedidos) {
           this.datosCliente.pedidos.forEach((pedido: any) => {
+            pedido.genero = pedido.genero.replace("_", " ");
             this.pedidosAbiertos[pedido.id] = false;
             this.pedidosCargados[pedido.id] = false;
           });
