@@ -84,6 +84,7 @@ export class PaginaUsuarioComponent implements OnInit {
     this.perfilUsuarioService.getDatosCliente().subscribe({
       next: (data) => {
         this.datosCliente = data;
+        console.log((data))
         if (this.datosCliente.pedidos) {
           this.datosCliente.pedidos.forEach((pedido: any) => {
             this.pedidosAbiertos[pedido.id] = false;
@@ -194,7 +195,7 @@ export class PaginaUsuarioComponent implements OnInit {
       setTimeout(() => {
         this.zone.run(() => {
           this.isAlertVisible = false;
-          this.cdRef.detectChanges(); // Asegura que Angular detecte el cambio
+          this.cdRef.detectChanges();
         });
       }, 5000);
     } else {

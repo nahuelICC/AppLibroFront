@@ -27,6 +27,8 @@ export class PasarelaPagoComponent implements OnInit {
   alertMessage: string = '';
   alertType: AlertType = 'success';
   isAlertVisible: boolean = false;
+  totalBooksPrice: number = 0;
+  direccion: string = '';
 
 
   constructor( private carritoService: CarritoService,private router:Router, private pasarelaPagoService: PasarelaPagoService) {
@@ -114,10 +116,11 @@ export class PasarelaPagoComponent implements OnInit {
       this.isAlertVisible = true;
       return;
     }
-
+    this.totalBooksPrice = localStorage.getItem('total') ? parseFloat(localStorage.getItem('total') as string) : 0;
+    this.direccion = `${this.formData.calle}, ${this.formData.codigoPostal}, ${this.formData.localidad}, ${this.formData.provincia}`;
     // total: this.totalBooksPrice + this.shippingCost - this.discount
 
-    this.carritoService.postPedido(this.cartItems).subscribe({
+    this.carritoService.postPedido(this.cartItems,this.totalBooksPrice,this.direccion).subscribe({
       next: (response: any) => {
         this.showConfirmEdit = false;
         this.clearCart();
@@ -136,6 +139,7 @@ export class PasarelaPagoComponent implements OnInit {
   clearCart() {
     this.cartItems = [];
     localStorage.removeItem('cart');
+    localStorage.removeItem('total');
   }
 
   isCurrentStepValid(): boolean {

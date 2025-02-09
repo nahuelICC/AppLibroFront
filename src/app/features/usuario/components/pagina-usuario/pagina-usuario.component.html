@@ -183,6 +183,9 @@
                 {{ pedido.fecha | date:'dd/MM/yyyy' }}
               </p>
               <p class="text-sm md:text-base mt-1" [style.color]="'var(--color-texto)'">
+                {{ pedido.direccion }}
+              </p>
+              <p class="text-sm md:text-base mt-1" [style.color]="'var(--color-texto)'">
                 {{ pedido.estadoNombre }}
               </p>
             </div>
@@ -200,19 +203,36 @@
 
               <!-- Detalles del Pedido -->
               <div *ngIf="pedido.detalles">
-                <div *ngFor="let producto of pedido.detalles" class="mb-3">
+                <!-- Mostrar contenido para Mystery Box -->
+                <div *ngIf="pedido.esMistery" class="mb-3">
                   <div class="flex justify-between items-start">
                     <div>
                       <p class="text-sm md:text-base font-medium" style="color: var(--color-texto)">
-                        {{ producto.titulo }}
+                        Mistery Box - Género: {{ pedido.genero }}
                       </p>
                       <p class="text-sm text-gray-500">
-                        Cantidad: {{ producto.cantidad }}
+                        Contenido sorpresa seleccionado especialmente para ti
                       </p>
                     </div>
-                    <p class="text-sm md:text-base" style="color: var(--color-texto)">
-                      {{ producto.precio | currency:'EUR':'symbol':'1.2-2' }}
-                    </p>
+                  </div>
+                </div>
+
+                <!-- Mostrar productos normales si no es Mystery -->
+                <div *ngIf="!pedido.esMistery">
+                  <div *ngFor="let producto of pedido.detalles" class="mb-3">
+                    <div class="flex justify-between items-start">
+                      <div>
+                        <p class="text-sm md:text-base font-medium" style="color: var(--color-texto)">
+                          {{ producto.titulo }}
+                        </p>
+                        <p class="text-sm text-gray-500">
+                          Cantidad: {{ producto.cantidad }}
+                        </p>
+                      </div>
+                      <p class="text-sm md:text-base" style="color: var(--color-texto)">
+                        {{ producto.precio | currency:'EUR':'symbol':'1.2-2' }}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -220,8 +240,8 @@
                   <div class="flex justify-between items-center">
                     <span class="font-medium text-base">Total:</span>
                     <span class="font-medium text-base">
-      {{ calcularTotalPedido(pedido) | currency:'EUR':'symbol':'1.2-2' }}
-    </span>
+        {{ pedido.total | currency:'EUR':'symbol':'1.2-2' }}
+      </span>
                   </div>
                 </div>
               </div>
