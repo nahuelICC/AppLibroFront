@@ -46,7 +46,13 @@ export class PaginaUsuarioComponent implements OnInit {
   alertType: AlertType = 'success';
   isAlertVisible: boolean = false;
   provincias:string[] = ['Álava','Albacete','Alicante','Almería','Asturias','Ávila','Badajoz','Barcelona','Burgos','Cáceres','Cádiz','Cantabria','Castellón','Ciudad Real','Córdoba','Cuenca','Gerona','Granada','Guadalajara','Guipúzcoa','Huelva','Huesca','Islas Baleares','Jaén','La Coruña','La Rioja','Las Palmas','León','Lérida','Lugo','Madrid','Málaga','Murcia','Navarra','Orense','Palencia','Pontevedra','Salamanca','Santa Cruz de Tenerife','Segovia','Sevilla','Soria','Tarragona','Teruel','Toledo','Valencia','Valladolid','Vizcaya','Zamora','Zaragoza'];
-  estadoSuscripcion:string = 'true';
+  estadoSuscripcion:boolean = true;
+  showGestionSuscripcion:boolean = false;
+  showConfirmCancel:boolean = false;
+  showConfirmRenew:boolean = false;
+  generos: string[] = ["Novela Negra", "Thriller", "Novela Historica", "Romantica", "Ciencia Ficcion", "Distopia", "Aventuras", "Fantasia", "Contemporaneo", "Terror", "Paranormal", "Poesia", "Juvenil", "Infantil", "Autoayuda", "Salud Y Deporte", "Manuales", "Memorias", "Biografias", "Cocina", "Viajes", "Libros Tecnicos", "Referencia", "Divulgativos", "Libros De Texto", "Arte"];
+  editandoGenero: boolean = false;
+  generoSeleccionado: number = 0;
 
   constructor(private perfilUsuarioService: PerfilUsuarioService,private fb: FormBuilder,private cdRef: ChangeDetectorRef, private zone: NgZone) {
     this.cambioContrasenaForm = this.fb.group({
@@ -88,6 +94,10 @@ export class PaginaUsuarioComponent implements OnInit {
     this.perfilUsuarioService.getDatosCliente().subscribe({
       next: (data) => {
         this.datosCliente = data;
+        console.log('Datos cargados:', this.datosCliente);
+        this.estadoSuscripcion = this.datosCliente.suscripcion.suscrito;
+        this.generoSeleccionado = this.datosCliente.suscripcion.genero -1;
+
         if (this.datosCliente.pedidos) {
           this.datosCliente.pedidos.forEach((pedido: any) => {
             pedido.genero = pedido.genero.replace("_", " ");
@@ -405,4 +415,57 @@ export class PaginaUsuarioComponent implements OnInit {
   get nuevaContrasena() {
     return this.cambioContrasenaForm.get('nueva');
   }
+
+  editarEstadoSuscripcion() {
+    if (this.estadoSuscripcion) {
+    this.perfilUsuarioService.putEditarEstado(this.estadoSuscripcion).subscribe({
+      next: (response) => {
+        console.log('Suscripción cancelada:', response);
+        this.alertMessage = 'Suscripción cancelada correctamente';
+        this.alertType = 'success';
+        this.isAlertVisible = true;
+        this.showGestionSuscripcion = false;
+        this.showConfirmCancel = false;
+        this.estadoSuscripcion = false;
+      },
+      error: (err) => {
+        console.error('Error cancelando suscripción:', err);
+        this.alertMessage = 'Error al cancelar la suscripción';
+        this.alertType = 'warning';
+        this.showConfirmCancel = false;
+        this.isAlertVisible = true;
+      }
+    });
+    } else {
+      this.perfilUsuarioService.putEditarEstado(this.estadoSuscripcion).subscribe({
+        next: (response) => {
+          console.log('Suscripción renovada:', response);
+          this.alertMessage = 'Suscripción renovada correctamente';
+          this.alertType = 'success';
+          this.isAlertVisible = true;
+          this.showGestionSuscripcion = false;
+          this.showConfirmRenew = false;
+          this.estadoSuscripcion = true;
+
+        },
+        error: (err) => {
+          console.log(this.estadoSuscripcion);
+          console.error('Error renovando suscripción:', err);
+          this.alertMessage = 'Error al renovar la suscripción';
+          this.alertType = 'warning';
+          this.showConfirmRenew = false;
+          this.isAlertVisible = true;
+        }
+      });
+
+    }
+    setTimeout(() => {
+      this.zone.run(() => {
+        this.isAlertVisible = false;
+        this.cdRef.detectChanges();
+      });
+    }, 5000);
+
+  }
+
 }
