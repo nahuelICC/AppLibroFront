@@ -1,66 +1,93 @@
-<div class="bg-white p-4 rounded-lg shadow-md max-w-[calc(100vw-16rem)]"> <!-- Contenedor principal limitado -->
+<div id="{{tablaActiva}}" class="bg-white p-4 rounded-lg shadow-md max-w-[calc(100vw-16rem)] hidden">
   <!-- Barra de búsqueda -->
   <div class="flex items-center border rounded-lg p-2 mb-4">
     <span class="text-gray-500 mr-2">🔍</span>
-    <input type="text" placeholder="Buscar" [(ngModel)]="buscador"  class="w-full outline-none bg-transparent">
+    <input type="text" placeholder="Buscar" [(ngModel)]="buscador"
+           class="w-full outline-none bg-transparent">
   </div>
 
-  <!-- Contenedor de tabla con scroll controlado -->
-  <div class="relative rounded-lg border border-gray-200 overflow-x-auto max-w-full"> <!-- Scroll horizontal aquí -->
-    <table class="w-full border-collapse border border-gray-300 rounded-lg table-fixed"> <!-- Mantenemos fixed -->
+  <!-- Contenedor de tabla -->
+  <div class="relative rounded-lg border border-gray-200 overflow-x-auto max-w-full">
+    <table class="w-full border-collapse border border-gray-300 rounded-lg table-fixed">
       <thead class="bg-gray-50 border-b-2 border-gray-200">
       <tr>
-        <!-- Columnas principales -->
         <th *ngFor="let col of columnas"
-            class="p-3 text-sm font-semibold text-gray-600 text-left whitespace-nowrap w-[200px] min-w-[200px]"> <!-- Anchos fijos -->
+            class="p-3 text-sm font-semibold text-gray-600 text-left whitespace-nowrap w-[200px] min-w-[200px]">
           {{ col.titulo }}
         </th>
-        <!-- Columna de acciones -->
-        <th class="p-3 text-sm font-semibold text-gray-600 text-left whitespace-nowrap w-[180px] min-w-[180px]">Acciones</th>
+        <th class="p-3 text-sm font-semibold text-gray-600 text-left whitespace-nowrap w-[180px] min-w-[180px]">
+          Acciones5
+        </th>
       </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
-      <tr *ngFor="let item of datos | filtroBuscador: buscador; let i = index" class="hover:bg-gray-50 transition-colors">
+      <tr *ngFor="let item of datos | filtroBuscador: buscador; let i = index"
+          class="hover:bg-gray-50 transition-colors">
         <td *ngFor="let col of columnas"
-            class="p-3 text-sm text-gray-700 whitespace-nowrap w-[200px] min-w-[200px] max-w-[200px] overflow-hidden text-ellipsis"> <!-- Tripe control de ancho -->
-          <ng-container *ngIf="editingRow !== i; else editField">
-            <ng-container *ngIf="isBoolean(item[col.campo]); else textField">
-              <span class="flex items-center">
-                  <mat-icon
-                    [ngClass]="item[col.campo] ? 'text-green-500' : 'text-red-500'"
-                  >
-                  {{ item[col.campo] ? 'check_circle' : 'cancel' }}
-                  </mat-icon>
-                </span>
+            class="p-3 text-sm text-gray-700 whitespace-nowrap w-[200px] min-w-[200px] max-w-[200px]">
+          <div class="relative overflow-visible">
+            <!-- Modo visualización normal -->
+            <ng-container *ngIf="editingRow !== i; else editField">
+              <div class="truncate">
+                <ng-container *ngIf="isBoolean(item[col.campo]); else textField">
+                    <span class="flex items-center">
+                      <mat-icon [ngClass]="item[col.campo] ? 'text-green-500' : 'text-red-500'">
+                        {{ item[col.campo] ? 'check_circle' : 'cancel' }}
+                      </mat-icon>
+                    </span>
+                </ng-container>
+                <ng-template #textField>
+                  <span class="truncate">{{ item[col.campo] }}</span>
+                </ng-template>
+              </div>
             </ng-container>
-            <ng-template #textField>
-              <span class="truncate">{{ item[col.campo] }}</span>
-            </ng-template>
-          </ng-container>
-          <ng-template #editField>
-            <ng-container *ngIf="isBoolean(item[col.campo]); else textField">
-                <input id="custom-checkbox" type="checkbox" [(ngModel)]="item[col.campo]"
-                        class="hidden" (change)="toggleCheck(item, col.campo)">
-                <label class="flex items-center cursor-pointer">
-                <span class="flex items-center">
-                  <mat-icon
-                  [ngClass]="item[col.campo] ? 'text-green-500' : 'text-red-500'"
-                  (click)="toggleCheck(item, col.campo)"
-                  >
-                  {{ item[col.campo] ? 'check_circle' : 'cancel' }}
-                  </mat-icon>
-                </span>
-              </label>
 
-            </ng-container>
-            <ng-template #textField>
-              <input type="text" [(ngModel)]="item[col.campo]"
-                     class="border p-1 rounded focus:outline-none focus:border-blue-500 w-full"
-                     [disabled]="!col.editable">
+            <!-- Modo edición -->
+            <ng-template #editField>
+              <ng-container *ngIf="col.editable; else nonEditable">
+                <ng-container *ngIf="isBoolean(item[col.campo]); else editTextField">
+                  <input type="checkbox" hidden
+                         [formControl]="getFormControl(col.campo)"
+                         (change)="toggleCheck(col.campo)">
+                  <label class="flex items-center cursor-pointer">
+                    <mat-icon
+                      [ngClass]="getFormControl(col.campo)?.value ? 'text-green-500' : 'text-red-500'"
+                      (click)="toggleCheck(col.campo)">
+                      {{ getFormControl(col.campo)?.value ? 'check_circle' : 'cancel' }}
+                    </mat-icon>
+                  </label>
+                </ng-container>
+
+                <!-- Campo de texto editable -->
+                <ng-template #editTextField>
+                  <div class="relative w-full">
+                    <input type="text" [formControl]="getFormControl(col.campo)"
+                           class="w-full border p-1 rounded focus:outline-none focus:border-blue-500 truncate">
+
+                    <!-- Tooltip de error posicionado fuera del flujo normal -->
+                    <div *ngIf="getFormControl(col.campo)?.invalid && getFormControl(col.campo)?.touched"
+                         class="absolute left-0 -top-2 transform -translate-y-full
+                                  bg-white text-red-500 text-xs px-3 py-1 border border-red-300
+                                  rounded shadow-lg z-[9999] min-w-[200px]">
+                      {{ getControlError(col.campo) }}
+                      <!-- Flecha del tooltip -->
+                      <div class="absolute top-full left-4 w-0 h-0
+                                    border-l-8 border-l-transparent
+                                    border-r-8 border-r-transparent
+                                    border-t-8 border-t-red-300"></div>
+                    </div>
+                  </div>
+                </ng-template>
+              </ng-container>
+
+              <ng-template #nonEditable>
+                <span class="truncate">{{ item[col.campo] }}</span>
+              </ng-template>
             </ng-template>
-          </ng-template>
+          </div>
         </td>
-        <!-- Botones de acción -->
+
+        <!-- Columna de acciones -->
         <td class="p-3 text-sm text-gray-700 whitespace-nowrap w-[150px] min-w-[150px] space-x-2">
           <ng-container *ngIf="editingRow !== i; else editButtons">
             <button (click)="editRow(i)"
@@ -68,12 +95,13 @@
               Editar
             </button>
           </ng-container>
+
           <ng-template #editButtons>
-            <button (click)="saveRow(i)"
+            <button (click)="saveRow()"
                     class="bg-green-500 hover:bg-green-600 text-white py-1 px-2 rounded">
               Guardar
             </button>
-            <button (click)="cancelEdit(i)"
+            <button (click)="cancelEdit()"
                     class="bg-gray-500 hover:bg-gray-600 text-white py-1 px-2 rounded">
               Cancelar
             </button>

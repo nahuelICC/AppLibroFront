@@ -4,6 +4,7 @@ import {UsuarioService} from './services/usuario.service';
 import {UsuarioTablaDTO} from './DTO/UsuarioTablaDTO';
 import {ClienteService} from './services/cliente.service';
 import {ClientesTablaDTO} from './DTO/ClientesTablaDTO';
+import { Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-admin',
@@ -15,21 +16,22 @@ import {ClientesTablaDTO} from './DTO/ClientesTablaDTO';
   styleUrl: './admin.component.css'
 })
 export class AdminComponent implements OnInit{
-  titulo: string = 'Usuarios';
+  titulo: string = 'Clientes';
   datos: any[] = [];
   configColumnas: { titulo: string; campo: string, editable: boolean}[] = [];
-
+  validadores: any;
   constructor(private clienteService: ClienteService) {
   }
 
   ngOnInit(): void {
     // Carga por defecto los usuarios
     this.cargarUsuarios();
+    document.getElementById('clientes')?.classList.remove('hidden');
   }
 
   showTable(tablaId: string, btnActual: EventTarget | null): void {
     // Ocultar todas las tablas
-    document.getElementById('usuarios')?.classList.add('hidden');
+    document.getElementById('clientes')?.classList.add('hidden');
     document.getElementById('pedidos')?.classList.add('hidden');
 
     // Remover estilos de botón activo
@@ -40,7 +42,7 @@ export class AdminComponent implements OnInit{
     document.getElementById(tablaId)?.classList.remove('hidden');
 
     // Cambiar título de la sección
-    const titulo = tablaId === 'usuarios' ? 'Usuarios' : 'Pedidos';
+    const titulo = tablaId === 'clientes' ? 'Clientes' : 'Pedidos';
     const tituloElement = document.getElementById('tituloSeccion');
     if (tituloElement) {
       tituloElement.textContent = titulo;
@@ -54,6 +56,8 @@ export class AdminComponent implements OnInit{
   }
 
   private cargarUsuarios() {
+
+
     this.titulo = 'Clientes';
     // Configuración de columnas para Usuarios
     this.configColumnas = [
@@ -66,6 +70,13 @@ export class AdminComponent implements OnInit{
       { titulo: 'Direccion', campo: 'direccion', editable: true},
       { titulo: 'Suscrito', campo: 'suscrito', editable: true}
     ];
+    this.validadores = {
+      nombre: [Validators.required, Validators.minLength(3)],
+      apellido: [Validators.required, Validators.minLength(4)],
+      telefono: [Validators.required, Validators.pattern(/^\d{9}$/)],
+      direccion: [Validators.required]
+
+    };
     // Llamada al servicio para obtener los usuarios
     this.clienteService.getClientesTabla().subscribe((res: ClientesTablaDTO[]) => {
       this.datos = res;

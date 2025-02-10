@@ -1,68 +1,137 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {NgClass, NgForOf, NgIf} from '@angular/common';
-import {UsuarioTablaDTO} from '../../DTO/UsuarioTablaDTO';
-import {UsuarioService} from '../../services/usuario.service';
-import {FormsModule} from '@angular/forms';
-import {MatIcon} from '@angular/material/icon';
-import {FiltroBuscadorPipe} from '../../pipes/filtro-buscador.pipe';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { NgClass, NgForOf, NgIf } from '@angular/common';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  ValidatorFn,
+  Validators
+} from '@angular/forms';
+import { MatIcon } from '@angular/material/icon';
+import { FiltroBuscadorPipe } from '../../pipes/filtro-buscador.pipe';
 
 @Component({
   selector: 'app-tabla',
+  standalone: true,
   imports: [
     NgForOf,
     FormsModule,
+    ReactiveFormsModule,
     NgIf,
     NgClass,
     MatIcon,
     FiltroBuscadorPipe
   ],
   templateUrl: './tabla.component.html',
-  standalone: true,
-  styleUrl: './tabla.component.css'
+  styleUrls: ['./tabla.component.css']
 })
-export class TablaComponent {
+export class TablaComponent implements OnInit {
   @Input() datos: any[] = [];
-  // Configuración de columnas: un array de objetos con título y campo
-  @Input() columnas: { titulo: string; campo: string; editable: boolean}[] = [];
+  @Input() columnas: { titulo: string; campo: string; editable: boolean }[] = [];
   @Output() actualizarFila = new EventEmitter<any>();
-  buscador: any;
+  @Input() validadores: { [key: string]: ValidatorFn[] } = {};
+  @Input() tablaActiva: string = '';
 
-  // Índice de la fila en edición. Si es null, ninguna está en edición.
+  buscador: string = '';
+  editingForm: FormGroup | null = null;
   editingRow: number | null = null;
+  originalData: any;
 
-  constructor(private usuarioService: UsuarioService) {}
 
-  // Activa el modo edición en la fila indicada
+  constructor(private fb: FormBuilder) {}
+
+  ngOnInit(): void {
+    document.getElementById('clientes')?.classList.remove('hidden');
+  }
+
   editRow(index: number): void {
+    if (this.editingRow !== null) return; // Evitar edición múltiple
+
+    this.originalData = { ...this.datos[index] };
+    const formConfig: { [key: string]: any } = {};
+
+    this.columnas.forEach(col => {
+      if (col.editable) {
+        formConfig[col.campo] = [
+          this.datos[index][col.campo],
+          this.validadores[col.campo] || []
+        ];
+      }
+    });
+
+    this.editingForm = this.fb.group(formConfig);
     this.editingRow = index;
   }
 
-  // Guarda los cambios y envía la actualización al backend
-  saveRow(index: number) {
-    const registroActualizado = { ...this.datos[index] };
-    this.actualizarFila.emit(registroActualizado); // Envía el usuario actualizado al padre
-    this.editingRow = null;
+  saveRow(): void {
+    if (this.editingForm && this.editingForm.valid && this.editingRow !== null) {
+      // 1. Actualizar el registro local
+      const updatedData = {
+        ...this.datos[this.editingRow],
+        ...this.editingForm.value
+      };
+
+      // 2. Actualizar el array (crear nueva referencia)
+      this.datos = this.datos.map((item, index) =>
+        index === this.editingRow ? updatedData : item
+      );
+
+      // 3. Emitir el evento
+      this.actualizarFila.emit(updatedData);
+
+      // 4. Resetear estado de edición
+      this.cancelEdit();
+    }
   }
 
-  // Cancela la edición (aquí podrías recargar los datos originales si es necesario)
-  cancelEdit(index: number): void {
-    // Si quieres restaurar datos originales, deberías tener una copia previa.
+  cancelEdit(): void {
+    this.editingForm = null;
     this.editingRow = null;
-  }
+    this.originalData = null;
 
-  // Método para eliminar la fila (opcional)
+    // Forzar detección de cambios si es necesario
+    this.datos = [...this.datos];
+  }
 
   deleteRow(index: number): void {
     if (confirm('¿Estás seguro de eliminar este registro?')) {
-      // Lógica para eliminar el usuario en el backend
-      // Por ejemplo, podrías llamar a un método this.usuarioService.deleteUsuario(...)
       this.datos.splice(index, 1);
     }
   }
+
   isBoolean(value: any): boolean {
     return typeof value === 'boolean';
   }
-  toggleCheck(item: any, campo: string): void {
-    item[campo] = !item[campo]; // Alterna entre true y false
+
+  toggleCheck(campo: string): void {
+    if (this.editingForm) {
+      const currentValue = this.editingForm.get(campo)?.value;
+      this.editingForm.get(campo)?.setValue(!currentValue);
+    }
+  }
+
+  getControlError(campo: string): string {
+    const control = this.getFormControl(campo);
+    if (!control || !control.errors) return '';
+
+
+    if (control.errors['required']) {
+      return 'Campo requerido';
+    }
+    if (control.errors['minlength']) {
+      return `Mínimo ${control.errors['minlength'].requiredLength} caracteres`;
+    }
+    if (control.errors['email']) {
+      return 'Formato de email inválido';
+    }
+    if (control.errors['pattern']){
+      return 'Debe contener 9 dígitos'
+    }
+    return '';
+  }
+  getFormControl(campo: string): FormControl {
+    return this.editingForm?.get(campo) as FormControl;
   }
 }
