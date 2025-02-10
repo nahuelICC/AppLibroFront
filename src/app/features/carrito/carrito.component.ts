@@ -31,7 +31,20 @@ export class CarritoComponent implements OnInit {
   shippingCost: number = 5;
   discount: number = 0;
 
-  constructor(private http: HttpClient, private carritoService: CarritoService,private router:Router) {}
+  constructor(private http: HttpClient, private carritoService: CarritoService,private router:Router) {
+    this.cartItems = this.carritoService.cartItems;
+  }
+
+  onQuantityUpdated(event: { idTipo: number; cantidad: number }) {
+
+    this.carritoService.updateItemQuantity(event.idTipo, event.cantidad);
+
+    const { idTipo, cantidad } = event;
+
+    this.updateProductQuantity(idTipo, cantidad);
+
+    this.calculateTotalPrice();
+  }
 
   ngOnInit(): void {
     this.loadCartFromLocalStorage();
@@ -51,28 +64,6 @@ export class CarritoComponent implements OnInit {
     }
   }
 
-  updateCartItem(event: { idTipo: number; cantidad: number }) {
-    const { idTipo, cantidad } = event;
-
-
-    const cartIndex = this.cartItems.findIndex((item) => item.id_tipo === idTipo);
-
-    if (cartIndex !== -1) {
-      if (cantidad > 0) {
-
-        this.cartItems[cartIndex].cantidad = cantidad;
-      } else {
-
-        this.cartItems.splice(cartIndex, 1);
-      }
-
-      localStorage.setItem('cart', JSON.stringify(this.cartItems));
-
-      this.updateProductQuantity(idTipo, cantidad);
-
-      this.calculateTotalPrice();
-    }
-  }
 
   updateProductQuantity(idTipo: number, cantidad: number) {
     const productIndex = this.products.findIndex((product) => product.id_tipo === idTipo);
@@ -142,6 +133,7 @@ export class CarritoComponent implements OnInit {
     this.totalBooksPrice = 0;
     this.shippingCost = 5;
     this.discount = 0;
+    this.carritoService.clearCart();
     localStorage.removeItem('cart');
   }
 

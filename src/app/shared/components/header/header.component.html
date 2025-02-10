@@ -41,7 +41,7 @@
       <!-- Botón Mi Cuenta -->
       <ng-container *ngIf="isAuthenticated; else loginRegisterButtons">
         <a [routerLink]="['/usuario']" class="text-sm font-bold text-[#078080] hover:text-[#065f5f] underline truncate">Mi cuenta</a>
-        <a [routerLink]="['/carrito']">
+        <a [routerLink]="['/carrito']" matBadge="{{cantidadCarrito}}">
           <div class="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full cursor-pointer hover:bg-gray-300">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l1 5h13l1-5h2M5 8h14l-1 9H6L5 8zm5 13a1 1 0 100-2 1 1 0 000 2zm6 0a1 1 0 100-2 1 1 0 000 2z" />

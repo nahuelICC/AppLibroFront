@@ -194,6 +194,7 @@ export class PasarelaPagoComponent implements OnInit {
 
   clearCart() {
     this.cartItems = [];
+    this.carritoService.clearCart();
     localStorage.removeItem('cart');
     localStorage.removeItem('total');
   }

@@ -185,10 +185,14 @@
               <p class="text-sm md:text-base mt-1" [style.color]="'var(--color-texto)'">
                 {{ pedido.direccion }}
               </p>
+              <div class="flex justify-between">
               <p class="text-sm md:text-base mt-1" [style.color]="'var(--color-texto)'">
-                {{ pedido.estadoNombre }}
+                Estado de pedido: <b>{{ pedido.estadoNombre }}</b>
               </p>
+              <mat-icon  (click)="descargarDetalles(pedido.id); $event.stopPropagation()">download</mat-icon>
+              </div>
             </div>
+
           </div>
 
           <!-- Contenido Desplegable Dinámico -->
@@ -218,7 +222,7 @@
                 </div>
 
                 <!-- Mostrar productos normales si no es Mystery -->
-                <div *ngIf="!pedido.esMistery">
+                <div *ngIf="!pedido.esMistery || pedido.estado == 5 || pedido.estado == 6">
                   <div *ngFor="let producto of pedido.detalles" class="mb-3">
                     <div class="flex justify-between items-start">
                       <div>
@@ -229,9 +233,11 @@
                           Cantidad: {{ producto.cantidad }}
                         </p>
                       </div>
-                      <p class="text-sm md:text-base" style="color: var(--color-texto)">
-                        {{ producto.precio | currency:'EUR':'symbol':'1.2-2' }}
-                      </p>
+                      <div class="flex items-center gap-2">
+                        <p class="text-sm md:text-base" style="color: var(--color-texto)">
+                          {{ producto.precio | currency:'EUR':'symbol':'1.2-2' }}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -273,7 +279,7 @@
     <div class="p-3 md:p-4 rounded-lg" style="background-color: var(--color-blanco-secundario)">
       <ng-container *ngIf="datosCliente.suscripcion && datosCliente.suscripcion.tipo; else noSuscripcion">
         <span class="text-sm md:text-base font-medium" style="color: var(--color-texto)">
-          {{ datosCliente.suscripcion.tipo }} - Activa desde {{ datosCliente.suscripcion.fechaInicio | date:'dd/MM/yyyy' }}
+          {{ datosCliente.suscripcion.tipo }} - Activa hasta {{ datosCliente.suscripcion.fechaFin | date:'dd/MM/yyyy' }}
         </span>
       </ng-container>
       <ng-template #noSuscripcion>
