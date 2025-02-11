@@ -7,7 +7,7 @@ import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} fr
 import {EditaUsuarioDTO} from '../../DTOs/EditaUsuarioDTO';
 import {AlertConfirmarComponent} from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
 import {AlertInfoComponent, AlertType} from '../../../../shared/components/alert-info/alert-info.component';
-import jsPDF from 'jspdf';
+import { jsPDF } from "jspdf";
 import html2canvas from 'html2canvas';
 
 @Component({
