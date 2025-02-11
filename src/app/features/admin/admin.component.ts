@@ -82,6 +82,7 @@ export class AdminComponent implements OnInit{
       this.datos = res;
     });
   }
+  
 
   onActualizarFila(item: any) {
     if (this.titulo === 'Clientes') {
