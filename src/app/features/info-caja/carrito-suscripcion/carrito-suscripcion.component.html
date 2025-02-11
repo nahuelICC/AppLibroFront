@@ -1,4 +1,4 @@
-<div class="flex justify-center mt-10">
+<div class="flex justify-center mt-5 pb-15 px-4 md:pb-40">
   <div class="w-full max-w-4xl bg-white shadow-md rounded-lg p-6">
     <h2 class="text-2xl font-bold text-center mb-6">Resumen de tu Suscripción</h2>
 
@@ -15,27 +15,54 @@
     </div>
 
     <!-- Selección de Género -->
-    <div class="mb-6 relative">
+    <div class="mb-16 relative">
       <label class="block text-lg font-semibold mb-2">Selecciona el género:</label>
+
       <div class="relative">
-        <select [(ngModel)]="generoSeleccionado"
-                class="w-full border rounded-lg p-2 text-gray-700 appearance-none bg-white focus:ring-2 focus:ring-[#E53935] focus:border-[#E53935] relative z-10">
-          <option value="" disabled selected>Selecciona una opción</option>
-          <option *ngFor="let genero of generos" [value]="genero.numero">{{ genero.nombre | nombreGenero}}</option>
-        </select>
-        <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-        </svg>
+        <!-- Select -->
+        <div class="relative">
+          <!-- Botón que simula el select -->
+          <button type="button"
+                  (click)="menuAbierto = !menuAbierto"
+                  class="w-full text-left border rounded-lg p-3 text-gray-700 bg-white focus:ring-2 focus:ring-[#E53935] flex justify-between items-center">
+            <span>{{ getGeneroText() || 'Selecciona una opción' }}</span>
+            <svg class="w-5 h-5 transform transition-transform duration-200"
+                 [class.rotate-180]="menuAbierto"
+                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <!-- Menú desplegable personalizado -->
+          <div *ngIf="menuAbierto"
+               class="absolute top-full left-0 w-full z-50 bg-white border rounded-lg shadow-lg max-h-60 overflow-auto">
+            <button *ngFor="let genero of generos"
+                    (click)="seleccionarGenero(genero.numero)"
+                    class="w-full px-4 py-3 text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none">
+              {{ genero.nombre | nombreGenero }}
+            </button>
+          </div>
+
+          <!-- Select nativo oculto -->
+          <select [(ngModel)]="generoSeleccionado"
+                  class="absolute inset-0 w-full h-full opacity-0 pointer-events-none">
+            <option value="" disabled selected>Selecciona una opción</option>
+            <option *ngFor="let genero of generos" [value]="genero.numero.toString()">
+              {{ genero.nombre | nombreGenero }}
+            </option>
+          </select>
+        </div>
+
       </div>
+
     </div>
 
     <!-- Botón de Confirmar Compra -->
     <div class="flex justify-center mt-6">
-      <button (click)="confirmarCompra()"
-              [disabled]="!generoSeleccionado"
-              class="bg-[#E53935] text-white px-6 py-3 rounded-lg font-bold disabled:bg-gray-400 transition-all duration-300 hover:bg-red-700">
-        Confirmar Compra
-      </button>
+      <app-boton [label]="'Confirmar Compra'" [color]="'#E53935'" (click)="confirmarCompra()" [disabled]="!generoSeleccionado" [size]="'medium'"> </app-boton>
     </div>
   </div>
 </div>
+
+
+

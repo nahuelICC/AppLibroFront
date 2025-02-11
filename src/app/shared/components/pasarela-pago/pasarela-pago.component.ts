@@ -251,41 +251,65 @@ export class PasarelaPagoComponent implements OnInit {
   crear() {
     if (this.genero && this.idTipo) {
       const tipoSuscripcion = parseInt(this.idTipo, 10);
-
-      // Construimos la dirección con los datos del formulario
       const direccion = `${this.formData.calle}, ${this.formData.codigoPostal}, ${this.formData.localidad}, ${this.formData.provincia}`;
 
-      // Creamos el objeto de datos a enviar
       const data = {
         genero: parseInt(this.genero, 10),
-        direccion: direccion  // Añadimos la dirección a los datos
+        direccion: direccion
       };
 
-      console.log('Enviando datos de suscripción:', { idCliente: this.idCliente, tipoSuscripcion, data });
+      console.log('Enviando datos de suscripción:', {idCliente: this.idCliente, tipoSuscripcion, data});
 
-      // Llamar al servicio para crear la suscripción
       this.pasarelaPagoService.crearSuscripcion(this.idCliente, tipoSuscripcion, data)
-        .subscribe(response => {
-          console.log('Suscripción creada con éxito:', response);
+        .subscribe({
+          next: (response) => {
+            console.log('Suscripción creada con éxito:', response);
 
-          // Borrar los datos de suscripción de localStorage después de crear la suscripción
-          localStorage.removeItem('generoSeleccionado');
-          localStorage.removeItem('idTipoSuscripcion');
-          localStorage.removeItem('esSuscripcion');
-          localStorage.removeItem('precioSuscripcion');  // Si quieres borrar también el precio
+            // Limpiar datos de localStorage después de la suscripción
+            localStorage.removeItem('generoSeleccionado');
+            localStorage.removeItem('idTipoSuscripcion');
+            localStorage.removeItem('esSuscripcion');
+            localStorage.removeItem('precioSuscripcion');
 
-          // Aquí puedes agregar la lógica de lo que debe suceder cuando la suscripción se haya creado correctamente
-          this.router.navigate(['usuario']);  // Navegar a otra página si es necesario
-        }, error => {
-          console.error('Error al crear la suscripción:', error);
-          // Lógica para manejar errores en la creación de suscripción
+            this.alertMessage = 'Suscrito con éxito';
+            this.alertType = 'success';
+            this.isAlertVisible = true;
+            this.cdRef.detectChanges(); // Forzar actualización de vista
+
+            setTimeout(() => {
+              this.isAlertVisible = false;
+              this.cdRef.detectChanges();
+            }, 3000); // Cerrar la alerta después de 3 segundos
+
+            this.router.navigate(['usuario']);
+          },
+          error: (error) => {
+            console.error('Error al crear la suscripción:', error);
+
+            if (error.status === 400) {
+              this.alertMessage = 'Ya tiene una suscripción activa';
+              this.alertType = 'warning';
+            } else {
+              this.alertMessage = 'Error al procesar la suscripción';
+              this.alertType = 'error';
+            }
+
+            this.isAlertVisible = true;
+            this.cdRef.detectChanges();
+
+            setTimeout(() => {
+              this.isAlertVisible = false;
+              this.cdRef.detectChanges();
+            }, 3000);
+
+            this.router.navigate(['usuario']);
+          }
         });
     } else {
       console.error('Faltan datos en localStorage para crear la suscripción.');
     }
+
+
   }
-
-
-
 
 }

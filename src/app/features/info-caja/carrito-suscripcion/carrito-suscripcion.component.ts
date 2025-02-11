@@ -3,15 +3,18 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {FormsModule} from '@angular/forms';
 import {GeneroDTO} from '../../tienda/DTOs/GeneroDTO';
 import {LibroServiceService} from '../../tienda/services/libro-service.service';
-import {NgForOf} from '@angular/common';
+import {NgForOf, NgIf} from '@angular/common';
 import {NombreGeneroPipe} from '../../tienda/pipes/nombre-genero.pipe';
+import {BotonComponent} from '../../../shared/components/boton/boton.component';
 
 @Component({
   selector: 'app-carrito-suscripcion',
   imports: [
     FormsModule,
     NgForOf,
-    NombreGeneroPipe
+    NombreGeneroPipe,
+    NgIf,
+    BotonComponent
   ],
   templateUrl: './carrito-suscripcion.component.html',
   standalone: true,
@@ -24,6 +27,7 @@ export class CarritoSuscripcionComponent implements OnInit{
   generos: GeneroDTO[] = [];
   tipoSuscripcion: string = '';
   idTipo: number | null = null;
+  menuAbierto: boolean = false;
 
   constructor(private route: ActivatedRoute, private router: Router, private libroService: LibroServiceService) {}
 
@@ -65,10 +69,15 @@ export class CarritoSuscripcionComponent implements OnInit{
     }
 
   }
+  seleccionarGenero(genero: number) {
+    this.generoSeleccionado = genero.toString();
+    this.menuAbierto = false; // Cierra el menú después de seleccionar
+  }
 
-
-
-
+  getGeneroText(): string {
+    const genero = this.generos.find(g => g.numero.toString() === this.generoSeleccionado);
+    return genero ? genero.nombre : '';
+  }
 
 
 }
