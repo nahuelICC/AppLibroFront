@@ -43,4 +43,8 @@ export class PerfilUsuarioService {
     return this.http.put(`${this.apiUrlClienteSuscripcion}/cambiaGenero`, { genero: genero });
   }
 
+  putEditarTipoSuscripcion(tipo: number | null, genero: number): Observable<any> {
+    return this.http.put(`${this.apiUrlClienteSuscripcion}/cambiaTipoSuscripcion`, { tipo: tipo, genero:genero });
+  }
+
 }

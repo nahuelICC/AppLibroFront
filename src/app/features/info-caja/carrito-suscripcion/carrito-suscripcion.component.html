@@ -59,9 +59,16 @@
 
     <!-- Botón de Confirmar Compra -->
     <div class="flex justify-center mt-6">
-      <app-boton [label]="'Confirmar Compra'" [color]="'#E53935'" (click)="confirmarCompra()" [disabled]="!generoSeleccionado" [size]="'medium'"> </app-boton>
+      <app-boton [label]="'Confirmar Compra'" [color]="'#E53935'" (click)="mostrarAlerta = true" [disabled]="!generoSeleccionado" [size]="'medium'"> </app-boton>
     </div>
   </div>
+
+  <app-alert-confirmar
+    *ngIf="mostrarAlerta"
+    [message]="'¿Estás seguro de que deseas continuar?'"
+    (confirm)="confirmarCompra()"
+    (cancel)="mostrarAlerta = false">
+  </app-alert-confirmar>
 </div>
 
 
