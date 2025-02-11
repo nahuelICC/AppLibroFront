@@ -16,7 +16,7 @@
 
     <div class="flex items-center gap-4 mb-8">
       <h1 class="text-3xl md:text-4xl font-bold text-gray-800">
-        Bienvenido, {{ datosCliente.username }}
+        Bienvenido, {{ datosCliente.username | titlecase }}
       </h1>
     </div>
 
@@ -305,7 +305,7 @@
           No hay suscripciones activas
         </span>
       </ng-template>
-      <div *ngIf="showGestionSuscripcion" class="flex flex-wrap gap-1 justify-around  border-t-gray-300 border-t mt-3 p-3 md:p-4" >
+      <div *ngIf="showGestionSuscripcion" class="flex flex-wrap gap-1 justify-around  border-t-gray-300 border-t mt-3 p-3 pb-0 md:p-4 md:pb-0" >
         <app-boton
           [label]="'Cambiar'"
           [size]="'small'"
@@ -338,7 +338,8 @@
           [label]="'Guardar'"
           [size]="'small'"
           [color]="'#078080'"
-          class="flex-shrink-0">
+          class="flex-shrink-0"
+        (click)="cambiarGenero()">
         </app-boton>
       </div>
     </div>
