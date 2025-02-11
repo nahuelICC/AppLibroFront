@@ -6,6 +6,8 @@ import {LibroServiceService} from '../../tienda/services/libro-service.service';
 import {NgForOf, NgIf} from '@angular/common';
 import {NombreGeneroPipe} from '../../tienda/pipes/nombre-genero.pipe';
 import {BotonComponent} from '../../../shared/components/boton/boton.component';
+import {PerfilUsuarioService} from '../../usuario/services/perfil-usuario.service';
+import {AlertConfirmarComponent} from '../../../shared/components/alert-confirmar/alert-confirmar.component';
 
 @Component({
   selector: 'app-carrito-suscripcion',
@@ -14,7 +16,8 @@ import {BotonComponent} from '../../../shared/components/boton/boton.component';
     NgForOf,
     NombreGeneroPipe,
     NgIf,
-    BotonComponent
+    BotonComponent,
+    AlertConfirmarComponent
   ],
   templateUrl: './carrito-suscripcion.component.html',
   standalone: true,
@@ -28,8 +31,10 @@ export class CarritoSuscripcionComponent implements OnInit{
   tipoSuscripcion: string = '';
   idTipo: number | null = null;
   menuAbierto: boolean = false;
+  editarGenero: boolean = false;
+  mostrarAlerta: boolean = false;
 
-  constructor(private route: ActivatedRoute, private router: Router, private libroService: LibroServiceService) {}
+  constructor(private route: ActivatedRoute, private router: Router, private libroService: LibroServiceService, private perfilUsuarioService: PerfilUsuarioService) {}
 
   ngOnInit(): void {
     // Obtener los parámetros de la suscripción seleccionada
@@ -37,6 +42,7 @@ export class CarritoSuscripcionComponent implements OnInit{
       this.nombre = params['nombre'] || '';
       this.precio = params['precio'] || 0;
       this.idTipo = Number(params['tipo']);
+      this.editarGenero = params['modificar'] === 'true';
     });
 
     // Llamar al servicio para obtener los géneros desde la base de datos
@@ -52,21 +58,34 @@ export class CarritoSuscripcionComponent implements OnInit{
 
   confirmarCompra() {
     console.log('Valores antes de guardar en localStorage:', this.generoSeleccionado, this.tipoSuscripcion, this.idTipo);
+    if (!this.editarGenero){
+      if (this.generoSeleccionado && this.idTipo !== null && this.idTipo !== undefined) {
+        localStorage.setItem('generoSeleccionado', this.generoSeleccionado); // Género seleccionado
+        localStorage.setItem('idTipoSuscripcion', this.idTipo.toString()); // idTipo de suscripción
+        localStorage.setItem('esSuscripcion', 'true'); // Indicamos que es una suscripción
 
-    if (this.generoSeleccionado && this.idTipo !== null && this.idTipo !== undefined) {
-      localStorage.setItem('generoSeleccionado', this.generoSeleccionado); // Género seleccionado
-      localStorage.setItem('idTipoSuscripcion', this.idTipo.toString()); // idTipo de suscripción
-      localStorage.setItem('esSuscripcion', 'true'); // Indicamos que es una suscripción
+        console.log('Generos, Precio, y Tipo de Suscripción en localStorage:');
+        console.log('generoSeleccionado:', localStorage.getItem('generoSeleccionado'));
+        console.log('idTipoSuscripcion:', localStorage.getItem('idTipoSuscripcion'));
+        console.log('esSuscripcion:', localStorage.getItem('esSuscripcion'));
 
-      console.log('Generos, Precio, y Tipo de Suscripción en localStorage:');
-      console.log('generoSeleccionado:', localStorage.getItem('generoSeleccionado'));
-      console.log('idTipoSuscripcion:', localStorage.getItem('idTipoSuscripcion'));
-      console.log('esSuscripcion:', localStorage.getItem('esSuscripcion'));
-
-      this.router.navigate(['/pago']);
-    } else {
-      console.error('Faltan datos de suscripción.');
+        this.router.navigate(['/pago']);
+      } else {
+        console.error('Faltan datos de suscripción.');
+      }
+    }else {
+      this.perfilUsuarioService.putEditarTipoSuscripcion(this.idTipo, Number(this.generoSeleccionado)).subscribe({
+          next: (data) => {
+            console.log('Respuesta del servidor:', data);
+            this.router.navigate(['/usuario']);
+          },
+          error: (error) => {
+            console.error('Error al editar el tipo de suscripción:', error);
+          }
+        }
+      );
     }
+
 
   }
   seleccionarGenero(genero: number) {

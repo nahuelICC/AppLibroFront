@@ -37,7 +37,7 @@ export class InfoCajasComponent implements OnInit{
       const idTipo = Number(params.get('id'));
       this.tipo = idTipo;
       this.modificarSuscripcion = localStorage.getItem('change') === 'true';
-      localStorage.removeItem('change');
+
 
       // Obtener suscripciones desde el servicio
       this.inicioService.obtenerSuscripciones().subscribe((data: SuscripcionInicio[]) => {
@@ -59,13 +59,25 @@ export class InfoCajasComponent implements OnInit{
   onConfirm() {
     this.mostrarAlerta = false;
     if (this.suscripcionSeleccionada) {
-      this.router.navigate(['/carritosuscripcion'], {
-        queryParams: {
-          nombre: this.suscripcionSeleccionada.nombre,
-          precio: this.suscripcionSeleccionada.precio,
-          tipo: this.suscripcionSeleccionada.id_tipo
-        }
-      });
+      if (localStorage.getItem('change') === 'true') {
+        this.router.navigate(['/carritosuscripcion'], {
+          queryParams: {
+            nombre: this.suscripcionSeleccionada.nombre,
+            precio: this.suscripcionSeleccionada.precio,
+            tipo: this.suscripcionSeleccionada.id_tipo,
+            modificar: true
+          }
+        });
+      }else {
+        this.router.navigate(['/carritosuscripcion'], {
+          queryParams: {
+            nombre: this.suscripcionSeleccionada.nombre,
+            precio: this.suscripcionSeleccionada.precio,
+            tipo: this.suscripcionSeleccionada.id_tipo
+          }
+        });
+      }
+      localStorage.removeItem('change');
     }
   }
 
