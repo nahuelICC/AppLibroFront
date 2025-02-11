@@ -2,13 +2,14 @@ import {ChangeDetectorRef, Component, NgZone, OnInit} from '@angular/core';
 import {PerfilUsuarioService} from '../../services/perfil-usuario.service';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 import {MatIcon} from '@angular/material/icon';
-import {CurrencyPipe, DatePipe, NgForOf, NgIf} from '@angular/common';
+import {CurrencyPipe, DatePipe, NgForOf, NgIf, TitleCasePipe} from '@angular/common';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {EditaUsuarioDTO} from '../../DTOs/EditaUsuarioDTO';
 import {AlertConfirmarComponent} from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
 import {AlertInfoComponent, AlertType} from '../../../../shared/components/alert-info/alert-info.component';
 import { jsPDF } from "jspdf";
 import html2canvas from 'html2canvas';
+import {Router, RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-pagina-usuario',
@@ -22,7 +23,9 @@ import html2canvas from 'html2canvas';
     ReactiveFormsModule,
     AlertConfirmarComponent,
     AlertInfoComponent,
-    MatIcon
+    MatIcon,
+    TitleCasePipe,
+    RouterLink
   ],
   templateUrl: './pagina-usuario.component.html',
   standalone: true,
@@ -54,7 +57,7 @@ export class PaginaUsuarioComponent implements OnInit {
   editandoGenero: boolean = false;
   generoSeleccionado: number = 0;
 
-  constructor(private perfilUsuarioService: PerfilUsuarioService,private fb: FormBuilder,private cdRef: ChangeDetectorRef, private zone: NgZone) {
+  constructor(private perfilUsuarioService: PerfilUsuarioService,private fb: FormBuilder,private cdRef: ChangeDetectorRef, private zone: NgZone, private router: Router) {
     this.cambioContrasenaForm = this.fb.group({
       actual: ['', Validators.required],
       nueva: ['', [
@@ -466,6 +469,37 @@ export class PaginaUsuarioComponent implements OnInit {
       });
     }, 5000);
 
+  }
+
+  cambiarGenero() {
+    let genero = Number(this.generoSeleccionado) + 1;
+    this.perfilUsuarioService.putEditarGenero(genero).subscribe({
+      next: (response) => {
+        console.log('Género cambiado:', response);
+        this.alertMessage = 'Género cambiado correctamente';
+        this.alertType = 'success';
+        this.isAlertVisible = true;
+        this.editandoGenero = false;
+      },
+      error: (err) => {
+        console.error('Error cambiando género:', err);
+        this.alertMessage = 'Error al cambiar el género';
+        this.alertType = 'warning';
+        this.isAlertVisible = true;
+      }
+    });
+    setTimeout(() => {
+      this.zone.run(() => {
+        this.isAlertVisible = false;
+        this.cdRef.detectChanges();
+      });
+    }, 5000);
+  }
+
+  cambiarSuscripcion() {
+    this.router.navigate(['/infocajas', this.datosCliente.suscripcion.tipoSuscripcion]).then(r =>{
+      localStorage.setItem('change', String(true));
+    });
   }
 
 }

@@ -6,6 +6,7 @@ import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 import {AlertConfirmarComponent} from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
+import {MatTooltip} from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-info-cajas',
@@ -15,7 +16,8 @@ import {AlertConfirmarComponent} from '../../../../shared/components/alert-confi
     NgClass,
     MatIcon,
     BotonComponent,
-    AlertConfirmarComponent
+    AlertConfirmarComponent,
+    MatTooltip
   ],
   templateUrl: './info-cajas.component.html',
   standalone: true,
@@ -25,16 +27,22 @@ export class InfoCajasComponent implements OnInit{
   suscripciones: SuscripcionInicio[] = [];
   suscripcionSeleccionada: SuscripcionInicio | null = null;
   mostrarAlerta: boolean = false;
+  modificarSuscripcion: boolean = false;
+  tipo: number = 0;
 
   constructor(private route: ActivatedRoute, private inicioService: InicioService, private router: Router) {}
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const idTipo = Number(params.get('id'));
+      this.tipo = idTipo;
+      this.modificarSuscripcion = localStorage.getItem('change') === 'true';
+      localStorage.removeItem('change');
 
       // Obtener suscripciones desde el servicio
       this.inicioService.obtenerSuscripciones().subscribe((data: SuscripcionInicio[]) => {
         this.suscripciones = data;
+        console.log(this.suscripciones);
         this.suscripcionSeleccionada = this.suscripciones.find(s => s.id_tipo === idTipo) || null;
       });
     });
@@ -42,6 +50,7 @@ export class InfoCajasComponent implements OnInit{
 
   seleccionarSuscripcion(suscripcion: SuscripcionInicio) {
     this.suscripcionSeleccionada = suscripcion;
+    this.modificarSuscripcion = this.tipo === Number(suscripcion.id_tipo);
   }
   confirmarSuscripcion() {
     this.mostrarAlerta = true;
