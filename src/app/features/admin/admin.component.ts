@@ -56,8 +56,6 @@ export class AdminComponent implements OnInit{
   }
 
   private cargarUsuarios() {
-
-
     this.titulo = 'Clientes';
     // Configuración de columnas para Usuarios
     this.configColumnas = [
@@ -82,7 +80,6 @@ export class AdminComponent implements OnInit{
       this.datos = res;
     });
   }
-  
 
   onActualizarFila(item: any) {
     if (this.titulo === 'Clientes') {
