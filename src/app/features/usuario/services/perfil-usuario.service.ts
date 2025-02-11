@@ -33,4 +33,9 @@ export class PerfilUsuarioService {
   postCambioContrasena(datos: { actual: string, nueva: string, repetir: string }): Observable<any> {
     return this.http.post(`${this.apiUrlUsuario}/cambioContrasenya`, datos);
   }
+
+  putEditarEstado(estado:boolean): Observable<any> {
+    return this.http.put(`${this.apiUrl}/editarEstado`, { estado: estado });
+  }
+
 }

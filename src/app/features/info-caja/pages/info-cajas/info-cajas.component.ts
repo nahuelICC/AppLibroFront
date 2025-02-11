@@ -53,7 +53,8 @@ export class InfoCajasComponent implements OnInit{
       this.router.navigate(['/carritosuscripcion'], {
         queryParams: {
           nombre: this.suscripcionSeleccionada.nombre,
-          precio: this.suscripcionSeleccionada.precio
+          precio: this.suscripcionSeleccionada.precio,
+          tipo: this.suscripcionSeleccionada.id_tipo
         }
       });
     }

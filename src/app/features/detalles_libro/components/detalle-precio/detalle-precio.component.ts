@@ -5,6 +5,7 @@ import {ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnInit, SimpleCh
 import {LibroDetalle} from '../../DTOs/LibroDetalle';
 import {DetallesLibroService} from '../../services/detalles-libro.service';
 import {AlertInfoComponent, AlertType} from '../../../../shared/components/alert-info/alert-info.component';
+import {CarritoService} from '../../../carrito/services/carrito.service';
 
 @Component({
   selector: 'app-detalle-precio',
@@ -30,14 +31,14 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
   alertType: AlertType = 'success';
   isAlertVisible: boolean = false;
 
-  constructor(private detallesLibroService: DetallesLibroService, private cdRef: ChangeDetectorRef, private zone: NgZone) {}
+  constructor(private detallesLibroService: DetallesLibroService, private cdRef: ChangeDetectorRef, private zone: NgZone, private cartService:CarritoService) {}
 
   ngOnInit() {
     console.log('tiposTapa en ngOnInit:', this.tiposTapa);
     if (this.tiposTapa.length > 0) {
       this.selectedTipoTapa = this.tiposTapa[0];
-      this.updatePrice(); // Actualizar el precio automáticamente
-      this.cdRef.detectChanges(); // Forzar la detección de cambios
+      this.updatePrice();
+      this.cdRef.detectChanges();
     }
   }
 
@@ -45,7 +46,7 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['tiposTapa'] && this.tiposTapa.length > 0) {
-      this.selectedTipoTapa = this.tiposTapa[0]; // Seleccionar el primer tipo de tapa
+      this.selectedTipoTapa = this.tiposTapa[0];
       this.updatePrice();
     }
   }
@@ -55,7 +56,7 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
     if (this.quantity + amount > 0 && this.quantity + amount <= 10) {
       this.quantity += amount;
     } else if (this.quantity + amount > 10) {
-      this.quantity = 10; // Limitar la cantidad máxima a 15
+      this.quantity = 10;
     } else {
       console.warn('La cantidad no puede ser menor que 1');
     }
@@ -63,14 +64,11 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
 
 
   selectCover(tipo: any) {
-    // Asigna el objeto completo del tipo de tapa al valor de selectedTipoTapa
     this.selectedTipoTapa = tipo;
     console.log('Tipo de tapa seleccionado:', this.selectedTipoTapa);
 
-    // Reinicia la cantidad a 1 cuando se cambia el tipo de tapa
     this.quantity = 1;
 
-    // Luego puedes llamar a updatePrice o cualquier otra función necesaria
     this.updatePrice();
   }
 
@@ -99,8 +97,6 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
 
 
 
-    // Nueva propiedad para el tipo de alerta
-
 
   anadirAlCarrito() {
     if (!this.libroId || !this.selectedTipoTapa || !this.selectedTipoTapa.id_tipo) {
@@ -110,42 +106,41 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
 
     const cartItem = {
       id_tipo: this.selectedTipoTapa.id_tipo,
-      cantidad: this.quantity
+      cantidad: this.quantity,
     };
 
-    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const existingItem = cart.find((item: any) => item.id_tipo === cartItem.id_tipo);
+    const existingItemIndex = this.cartService.cartItems.findIndex(
+      (item) => item.id_tipo === cartItem.id_tipo
+    );
 
-    if (existingItem) {
-      const newQuantity = existingItem.cantidad + cartItem.cantidad;
+    if (existingItemIndex !== -1) {
+
+      const newQuantity = this.cartService.cartItems[existingItemIndex].cantidad + cartItem.cantidad;
+
       if (newQuantity > 10) {
         this.alertMessage = 'No se puede añadir más de 10 unidades del mismo libro.';
-        this.alertType = 'warning'; // Tipo de alerta 'warning'
+        this.alertType = 'warning';
       } else {
-        existingItem.cantidad = newQuantity;
+
+        this.cartService.cartItems[existingItemIndex].cantidad = newQuantity;
         this.alertMessage = 'Libro añadido al carrito correctamente';
-        this.alertType = 'success'; // Tipo de alerta 'success'
+        this.alertType = 'success';
+
+
+        this.cartService.updateCartInLocalStorage();
+        this.cartService.updateCartItemCount();
       }
     } else {
-      cart.push(cartItem);
+
+      this.cartService.addItemToCart(cartItem);
       this.alertMessage = 'Libro añadido al carrito correctamente';
       this.alertType = 'success'; // Tipo de alerta 'success'
     }
 
-    localStorage.setItem('cart', JSON.stringify(cart));
-
-    // Mostrar la alerta
     this.isAlertVisible = true;
 
-    // Forzar la detección de cambios
-    this.cdRef.detectChanges();
-
-    // Ocultar la alerta después de 2 segundos
     setTimeout(() => {
-      this.zone.run(() => {
-        this.isAlertVisible = false;
-        this.cdRef.detectChanges(); // Asegura que Angular detecte el cambio
-      });
+      this.isAlertVisible = false;
     }, 2000);
   }
 

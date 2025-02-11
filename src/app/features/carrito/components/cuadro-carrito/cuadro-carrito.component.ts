@@ -21,6 +21,10 @@ export class CuadroCarritoComponent {
 
   @Output() quantityUpdated = new EventEmitter<{ idTipo: number; cantidad: number }>();
 
+  private emitQuantityUpdate() {
+    this.quantityUpdated.emit({ idTipo: this.idTipo, cantidad: this.cantidad });
+  }
+
   incrementQuantity() {
     if (this.cantidad < 10) {
       this.cantidad++;
@@ -38,8 +42,5 @@ export class CuadroCarritoComponent {
     }
   }
 
-  private emitQuantityUpdate() {
-    this.quantityUpdated.emit({ idTipo: this.idTipo, cantidad: this.cantidad });
-  }
 
 }

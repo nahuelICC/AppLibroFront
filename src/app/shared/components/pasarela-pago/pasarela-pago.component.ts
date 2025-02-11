@@ -1,4 +1,4 @@
-import {Component, OnInit, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, Output} from '@angular/core';
 import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BotonComponent } from '../boton/boton.component';
@@ -7,6 +7,7 @@ import {Router} from '@angular/router';
 import {PasarelaPagoService} from '../../services/pasarela-pago.service';
 import {AlertConfirmarComponent} from '../alert-confirmar/alert-confirmar.component';
 import {AlertInfoComponent, AlertType} from '../alert-info/alert-info.component';
+import {DetallesLibroService} from '../../../features/detalles_libro/services/detalles-libro.service';
 
 
 @Component({
@@ -29,13 +30,40 @@ export class PasarelaPagoComponent implements OnInit {
   isAlertVisible: boolean = false;
   totalBooksPrice: number = 0;
   direccion: string = '';
+  esSuscripcion: boolean = false;
+  idCliente: number = 0;
+
+  genero: string | null = null;
+  idTipo: string | null = null;
 
 
-  constructor( private carritoService: CarritoService,private router:Router, private pasarelaPagoService: PasarelaPagoService) {
+  constructor( private carritoService: CarritoService,private router:Router, private pasarelaPagoService: PasarelaPagoService,  private detallesLibroService: DetallesLibroService, private cdRef: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
     this.loadCartFromLocalStorage();
+
+    // Verificar si es una suscripción
+    const esSuscripcion = localStorage.getItem('esSuscripcion');
+    const genero = localStorage.getItem('generoSeleccionado');
+    const idTipo = localStorage.getItem('idTipoSuscripcion');
+
+    if (esSuscripcion === 'true') {
+      this.esSuscripcion = true;
+      console.log('Es una suscripción');
+    } else {
+      this.esSuscripcion = false;
+      console.log('No es una suscripción');
+    }
+
+    // Logs para verificar los datos de la suscripción
+    console.log('Generos, Precio, y Tipo de Suscripción en localStorage:');
+    console.log('generoSeleccionado:', localStorage.getItem('generoSeleccionado'));
+    console.log('precioSuscripcion:', localStorage.getItem('precioSuscripcion'));
+    console.log('idTipoSuscripcion:', localStorage.getItem('idTipoSuscripcion'));
+    console.log('esSuscripcion:', localStorage.getItem('esSuscripcion'));
+
+    // Obtener los datos de dirección y cliente (lo que ya tienes)
     this.pasarelaPagoService.getDireccionTelefono().subscribe({
       next: (response: any) => {
         this.datos = response;
@@ -51,7 +79,35 @@ export class PasarelaPagoComponent implements OnInit {
         console.error('Error al obtener los datos:', error);
       }
     });
+
+    this.detallesLibroService.obtenerIdCliente().subscribe({
+      next: (response) => {
+        this.idCliente = response.id_cliente;  // Almacenamos el id_cliente
+        console.log('ID Cliente:', this.idCliente);
+      },
+      error: (error) => {
+        console.error('Error al obtener el id_cliente:', error);
+      }
+    });
+
+    // Verificar los datos de localStorage antes de crear la suscripción
+    const generoStorage = localStorage.getItem('generoSeleccionado');
+    const idTipoStorage = localStorage.getItem('idTipoSuscripcion');
+    const esSuscripcionStorage = localStorage.getItem('esSuscripcion');
+
+    if (generoStorage && idTipoStorage && esSuscripcionStorage === 'true') {
+      // Si los datos son correctos, se asignan
+      this.genero = generoStorage;
+      this.idTipo = idTipoStorage;
+      console.log('Datos obtenidos del localStorage para suscripción:', this.genero, this.idTipo);
+    } else {
+      console.log('Faltan datos en localStorage para crear la suscripción.');
+    }
+
+    // Forzar la actualización de la vista para evitar el error ExpressionChangedAfterItHasBeenCheckedError
+    this.cdRef.detectChanges();
   }
+
 
   formData = {
     calle: '',
@@ -138,6 +194,7 @@ export class PasarelaPagoComponent implements OnInit {
 
   clearCart() {
     this.cartItems = [];
+    this.carritoService.clearCart();
     localStorage.removeItem('cart');
     localStorage.removeItem('total');
   }
@@ -179,6 +236,56 @@ export class PasarelaPagoComponent implements OnInit {
       this.currentStep++;
     }
   }
+
+  onFinalizar() {
+
+    if (this.esSuscripcion) {
+      // Si es suscripción, llamamos al servicio para crear la suscripción
+      this.crear();
+    } else {
+      // Si no es suscripción, simplemente completamos el pedido
+      this.sendOrderToBackend();
+    }
+  }
+
+  crear() {
+    if (this.genero && this.idTipo) {
+      const tipoSuscripcion = parseInt(this.idTipo, 10);
+
+      // Construimos la dirección con los datos del formulario
+      const direccion = `${this.formData.calle}, ${this.formData.codigoPostal}, ${this.formData.localidad}, ${this.formData.provincia}`;
+
+      // Creamos el objeto de datos a enviar
+      const data = {
+        genero: parseInt(this.genero, 10),
+        direccion: direccion  // Añadimos la dirección a los datos
+      };
+
+      console.log('Enviando datos de suscripción:', { idCliente: this.idCliente, tipoSuscripcion, data });
+
+      // Llamar al servicio para crear la suscripción
+      this.pasarelaPagoService.crearSuscripcion(this.idCliente, tipoSuscripcion, data)
+        .subscribe(response => {
+          console.log('Suscripción creada con éxito:', response);
+
+          // Borrar los datos de suscripción de localStorage después de crear la suscripción
+          localStorage.removeItem('generoSeleccionado');
+          localStorage.removeItem('idTipoSuscripcion');
+          localStorage.removeItem('esSuscripcion');
+          localStorage.removeItem('precioSuscripcion');  // Si quieres borrar también el precio
+
+          // Aquí puedes agregar la lógica de lo que debe suceder cuando la suscripción se haya creado correctamente
+          this.router.navigate(['usuario']);  // Navegar a otra página si es necesario
+        }, error => {
+          console.error('Error al crear la suscripción:', error);
+          // Lógica para manejar errores en la creación de suscripción
+        });
+    } else {
+      console.error('Faltan datos en localStorage para crear la suscripción.');
+    }
+  }
+
+
 
 
 }
