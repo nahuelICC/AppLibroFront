@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, NgZone, OnInit} from '@angular/core';
 import {PerfilUsuarioService} from '../../services/perfil-usuario.service';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 import {MatIcon} from '@angular/material/icon';
-import {CurrencyPipe, DatePipe, NgForOf, NgIf} from '@angular/common';
+import {CurrencyPipe, DatePipe, NgForOf, NgIf, TitleCasePipe} from '@angular/common';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {EditaUsuarioDTO} from '../../DTOs/EditaUsuarioDTO';
 import {AlertConfirmarComponent} from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
@@ -22,7 +22,8 @@ import html2canvas from 'html2canvas';
     ReactiveFormsModule,
     AlertConfirmarComponent,
     AlertInfoComponent,
-    MatIcon
+    MatIcon,
+    TitleCasePipe
   ],
   templateUrl: './pagina-usuario.component.html',
   standalone: true,
@@ -466,6 +467,31 @@ export class PaginaUsuarioComponent implements OnInit {
       });
     }, 5000);
 
+  }
+
+  cambiarGenero() {
+    let genero = Number(this.generoSeleccionado) + 1;
+    this.perfilUsuarioService.putEditarGenero(genero).subscribe({
+      next: (response) => {
+        console.log('Género cambiado:', response);
+        this.alertMessage = 'Género cambiado correctamente';
+        this.alertType = 'success';
+        this.isAlertVisible = true;
+        this.editandoGenero = false;
+      },
+      error: (err) => {
+        console.error('Error cambiando género:', err);
+        this.alertMessage = 'Error al cambiar el género';
+        this.alertType = 'warning';
+        this.isAlertVisible = true;
+      }
+    });
+    setTimeout(() => {
+      this.zone.run(() => {
+        this.isAlertVisible = false;
+        this.cdRef.detectChanges();
+      });
+    }, 5000);
   }
 
 }
