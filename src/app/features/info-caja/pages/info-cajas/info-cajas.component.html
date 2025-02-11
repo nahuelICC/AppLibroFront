@@ -143,8 +143,14 @@
     <!-- Sección "Precio" y botón de suscribirse -->
     <p class="relative z-10 text-3xl font-bold text-center text-gray-900">{{ suscripcionSeleccionada.precio }}€ /mes</p>
     <div class="relative z-10 mt-8 flex justify-center">
-      <app-boton [label]="'Suscribirse'" [color]="'#E53935'" [size]="'small'" (click)="confirmarSuscripcion()"></app-boton>
-    </div>
+      <app-boton
+        [label]="'Suscribirse'"
+        [color]="'#E53935'"
+        [size]="'small'"
+        (click)="confirmarSuscripcion()"
+      [disabled]="modificarSuscripcion"
+      matTooltip="{{ modificarSuscripcion ? 'Ya estas suscrito a esta opcion' : '' }}">
+      </app-boton>
 
     <!-- Componente de alerta de confirmación -->
     <app-alert-confirmar
@@ -154,4 +160,5 @@
       (cancel)="onCancel()">
     </app-alert-confirmar>
   </div>
+</div>
 </div>

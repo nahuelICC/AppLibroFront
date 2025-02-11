@@ -9,6 +9,7 @@ import {AlertConfirmarComponent} from '../../../../shared/components/alert-confi
 import {AlertInfoComponent, AlertType} from '../../../../shared/components/alert-info/alert-info.component';
 import { jsPDF } from "jspdf";
 import html2canvas from 'html2canvas';
+import {Router, RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-pagina-usuario',
@@ -23,7 +24,8 @@ import html2canvas from 'html2canvas';
     AlertConfirmarComponent,
     AlertInfoComponent,
     MatIcon,
-    TitleCasePipe
+    TitleCasePipe,
+    RouterLink
   ],
   templateUrl: './pagina-usuario.component.html',
   standalone: true,
@@ -55,7 +57,7 @@ export class PaginaUsuarioComponent implements OnInit {
   editandoGenero: boolean = false;
   generoSeleccionado: number = 0;
 
-  constructor(private perfilUsuarioService: PerfilUsuarioService,private fb: FormBuilder,private cdRef: ChangeDetectorRef, private zone: NgZone) {
+  constructor(private perfilUsuarioService: PerfilUsuarioService,private fb: FormBuilder,private cdRef: ChangeDetectorRef, private zone: NgZone, private router: Router) {
     this.cambioContrasenaForm = this.fb.group({
       actual: ['', Validators.required],
       nueva: ['', [
@@ -492,6 +494,12 @@ export class PaginaUsuarioComponent implements OnInit {
         this.cdRef.detectChanges();
       });
     }, 5000);
+  }
+
+  cambiarSuscripcion() {
+    this.router.navigate(['/infocajas', this.datosCliente.suscripcion.tipoSuscripcion]).then(r =>{
+      localStorage.setItem('change', String(true));
+    });
   }
 
 }
