@@ -67,6 +67,13 @@
               [size]="'small'"
               (click)="confirmarSuscripcion()">
             </app-boton>
+
+            <app-alert-confirmar
+              *ngIf="mostrarAlerta"
+              [message]="'¿Quieres suscribirte a ' + suscripcionSeleccionada?.nombre + '?'"
+              (confirm)="onConfirm()"
+              (cancel)="onCancel()"
+            ></app-alert-confirmar>
           </div>
         </div>
       </div>
@@ -153,12 +160,14 @@
       </app-boton>
 
     <!-- Componente de alerta de confirmación -->
-    <app-alert-confirmar
-      *ngIf="mostrarAlerta"
-      [message]="'¿Quieres suscribirte a ' + suscripcionSeleccionada?.nombre + '?'"
-      (confirm)="onConfirm()"
-      (cancel)="onCancel()">
-    </app-alert-confirmar>
-  </div>
+      <app-alert-confirmar
+        *ngIf="mostrarAlerta"
+        [message]="'¿Quieres suscribirte a ' + suscripcionSeleccionada?.nombre + '?'"
+        (confirm)="onConfirm()"
+        (cancel)="onCancel()"
+      ></app-alert-confirmar>
+
+
+    </div>
 </div>
 </div>
