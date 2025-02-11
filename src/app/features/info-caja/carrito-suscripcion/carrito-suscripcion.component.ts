@@ -22,6 +22,8 @@ export class CarritoSuscripcionComponent implements OnInit{
   precio: number = 0;
   generoSeleccionado: string = '';
   generos: GeneroDTO[] = [];
+  tipoSuscripcion: string = '';
+  idTipo: number | null = null;
 
   constructor(private route: ActivatedRoute, private router: Router, private libroService: LibroServiceService) {}
 
@@ -30,6 +32,7 @@ export class CarritoSuscripcionComponent implements OnInit{
     this.route.queryParams.subscribe(params => {
       this.nombre = params['nombre'] || '';
       this.precio = params['precio'] || 0;
+      this.idTipo = Number(params['tipo']);
     });
 
     // Llamar al servicio para obtener los géneros desde la base de datos
@@ -44,14 +47,28 @@ export class CarritoSuscripcionComponent implements OnInit{
   }
 
   confirmarCompra() {
-    if (this.generoSeleccionado) {
-      // Guardar en localStorage
-      localStorage.setItem('generoSeleccionado', this.generoSeleccionado);
-      console.log('Género guardado:', this.generoSeleccionado);
+    console.log('Valores antes de guardar en localStorage:', this.generoSeleccionado, this.tipoSuscripcion, this.idTipo);
 
-      // Redirigir a la pasarela de pago
+    if (this.generoSeleccionado && this.idTipo !== null && this.idTipo !== undefined) {
+      localStorage.setItem('generoSeleccionado', this.generoSeleccionado); // Género seleccionado
+      localStorage.setItem('idTipoSuscripcion', this.idTipo.toString()); // idTipo de suscripción
+      localStorage.setItem('esSuscripcion', 'true'); // Indicamos que es una suscripción
+
+      console.log('Generos, Precio, y Tipo de Suscripción en localStorage:');
+      console.log('generoSeleccionado:', localStorage.getItem('generoSeleccionado'));
+      console.log('idTipoSuscripcion:', localStorage.getItem('idTipoSuscripcion'));
+      console.log('esSuscripcion:', localStorage.getItem('esSuscripcion'));
+
       this.router.navigate(['/pago']);
+    } else {
+      console.error('Faltan datos de suscripción.');
     }
+
   }
+
+
+
+
+
 
 }
