@@ -56,6 +56,7 @@ export class AdminComponent implements OnInit{
   }
 
   private cargarUsuarios() {
+    document.getElementById('clientes')?.classList.remove('hidden');
     this.titulo = 'Clientes';
     // Configuración de columnas para Usuarios
     this.configColumnas = [
