@@ -156,7 +156,7 @@ export class DetallesComponent implements OnInit {
       distribution[resena.valoracion - 1]++;
     });
 
-    this.averageRating = Math.round((total / count) * 10) / 10;
+    this.averageRating = parseFloat((total / count).toFixed(1));
     this.totalReviews = count;
 
     this.ratingDistribution = distribution.map((count, index) => new RatingDistribution(
@@ -213,9 +213,6 @@ export class DetallesComponent implements OnInit {
       }
     );
   }
-
-
-
 
   toggleFormulario() {
     this.mostrarFormulario = !this.mostrarFormulario;
@@ -321,9 +318,4 @@ export class DetallesComponent implements OnInit {
     // Forzar la actualización de la vista
     this.cdRef.detectChanges();
   }
-
-
-
-
-
 }
