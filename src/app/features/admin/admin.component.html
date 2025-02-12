@@ -19,7 +19,21 @@
   <!-- Contenido principal -->
   <main class="flex-1 p-6">
     <h1 id="tituloSeccion" class="text-2xl font-bold mb-4">{{ titulo }}</h1>
-    <app-tabla [tablaActiva]="'clientes'" [datos]="datos" [columnas]="configColumnas" (actualizarFila)="onActualizarFila($event)" [validadores]="validadores"></app-tabla>
-    <app-tabla [tablaActiva]="'pedidos'"></app-tabla>
+    <app-tabla *ngIf="activeTabId === 'clientes'"
+               [tablaActiva]="'clientes'"
+               [datos]="clientesData"
+               [columnas]="clientesColumnas"
+               [validadores]="clientesValidadores"
+               (actualizarFila)="onActualizarFila($event)">
+    </app-tabla>
+
+    <!-- Tabla Pedidos -->
+    <app-tabla *ngIf="activeTabId === 'pedidos'"
+               [tablaActiva]="'pedidos'"
+               [datos]="pedidosData"
+               [columnas]="pedidosColumnas"
+               [validadores]="pedidosValidadores"
+               (actualizarFila)="onActualizarFila($event)">
+    </app-tabla>
   </main>
 </div>
