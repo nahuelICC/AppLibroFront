@@ -2,6 +2,7 @@
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import {map, Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -9,6 +10,7 @@ import { Injectable } from '@angular/core';
 export class AuthServiceService {
   private tokenKey = 'token';
   private loggedKey = 'logged';
+  private apiClienteSuscripcionUrl = '/api/ClienteSuscripcion';
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -16,6 +18,7 @@ export class AuthServiceService {
   setToken(token: string): void {
     localStorage.setItem(this.tokenKey, token);
     localStorage.setItem(this.loggedKey, 'true');
+    this.isSuscribed().subscribe(isSuscribed => localStorage.setItem('isSuscribed', isSuscribed));
   }
 
   // Obtiene el token desde localStorage
@@ -32,11 +35,19 @@ export class AuthServiceService {
   // Verifica si el usuario está logueado
   isLogged(): boolean {
     return localStorage.getItem(this.loggedKey) === 'true';
+
   }
 
   // Cierra la sesión y redirige al usuario
   logout(): void {
     this.clearToken();
+    localStorage.clear();
     this.router.navigate(['/login']);
+  }
+
+  isSuscribed(): Observable<string> {
+    return this.http.get<number>(`${this.apiClienteSuscripcionUrl}/compruebaSuscripcion`).pipe(
+      map(response => response !== 0 ? 'true' : 'false')
+    );
   }
 }

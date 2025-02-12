@@ -29,6 +29,7 @@ export class InfoCajasComponent implements OnInit{
   mostrarAlerta: boolean = false;
   modificarSuscripcion: boolean = false;
   tipo: number = 0;
+  suscrito: boolean = false;
 
   constructor(private route: ActivatedRoute, private inicioService: InicioService, private router: Router) {}
 
@@ -37,6 +38,7 @@ export class InfoCajasComponent implements OnInit{
       const idTipo = Number(params.get('id'));
       this.tipo = idTipo;
       this.modificarSuscripcion = localStorage.getItem('change') === 'true';
+      this.suscrito = localStorage.getItem('isSuscribed') === 'true';
 
 
       // Obtener suscripciones desde el servicio

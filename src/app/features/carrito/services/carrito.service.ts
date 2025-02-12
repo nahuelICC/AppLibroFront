@@ -9,6 +9,7 @@ export class CarritoService {
 
   private apiUrl = '/api/libroTipo';
   private apiPedidoUrl = '/api/pedido';
+  private apiClienteSuscripcionUrl = '/api/ClienteSuscripcion';
   cartItems: any[] = [];
   private cartItemCountSource = new BehaviorSubject<number>(0);
   public cartItemCount$ = this.cartItemCountSource.asObservable();
@@ -67,6 +68,9 @@ export class CarritoService {
     if (itemIndex !== -1) {
       if (cantidad <= 0) {
         this.cartItems.splice(itemIndex, 1);
+        if (this.cartItems.length === 0) {
+          this.clearCart();
+        }
       } else {
         this.cartItems[itemIndex].cantidad = cantidad;
       }
@@ -81,4 +85,10 @@ export class CarritoService {
     this.updateCartInLocalStorage();
     this.updateCartItemCount();
   }
+
+  compruebaSuscrito(): Observable<any> {
+    return this.http.get(`${this.apiClienteSuscripcionUrl}/compruebaSuscripcion`);
+  }
+
+
 }
