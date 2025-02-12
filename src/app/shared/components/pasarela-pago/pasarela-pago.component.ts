@@ -264,24 +264,15 @@ export class PasarelaPagoComponent implements OnInit {
         .subscribe({
           next: (response) => {
             console.log('Suscripción creada con éxito:', response);
-
+            this.isAlertVisible = true;
+            this.alertMessage = 'Suscripción contratada';
+            this.alertType = 'success';
             // Limpiar datos de localStorage después de la suscripción
             localStorage.removeItem('generoSeleccionado');
             localStorage.removeItem('idTipoSuscripcion');
             localStorage.removeItem('esSuscripcion');
             localStorage.removeItem('precioSuscripcion');
 
-            this.alertMessage = 'Suscrito con éxito';
-            this.alertType = 'success';
-            this.isAlertVisible = true;
-            this.cdRef.detectChanges(); // Forzar actualización de vista
-
-            setTimeout(() => {
-              this.isAlertVisible = false;
-              this.cdRef.detectChanges();
-            }, 3000); // Cerrar la alerta después de 3 segundos
-
-            this.router.navigate(['usuario']);
           },
           error: (error) => {
             console.error('Error al crear la suscripción:', error);
@@ -289,20 +280,14 @@ export class PasarelaPagoComponent implements OnInit {
             if (error.status === 400) {
               this.alertMessage = 'Ya tiene una suscripción activa';
               this.alertType = 'warning';
+              localStorage.removeItem('esSuscripcion');
             } else {
               this.alertMessage = 'Error al procesar la suscripción';
               this.alertType = 'error';
             }
 
             this.isAlertVisible = true;
-            this.cdRef.detectChanges();
 
-            setTimeout(() => {
-              this.isAlertVisible = false;
-              this.cdRef.detectChanges();
-            }, 3000);
-
-            this.router.navigate(['usuario']);
           }
         });
     } else {

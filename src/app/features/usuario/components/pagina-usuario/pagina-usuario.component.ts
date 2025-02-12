@@ -1,15 +1,15 @@
-import {ChangeDetectorRef, Component, NgZone, OnInit} from '@angular/core';
-import {PerfilUsuarioService} from '../../services/perfil-usuario.service';
-import {BotonComponent} from '../../../../shared/components/boton/boton.component';
-import {MatIcon} from '@angular/material/icon';
-import {CurrencyPipe, DatePipe, NgForOf, NgIf, TitleCasePipe} from '@angular/common';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {EditaUsuarioDTO} from '../../DTOs/EditaUsuarioDTO';
-import {AlertConfirmarComponent} from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
-import {AlertInfoComponent, AlertType} from '../../../../shared/components/alert-info/alert-info.component';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
+import { PerfilUsuarioService } from '../../services/perfil-usuario.service';
+import { BotonComponent } from '../../../../shared/components/boton/boton.component';
+import { MatIcon } from '@angular/material/icon';
+import { CurrencyPipe, DatePipe, NgForOf, NgIf, TitleCasePipe } from '@angular/common';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { EditaUsuarioDTO } from '../../DTOs/EditaUsuarioDTO';
+import { AlertConfirmarComponent } from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
+import { AlertInfoComponent, AlertType } from '../../../../shared/components/alert-info/alert-info.component';
 import { jsPDF } from "jspdf";
 import html2canvas from 'html2canvas';
-import {Router, RouterLink} from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-pagina-usuario',
@@ -37,7 +37,7 @@ export class PaginaUsuarioComponent implements OnInit {
   datosCliente: any = { pedidos: [] };
   editandoPerfil = false;
   datosClienteOriginal: any;
-  datosEdicion:EditaUsuarioDTO = new EditaUsuarioDTO();
+  datosEdicion: EditaUsuarioDTO = new EditaUsuarioDTO();
   editandoDireccion = false;
   direccionPartes: string[] = ["", "", "", ""];
   mostrandoCambioContrasena = false;
@@ -48,16 +48,16 @@ export class PaginaUsuarioComponent implements OnInit {
   alertMessage: string = '';
   alertType: AlertType = 'success';
   isAlertVisible: boolean = false;
-  provincias:string[] = ['Álava','Albacete','Alicante','Almería','Asturias','Ávila','Badajoz','Barcelona','Burgos','Cáceres','Cádiz','Cantabria','Castellón','Ciudad Real','Córdoba','Cuenca','Gerona','Granada','Guadalajara','Guipúzcoa','Huelva','Huesca','Islas Baleares','Jaén','La Coruña','La Rioja','Las Palmas','León','Lérida','Lugo','Madrid','Málaga','Murcia','Navarra','Orense','Palencia','Pontevedra','Salamanca','Santa Cruz de Tenerife','Segovia','Sevilla','Soria','Tarragona','Teruel','Toledo','Valencia','Valladolid','Vizcaya','Zamora','Zaragoza'];
-  estadoSuscripcion:boolean = true;
-  showGestionSuscripcion:boolean = false;
-  showConfirmCancel:boolean = false;
-  showConfirmRenew:boolean = false;
+  provincias: string[] = ['Álava', 'Albacete', 'Alicante', 'Almería', 'Asturias', 'Ávila', 'Badajoz', 'Barcelona', 'Burgos', 'Cáceres', 'Cádiz', 'Cantabria', 'Castellón', 'Ciudad Real', 'Córdoba', 'Cuenca', 'Gerona', 'Granada', 'Guadalajara', 'Guipúzcoa', 'Huelva', 'Huesca', 'Islas Baleares', 'Jaén', 'La Coruña', 'La Rioja', 'Las Palmas', 'León', 'Lérida', 'Lugo', 'Madrid', 'Málaga', 'Murcia', 'Navarra', 'Orense', 'Palencia', 'Pontevedra', 'Salamanca', 'Santa Cruz de Tenerife', 'Segovia', 'Sevilla', 'Soria', 'Tarragona', 'Teruel', 'Toledo', 'Valencia', 'Valladolid', 'Vizcaya', 'Zamora', 'Zaragoza'];
+  estadoSuscripcion: boolean = true;
+  showGestionSuscripcion: boolean = false;
+  showConfirmCancel: boolean = false;
+  showConfirmRenew: boolean = false;
   generos: string[] = ["Novela Negra", "Thriller", "Novela Historica", "Romantica", "Ciencia Ficcion", "Distopia", "Aventuras", "Fantasia", "Contemporaneo", "Terror", "Paranormal", "Poesia", "Juvenil", "Infantil", "Autoayuda", "Salud Y Deporte", "Manuales", "Memorias", "Biografias", "Cocina", "Viajes", "Libros Tecnicos", "Referencia", "Divulgativos", "Libros De Texto", "Arte"];
   editandoGenero: boolean = false;
   generoSeleccionado: number = 0;
 
-  constructor(private perfilUsuarioService: PerfilUsuarioService,private fb: FormBuilder,private cdRef: ChangeDetectorRef, private zone: NgZone, private router: Router) {
+  constructor(private perfilUsuarioService: PerfilUsuarioService, private fb: FormBuilder, private cdRef: ChangeDetectorRef, private zone: NgZone, private router: Router) {
     this.cambioContrasenaForm = this.fb.group({
       actual: ['', Validators.required],
       nueva: ['', [
@@ -91,15 +91,13 @@ export class PaginaUsuarioComponent implements OnInit {
     this.currentPage++;
   }
 
-
-
   private cargarDatosCliente(): void {
     this.perfilUsuarioService.getDatosCliente().subscribe({
       next: (data) => {
         this.datosCliente = data;
         console.log('Datos cargados:', this.datosCliente);
         this.estadoSuscripcion = this.datosCliente.suscripcion.suscrito;
-        this.generoSeleccionado = this.datosCliente.suscripcion.genero -1;
+        this.generoSeleccionado = this.datosCliente.suscripcion.genero - 1;
 
         if (this.datosCliente.pedidos) {
           this.datosCliente.pedidos.forEach((pedido: any) => {
@@ -146,121 +144,144 @@ export class PaginaUsuarioComponent implements OnInit {
           this.datosCliente.pedidos[pedidoIndex].detalles = detalles;
 
           // Generar el PDF
-          this.generarPDF(detalles,pedido,this.datosCliente);
+          this.generarPDF(detalles, pedido, this.datosCliente);
         }
       },
       error: (err) => console.error('Error al descargar detalles:', err)
     });
   }
 
-  generarPDF(detalles: any, pedido: any,datosCliente:any): void {
-    const isMistery = pedido.esMistery && ![5, 6].includes(pedido.estado);
-
-    console.log('Pedido:', pedido);
-    console.log(datosCliente);
-
-    // Crear elemento HTML temporal
+  generarPDF(detalles: any, pedido: any, datosCliente: any): void {
     const div = document.createElement('div');
-
-    // Plantilla condicional
-    div.innerHTML = isMistery ? `
-    <div class="container">
-      <div class="header">
+    div.innerHTML = `
+  <div class="container">
+    <div class="header">
+      <div class="image-container">
         <img src="assets/Logo.png" alt="Tinteka">
-        <h1>TIENES UN NUEVO ENVÍO MISTERY</h1>
-        <h2>Detalles del Pedido Mistery</h2>
-        <p>Pedido: ${pedido.referencia}</p>
-        <p>Cliente: ${datosCliente.nombre} ${datosCliente.apellido}</p>
-        <p>Fecha: ${new Date(pedido.fecha).toLocaleString()}</p>
       </div>
-      <div class="details">
-        <p>Suscripción: <b>${datosCliente.suscripcion.tipo}</b></p>
-        <p>Libros enviados: ${detalles.length}</p>
-        <p>Género: ${pedido.genero}</p>
-      </div>
-      <div class="footer">
-        <p>Si tienes alguna pregunta, contacta en <a href="mailto:contacto.tinteka@gmail.com">contacto.tinteka@gmail.com</a>.</p>
-      </div>
+      <h1>Factura del Pedido</h1>
+      <p>Número de Factura: ${pedido.referencia}</p>
+      <p>Fecha del Pedido: ${new Date(pedido.fecha).toLocaleDateString()}</p>
     </div>
-  ` : `
-    <div class="container">
-      <div class="header">
-        <img src="assets/Logo.png" alt="Tinteka">
-        <h1>Detalles del Pedido</h1>
-        <p>Referencia: ${pedido.referencia}</p>
-        <p>Cliente: ${datosCliente.nombre} ${datosCliente.apellido}</p>
-        <p>Fecha: ${new Date(pedido.fecha).toLocaleString()}</p>
-        <p>Dirección: ${pedido.direccion}</p>
-      </div>
-      <div class="details">
-        <table>
-          <thead>
-            <tr><th>Libro</th><th>Cantidad</th><th>Precio</th></tr>
-          </thead>
-          <tbody>
-            ${detalles.map((linea: any) => `
-              <tr>
-                <td>${linea.titulo}</td>
-                <td>${linea.cantidad}</td>
-                <td>${linea.precio} €</td>
-              </tr>
-            `).join('')}
-            <tr>
-              <td class="total-label" colspan="2">Gastos Envío:</td>
-              <td class="total-value">${pedido.total < 5 ? 5 : 0} €</td>
-            </tr>
-            <tr>
-              <td class="total-label" colspan="2">Total:</td>
-              <td class="total-value">${pedido.total} €</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="footer">
-        <p>Para consultas: <a href="mailto:contacto.tinteka@gmail.com">contacto.tinteka@gmail.com</a></p>
-      </div>
+    <div>
+      <h3>Datos del Cliente</h3>
+      <p>${datosCliente.nombre} ${datosCliente.apellido}</p>
+      <p>Dirección de Envío: ${pedido.direccion}</p>
     </div>
-  `;
+    <div class="details">
+      <h3>Detalles del Pedido</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Libro</th>
+            <th>Cantidad</th>
+            <th>Precio (IVA incl.)</th>
+            <th>Precio (IVA excl.)</th>
+            <th>IVA (4%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${detalles.map((linea: any) => `
+            <tr>
+              <td>${linea.titulo}</td>
+              <td>${linea.cantidad}</td>
+              <td>${linea.precio} €</td>
+              <td>${(linea.precio * 0.96).toFixed(2)} €</td>
+              <td>${(linea.precio - (linea.precio * 0.96)).toFixed(2)} €</td>
+            </tr>
+          `).join('')}
+          <tr>
+            <td class="total" colspan="4">Gastos de Envío (IVA incl.):</td>
+            <td>${pedido.total < 5 ? 5 : 0} €</td>
+          </tr>
+          <tr>
+            <td class="total" colspan="4">Total (IVA incl.):</td>
+            <td>${pedido.total} €</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3>Datos del Vendedor</h3>
+      <p>Tinteka</p>
+      <p>Email: <a href="mailto:contacto.tinteka@gmail.com">contacto.tinteka@gmail.com</a></p>
+    </div>
+    <div class="footer">
+      <p>Si tienes alguna pregunta, contacta con nosotros en <a href="mailto:contacto.tinteka@gmail.com">contacto.tinteka@gmail.com</a>.</p>
+    </div>
+  </div>
+`;
 
-    // Configuración común
-    div.style.width = '190mm';
-    div.style.margin = '0 auto';
-
-    // Estilos condicionales
+    // Estilos
     const styles = document.createElement('style');
-    styles.innerHTML = isMistery ? `
-    body { font-family: 'Arial', sans-serif; background: #f4f4f9; padding: 20px; }
-    .container { max-width: 600px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); margin-left: auto;
-    margin-right: auto;box-sizing: border-box; }
-    .header { text-align: center; margin-bottom: 25px; }
-    .header img { height: 50px; margin: 0 auto 20px; display: block; }
-    .header h1 { font-size: 24px; color: #232323; font-weight: bold; }
-    .header h2 { font-size: 20px; color: #555; margin: 5px 0; }
-    .details { margin: 25px 0; padding: 20px; background: #f9f9f9; border-radius: 8px; border: 1px solid #e0e0e0; }
-    .details p { font-size: 16px; color: #444; margin: 10px 0; }
-    .footer { text-align: center; font-size: 14px; color: #666; margin-top: 25px; }
-    .footer a { color: #007BFF; text-decoration: none; font-weight: 500; }
-  ` : `
-    body { font-family: 'Work Sans', sans-serif; background: #f0f0e8; padding: 20px; }
-    .container { max-width: 600px; background: #fffffe; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-left: auto;
-    margin-right: auto; box-sizing: border-box;}
-    .header { text-align: center; }
-    .header img { height: 50px; margin: 0 auto 20px; display: block; }
-    .header h1 { font-size: 24px; color: #232323; font-weight: bold; }
-    .details { margin: 20px 0; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 8px; border: 1px solid #ddd; }
-    th { background: #f4f4f4; }
-    .total-label { text-align: right; font-weight: bold; width: 80%; border: none; }
-    .total-value { font-weight: bold; width: 20%; border: none; }
-    .footer { text-align: center; font-size: 14px; color: #222525; }
-    .footer a { color: #007BFF; text-decoration: none; }
-  `;
+    styles.innerHTML = `
+  body {
+    font-family: 'Work Sans', sans-serif;
+    background-color: #f8f9fa;
+    padding: 20px;
+  }
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .header {
+    text-align: center;
+  }
+  .image-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .header img {
+    height: 50px;
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: bold;
+    color: #232323;
+  }
+  h3 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #232323;
+    margin-top: 20px;
+  }
+  .details table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  .details th, .details td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  .details th {
+    background-color: #f4f4f4;
+  }
+  .total {
+    text-align: right;
+    font-weight: bold;
+  }
+  .footer {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 20px;
+    color: #555;
+  }
+  .footer a {
+    color: #078080;
+    text-decoration: none;
+  }
+`;
 
     div.appendChild(styles);
     document.body.appendChild(div);
 
-    // Generación del PDF
     // Generación del PDF
     html2canvas(div, {
       scale: 2,
@@ -283,7 +304,7 @@ export class PaginaUsuarioComponent implements OnInit {
 
       // Aplicar posición horizontal centrada
       pdf.addImage(canvas, 'PNG', horizontalPosition, currentHeight, imgWidth, imgHeight);
-      pdf.save(`detalles_pedido_${pedido.referencia}.pdf`);
+      pdf.save(`factura_pedido_${pedido.referencia}.pdf`);
       document.body.removeChild(div);
     });
   }
@@ -298,7 +319,7 @@ export class PaginaUsuarioComponent implements OnInit {
     if (this.editandoPerfil) {
       this.guardarCambios();
     } else {
-      this.datosClienteOriginal = {...this.datosCliente};
+      this.datosClienteOriginal = { ...this.datosCliente };
     }
     this.editandoPerfil = !this.editandoPerfil;
   }
@@ -421,24 +442,24 @@ export class PaginaUsuarioComponent implements OnInit {
 
   editarEstadoSuscripcion() {
     if (this.estadoSuscripcion) {
-    this.perfilUsuarioService.putEditarEstado(this.estadoSuscripcion).subscribe({
-      next: (response) => {
-        console.log('Suscripción cancelada:', response);
-        this.alertMessage = 'Suscripción cancelada correctamente';
-        this.alertType = 'success';
-        this.isAlertVisible = true;
-        this.showGestionSuscripcion = false;
-        this.showConfirmCancel = false;
-        this.estadoSuscripcion = false;
-      },
-      error: (err) => {
-        console.error('Error cancelando suscripción:', err);
-        this.alertMessage = 'Error al cancelar la suscripción';
-        this.alertType = 'warning';
-        this.showConfirmCancel = false;
-        this.isAlertVisible = true;
-      }
-    });
+      this.perfilUsuarioService.putEditarEstado(this.estadoSuscripcion).subscribe({
+        next: (response) => {
+          console.log('Suscripción cancelada:', response);
+          this.alertMessage = 'Suscripción cancelada correctamente';
+          this.alertType = 'success';
+          this.isAlertVisible = true;
+          this.showGestionSuscripcion = false;
+          this.showConfirmCancel = false;
+          this.estadoSuscripcion = false;
+        },
+        error: (err) => {
+          console.error('Error cancelando suscripción:', err);
+          this.alertMessage = 'Error al cancelar la suscripción';
+          this.alertType = 'warning';
+          this.showConfirmCancel = false;
+          this.isAlertVisible = true;
+        }
+      });
     } else {
       this.perfilUsuarioService.putEditarEstado(this.estadoSuscripcion).subscribe({
         next: (response) => {
@@ -497,7 +518,7 @@ export class PaginaUsuarioComponent implements OnInit {
   }
 
   cambiarSuscripcion() {
-    this.router.navigate(['/infocajas', this.datosCliente.suscripcion.tipoSuscripcion]).then(r =>{
+    this.router.navigate(['/infocajas', this.datosCliente.suscripcion.tipoSuscripcion]).then(r => {
       localStorage.setItem('change', String(true));
     });
   }
