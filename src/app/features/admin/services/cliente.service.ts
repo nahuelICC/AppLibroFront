@@ -12,7 +12,7 @@ export class ClienteService {
   constructor(private http: HttpClient) { }
 
   getClientesTabla(): Observable<ClientesTablaDTO[]>{
-    return this.http.get<ClientesTablaDTO[]>(`${this.apiUrl}/clientesTabla`)
+    return this.http.get<ClientesTablaDTO[]>(`${this.apiUrl}/admin/clientesTabla`)
   }
 
   modificarCliente(item: any): Observable<any> {
