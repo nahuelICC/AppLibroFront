@@ -1,7 +1,7 @@
-<div id="{{tablaActiva}}" class="bg-white p-4 rounded-lg shadow-md max-w-[calc(100vw-16rem)] hidden">
+<div id="{{tablaActiva}}" class="bg-white p-4 rounded-lg shadow-md max-w-[calc(100vw-16rem)]">
   <!-- Barra de búsqueda -->
   <div class="flex items-center border rounded-lg p-2 mb-4">
-    <span class="text-gray-500 mr-2">🔍</span>
+    <span class="text-gray-500 mr-2 flex"><mat-icon class="self-center">search</mat-icon></span>
     <input type="text" placeholder="Buscar" [(ngModel)]="buscador"
            class="w-full outline-none bg-transparent">
   </div>
@@ -36,9 +36,9 @@
                       </mat-icon>
                     </span>
                 </ng-container>
-                <ng-template #textField>
-                  <span class="truncate">{{ item[col.campo] }}</span>
-                </ng-template>
+                  <ng-template #textField>
+                      <span class="truncate"> {{ item[col.campo] }} </span>
+                  </ng-template>
               </div>
             </ng-container>
 
@@ -59,12 +59,27 @@
                 </ng-container>
 
                 <!-- Campo de texto editable -->
-                <ng-template #editTextField>
-                  <div class="relative w-full">
-                    <input type="text" [formControl]="getFormControl(col.campo)"
-                           class="w-full border p-1 rounded focus:outline-none focus:border-blue-500 truncate">
+                  <ng-template #editTextField>
+                      <div class="relative w-full">
+                          <ng-container *ngIf="col.isEstado; else standardTextInput">
+                              <select [formControl]="getFormControl(col.campo)"
+                                      class="w-full border p-1 rounded focus:outline-none focus:border-blue-500 truncate">
+                                  <option *ngFor="let estado of estados"
+                                          [value]="estado"
+                                          [selected]="estado === item[col.campo]">
+                                      {{ estado }}
+                                  </option>
+                              </select>
+                          </ng-container>
 
-                    <!-- Tooltip de error posicionado fuera del flujo normal -->
+                          <ng-template #standardTextInput>
+                              <input type="text"
+                                     [formControl]="getFormControl(col.campo)"
+                                     class="w-full border p-1 rounded focus:outline-none focus:border-blue-500 truncate">
+                          </ng-template>
+
+
+                          <!-- Tooltip de error posicionado fuera del flujo normal -->
                     <div *ngIf="getFormControl(col.campo)?.invalid && getFormControl(col.campo)?.touched"
                          class="absolute left-0 -top-2 transform -translate-y-full
                                   bg-white text-red-500 text-xs px-3 py-1 border border-red-300
@@ -81,7 +96,9 @@
               </ng-container>
 
               <ng-template #nonEditable>
-                <span class="truncate">{{ item[col.campo] }}</span>
+                <div class="overflow-hidden w-full">
+                  <span class="">{{ item[col.campo] }}</span>
+                </div>
               </ng-template>
             </ng-template>
           </div>

@@ -11,6 +11,9 @@ import {
 } from '@angular/forms';
 import { MatIcon } from '@angular/material/icon';
 import { FiltroBuscadorPipe } from '../../pipes/filtro-buscador.pipe';
+import {PedidoService} from "../../services/pedido.service";
+import {PedidosTablaDTO} from "../../DTO/PedidosTablaDTO";
+import {EstadoDTO} from "../../DTO/EstadoDTO";
 
 @Component({
   selector: 'app-tabla',
@@ -29,7 +32,7 @@ import { FiltroBuscadorPipe } from '../../pipes/filtro-buscador.pipe';
 })
 export class TablaComponent implements OnInit {
   @Input() datos: any[] = [];
-  @Input() columnas: { titulo: string; campo: string; editable: boolean }[] = [];
+  @Input() columnas: { titulo: string; campo: string; editable: boolean , isEstado: boolean }[] = [];
   @Output() actualizarFila = new EventEmitter<any>();
   @Input() validadores: { [key: string]: ValidatorFn[] } = {};
   @Input() tablaActiva: string = '';
@@ -38,12 +41,25 @@ export class TablaComponent implements OnInit {
   editingForm: FormGroup | null = null;
   editingRow: number | null = null;
   originalData: any;
+  estados: string[] = [];
 
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private pedidoService: PedidoService) {}
 
   ngOnInit(): void {
     document.getElementById('clientes')?.classList.remove('hidden');
+    this.cargaEstados();
+
+  }
+  cargaEstados(): void{
+    this.pedidoService.getEstados().subscribe((res: any[]) => {
+      this.estados = res;
+    });
+  }
+
+  getEstadoNombre(est: string): string|undefined {
+    const estado = this.estados.find(e => e === est);
+    return estado ? estado : 'Desconocido';
   }
 
   editRow(index: number): void {
