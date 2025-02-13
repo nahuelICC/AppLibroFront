@@ -2,21 +2,17 @@
   <!-- Versión móvil: acordeones (visible solo en pantallas pequeñas) -->
   <div class="block md:hidden mb-8">
     <div *ngFor="let suscripcion of suscripciones" class="mb-4">
-      <!-- Contenedor del "acordeón" con borde condicional -->
       <div class="border rounded-lg overflow-hidden"
            [ngClass]="{
              'border-red-500': suscripcion.id_tipo === suscripcionSeleccionada?.id_tipo,
              'border-gray-300': suscripcion.id_tipo !== suscripcionSeleccionada?.id_tipo
            }">
-        <!-- Header: al hacer click se selecciona la suscripción -->
         <div class="cursor-pointer p-4 bg-white flex justify-between items-center"
              (click)="seleccionarSuscripcion(suscripcion)">
           <span class="text-xl font-semibold">{{ suscripcion.nombre }}</span>
           <span class="text-2xl font-bold">{{ suscripcion.precio }}€ /mes</span>
         </div>
-        <!-- Contenido desplegable: se muestra solo si esta suscripción es la seleccionada -->
         <div *ngIf="suscripcion.id_tipo === suscripcionSeleccionada?.id_tipo" class="p-4 bg-gray-50">
-          <!-- Sección "¿Cómo funciona?" -->
           <section class="mb-4">
             <h4 class="text-xl font-semibold text-[#e74c3c]">¿Cómo funciona?</h4>
             <p class="text-lg text-gray-700">
@@ -24,8 +20,6 @@
               Todas las suscripciones tienen la misma duración, pero varían en precio y contenido, permitiéndote elegir la que mejor se adapte a tus necesidades.
             </p>
           </section>
-
-          <!-- Sección "Duración" -->
           <section class="mb-4">
             <h4 class="text-xl font-semibold text-[#e74c3c]">Duración</h4>
             <div class="flex items-center text-lg text-gray-700">
@@ -36,8 +30,6 @@
               Mensual
             </div>
           </section>
-
-          <!-- Sección "¿Qué incluye la suscripción?" -->
           <section class="mb-4">
             <h4 class="text-xl font-semibold text-[#e74c3c]">
               ¿Qué incluye la suscripción {{ suscripcion.nombre }}?
@@ -54,32 +46,28 @@
               </li>
             </ul>
           </section>
-
-          <!-- Separador -->
           <div class="mb-4 border-t-2 border-black"></div>
-
-          <!-- Sección "Precio" y botón de suscribirse -->
           <p class="text-3xl font-bold text-center text-gray-900 mb-4">{{ suscripcion.precio }}€ /mes</p>
           <div class="flex justify-center">
             <app-boton
-              [label]="'Suscribirse'"
+              [label]="isSuscribed() ? 'Cambiar Suscripción' : 'Suscribirse'"
               [color]="'#E53935'"
               [size]="'small'"
-              (click)="confirmarSuscripcion()">
+              (click)="confirmarSuscripcion()"
+              [disabled]="!isLogged() || (isSuscribed() && suscripcion.id_tipo === getSubscriptionType())"
+              matTooltip="{{ !isLogged() ? 'Regístrate para poder suscribirte' : (isSuscribed() && suscripcion.id_tipo === getSubscriptionType()) ? 'Ya estás suscrito a esta opción' : '' }}">
             </app-boton>
-
             <app-alert-confirmar
               *ngIf="mostrarAlerta"
-              [message]="'¿Quieres suscribirte a ' + suscripcionSeleccionada?.nombre + '?'"
+              [message]="isSuscribed() ? '¿Desea cambiar de suscripción?' : '¿Quieres suscribirte a ' + suscripcionSeleccionada?.nombre + '?'"
               (confirm)="onConfirm()"
-              (cancel)="onCancel()"
-            ></app-alert-confirmar>
+              (cancel)="onCancel()">
+            </app-alert-confirmar>
           </div>
         </div>
       </div>
     </div>
   </div>
-
   <!-- Versión escritorio: grid de 3 columnas (visible en pantallas medianas y superiores) -->
   <div class="hidden md:grid grid-cols-3 gap-8">
     <div *ngFor="let suscripcion of suscripciones"
@@ -89,22 +77,16 @@
            'border-gray-300': suscripcion.id_tipo !== suscripcionSeleccionada?.id_tipo
          }"
          (click)="seleccionarSuscripcion(suscripcion)">
-      <!-- Etiqueta de nombre de suscripción -->
       <div class="absolute top-4 right-4 bg-[#078080] text-white px-3 py-1 rounded-full text-sm font-semibold">
         {{ getEtiqueta(suscripcion.nombre ?? '') }}
       </div>
-      <!-- Título y precio -->
       <h5 class="text-xl md:text-2xl font-semibold mb-2">{{ suscripcion.nombre }}</h5>
       <p class="text-2xl md:text-3xl font-bold mb-4">{{ suscripcion.precio }}€ /mes</p>
     </div>
   </div>
-
   <!-- Cuadro grande de información (solo se muestra en escritorio) -->
   <div *ngIf="suscripcionSeleccionada" class="hidden md:block mt-12 p-8 bg-white rounded-lg shadow-lg relative overflow-hidden">
-    <!-- Nombre de la suscripción -->
     <h3 class="relative z-10 text-3xl font-bold text-center mb-8">{{ suscripcionSeleccionada.nombre }}</h3>
-
-    <!-- Sección "¿Cómo funciona?" -->
     <section class="relative z-10 space-y-4">
       <h4 class="text-xl font-semibold text-[#e74c3c]">¿Cómo funciona?</h4>
       <p class="text-lg text-gray-700">
@@ -112,8 +94,6 @@
         Todas las suscripciones tienen la misma duración, pero varían en precio y contenido, permitiéndote elegir la que mejor se adapte a tus necesidades.
       </p>
     </section>
-
-    <!-- Sección "Duración" -->
     <section class="relative z-10 mt-5 space-y-4">
       <h4 class="text-xl font-semibold text-[#e74c3c]">Duración</h4>
       <div class="flex items-center text-lg text-gray-700">
@@ -125,8 +105,6 @@
         Mensual
       </div>
     </section>
-
-    <!-- Sección "¿Qué incluye la suscripción?" -->
     <section class="relative z-10 mt-5 space-y-4">
       <h4 class="text-xl font-semibold text-[#e74c3c]">
         ¿Qué incluye la suscripción {{ suscripcionSeleccionada.nombre }}?
@@ -143,31 +121,23 @@
         </li>
       </ul>
     </section>
-
-    <!-- Separador -->
     <div class="relative z-10 my-8 border-t-2 border-black w-full"></div>
-
-    <!-- Sección "Precio" y botón de suscribirse -->
     <p class="relative z-10 text-3xl font-bold text-center text-gray-900">{{ suscripcionSeleccionada.precio }}€ /mes</p>
     <div class="relative z-10 mt-8 flex justify-center">
       <app-boton
-        [label]="'Suscribirse'"
+        [label]="isSuscribed() ? 'Cambiar Suscripción' : 'Suscribirse'"
         [color]="'#E53935'"
         [size]="'small'"
         (click)="confirmarSuscripcion()"
-      [disabled]="modificarSuscripcion"
-      matTooltip="{{ modificarSuscripcion ? 'Ya estas suscrito a esta opcion' : '' }}">
+        [disabled]="!isLogged() || (isSuscribed() && suscripcionSeleccionada.id_tipo === getSubscriptionType())"
+        matTooltip="{{ !isLogged() ? 'Regístrate para poder suscribirte' : (isSuscribed() && suscripcionSeleccionada.id_tipo === getSubscriptionType()) ? 'Ya estás suscrito a esta opción' : '' }}">
       </app-boton>
-
-    <!-- Componente de alerta de confirmación -->
       <app-alert-confirmar
         *ngIf="mostrarAlerta"
-        [message]="'¿Quieres suscribirte a ' + suscripcionSeleccionada?.nombre + '?'"
+        [message]="isSuscribed() ? '¿Desea cambiar de suscripción?' : '¿Quieres suscribirte a ' + suscripcionSeleccionada?.nombre + '?'"
         (confirm)="onConfirm()"
-        (cancel)="onCancel()"
-      ></app-alert-confirmar>
-
-
+        (cancel)="onCancel()">
+      </app-alert-confirmar>
     </div>
-</div>
+  </div>
 </div>

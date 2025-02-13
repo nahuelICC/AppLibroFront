@@ -1,27 +1,18 @@
 <div class="flex justify-center mt-5 pb-15 px-4 md:pb-40">
   <div class="w-full max-w-4xl bg-white shadow-md rounded-lg p-6">
     <h2 class="text-2xl font-bold text-center mb-6">Resumen de tu Suscripción</h2>
-
-    <!-- Nombre de la Suscripción -->
     <div class="flex justify-between items-center border-b pb-4 mb-4">
       <span class="text-lg font-semibold">Tipo de Caja:</span>
       <span class="text-lg">{{ nombre }}</span>
     </div>
-
-    <!-- Precio -->
     <div class="flex justify-between items-center border-b pb-4 mb-4">
       <span class="text-lg font-semibold">Precio:</span>
       <span class="text-lg">{{ precio }}€ /mes</span>
     </div>
-
-    <!-- Selección de Género -->
     <div class="mb-16 relative">
       <label class="block text-lg font-semibold mb-2">Selecciona el género:</label>
-
       <div class="relative">
-        <!-- Select -->
         <div class="relative">
-          <!-- Botón que simula el select -->
           <button type="button"
                   (click)="menuAbierto = !menuAbierto"
                   class="w-full text-left border rounded-lg p-3 text-gray-700 bg-white focus:ring-2 focus:ring-[#E53935] flex justify-between items-center">
@@ -32,8 +23,6 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
-
-          <!-- Menú desplegable personalizado -->
           <div *ngIf="menuAbierto"
                class="absolute top-full left-0 w-full z-50 bg-white border rounded-lg shadow-lg max-h-60 overflow-auto">
             <button *ngFor="let genero of generos"
@@ -42,8 +31,6 @@
               {{ genero.nombre | nombreGenero }}
             </button>
           </div>
-
-          <!-- Select nativo oculto -->
           <select [(ngModel)]="generoSeleccionado"
                   class="absolute inset-0 w-full h-full opacity-0 pointer-events-none">
             <option value="" disabled selected>Selecciona una opción</option>
@@ -52,24 +39,19 @@
             </option>
           </select>
         </div>
-
       </div>
-
     </div>
-
-    <!-- Botón de Confirmar Compra -->
     <div class="flex justify-center mt-6">
-      <app-boton [label]="'Confirmar Compra'" [color]="'#E53935'" (click)="mostrarAlerta = true" [disabled]="!generoSeleccionado" [size]="'medium'"> </app-boton>
+      <app-boton [label]="isSuscribed ? 'Confirmar Cambio' : 'Confirmar Compra'" [color]="'#E53935'" (click)="mostrarAlerta = true" [disabled]="!generoSeleccionado" [size]="'medium'"> </app-boton>
+    </div>
+    <div *ngIf="isSuscribed" class="text-center text-sm text-gray-600 mt-2">
+      El precio de la nueva suscripción se cargará en el próximo ciclo de factura.
     </div>
   </div>
-
   <app-alert-confirmar
     *ngIf="mostrarAlerta"
-    [message]="'¿Estás seguro de que deseas continuar?'"
+    [message]="isSuscribed ? '¿Desea cambiar de suscripción?' : '¿Estás seguro de que deseas continuar?'"
     (confirm)="confirmarCompra()"
     (cancel)="mostrarAlerta = false">
   </app-alert-confirmar>
 </div>
-
-
-
