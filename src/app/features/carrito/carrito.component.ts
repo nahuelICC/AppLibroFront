@@ -37,7 +37,6 @@ export class CarritoComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private carritoService: CarritoService,
-    private router: Router
   ) {
     this.cartItems = this.carritoService.cartItems;
   }
@@ -55,10 +54,10 @@ export class CarritoComponent implements OnInit {
     );
   }
 
-  onQuantityUpdated(event: { idTipo: number; cantidad: number }) {
-    const { idTipo, cantidad } = event;
-    this.carritoService.updateItemQuantity(idTipo, cantidad);
-    this.updateProductQuantity(idTipo, cantidad);
+  onQuantityUpdated(event: { id: number; cantidad: number }) {
+    const { id, cantidad } = event;
+    this.carritoService.updateItemQuantity(id, cantidad);
+    this.updateProductQuantity(id, cantidad);
     this.calculateTotalPrice(); // Recalcular precios tras cambiar la cantidad
   }
 
@@ -122,7 +121,7 @@ export class CarritoComponent implements OnInit {
     this.totalBooksPrice = 0;
 
     this.cartItems.forEach((item: any) => {
-      const idLibroTipo = item.id_tipo;
+      const idLibroTipo = item.id;
       this.carritoService.getLibroTipo(idLibroTipo).subscribe(
         (response: any) => {
           const product = response;

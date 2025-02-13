@@ -1,19 +1,10 @@
 export class LibroDetalle {
-  titulo: string;
-  autor: string;
-  portada: string;
-  genero: string;
-  descripcion: string;
-  precioTapaBlanda: string;
-  precioTapaDura: string;
+  id?: number;
+  titulo?: string;
+  autor?: string;
+  portada?: string;
+  genero?: string;
+  descripcion?: string;
+  tiposTapa?: any[];
 
-  constructor(titulo: string, autor: string, portada: string, genero: string, descripcion: string,precioTapaBlanda: string,precioTapaDura: string) {
-    this.titulo = titulo;
-    this.autor = autor;
-    this.portada = portada;
-    this.genero = genero;
-    this.descripcion = descripcion;
-    this.precioTapaBlanda = precioTapaBlanda;
-    this.precioTapaDura= precioTapaDura;
-  }
 }

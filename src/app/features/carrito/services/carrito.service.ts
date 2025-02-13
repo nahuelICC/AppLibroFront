@@ -26,7 +26,7 @@ export class CarritoService {
 
   addItemToCart(item: any) {
     const existingItemIndex = this.cartItems.findIndex(
-      (cartItem) => cartItem.id_tipo === item.id_tipo
+      (cartItem) => cartItem.id === item.id
     );
 
     if (existingItemIndex !== -1) {
@@ -62,8 +62,8 @@ export class CarritoService {
 
 
 
-  updateItemQuantity(idTipo: number, cantidad: number) {
-    const itemIndex = this.cartItems.findIndex(item => item.id_tipo === idTipo);
+  updateItemQuantity(id: number, cantidad: number) {
+    const itemIndex = this.cartItems.findIndex(item => item.id === id);
 
     if (itemIndex !== -1) {
       if (cantidad <= 0) {

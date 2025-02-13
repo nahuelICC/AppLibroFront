@@ -4,10 +4,8 @@ import { BotonComponent } from '../../../../shared/components/boton/boton.compon
 import { FormsModule } from '@angular/forms';
 import { ResenaComponent } from '../../components/resena/resena.component';
 import { DetallePrecioComponent } from '../../components/detalle-precio/detalle-precio.component';
-import { LibroDetalle } from "../../DTOs/LibroDetalle";
 import { ActivatedRoute } from "@angular/router";
 import { LibroServiceService } from "../../../../core/services/libro/libro-service.service";
-import { LibroDetalleResponse } from '../../DTOs/LibroDetalleResponse';
 import { MatIcon } from '@angular/material/icon';
 import { DetallesLibroService } from '../../services/detalles-libro.service';
 import { Resenya } from '../../DTOs/Resenya';
@@ -30,12 +28,11 @@ import { RatingDistribution } from '../../DTOs/RatingDistribution';
   styleUrl: './detalles.component.css'
 })
 export class DetallesComponent implements OnInit {
-  libro: LibroDetalle = new LibroDetalle('', '', '', '', '', '', '');
+  libro: any ;
   resenyas: Resenya[] = [];
   nuevaResenya = new Resenya(0, 0, 0, '', 0, '', '');
   paginatedResenyas: Resenya[] = [];
   paginacion: Paginacion = new Paginacion(1, 2, 0, []);
-  tiposTapa: any[] = [];
   libroId: number = 0;
   mostrarFormulario: boolean = false;
   averageRating: number = 0;
@@ -67,22 +64,13 @@ export class DetallesComponent implements OnInit {
       this.detallesLibroService.obtenerIdCliente().subscribe(response => {
         this.clienteIdActual = response.id_cliente;
       });
-      this.libroService.getLibroDetalle(+id).subscribe((data: LibroDetalleResponse) => {
-        this.libro = new LibroDetalle(
-          data.libro.titulo,
-          data.libro.autor,
-          data.libro.portada,
-          data.libro.genero,
-          data.libro.descripcion,
-          data.libro.precioTapaBlanda,
-          data.libro.precioTapaDura
-        );
-        this.tiposTapa = data.tiposTapa;
+      this.libroService.getLibroDetalle(+id).subscribe((data: any) => {
+        this.libro = data;
         this.libroId = +id;
         this.nuevaResenya.id_libro = this.libroId;
 
-        if (this.tiposTapa && this.tiposTapa.length > 0) {
-          this.selectedTipoTapa = this.tiposTapa[0];
+        if (this.libro.tiposTapa && this.libro.tiposTapa.length > 0) {
+          this.selectedTipoTapa = this.libro.tiposTapa[0];
         }
 
         this.fetchAverageRating();
@@ -141,11 +129,7 @@ export class DetallesComponent implements OnInit {
   }
 
   calcularEstadisticas() {
-    if (!this.resenyas || this.resenyas.length === 0) {
-      this.ratingDistribution = this.ratingDistribution.map(entry => new RatingDistribution(entry.stars, 0, 0));
-      this.cdRef.detectChanges();
-      return;
-    }
+   this.ratingDistribution = this.ratingDistribution.map(entry => new RatingDistribution(entry.stars!, 0, 0));
 
     let total = 0;
     let count = this.resenyas.length;

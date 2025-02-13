@@ -19,4 +19,5 @@ export class PasarelaPagoService {
   crearSuscripcion(idCliente: number, tipoSuscripcion: number, data: any): Observable<any> {
     return this.http.post(`${this.apiUrlSuscripcion}/nueva/${idCliente}/${tipoSuscripcion}`, data);
   }
+
 }

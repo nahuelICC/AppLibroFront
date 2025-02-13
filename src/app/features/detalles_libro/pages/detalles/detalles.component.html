@@ -28,12 +28,7 @@
   <div class="md:w-1/3 p-6 flex flex-col w-full">
     <app-detalle-precio
       *ngIf="libro"
-      [precios]="{
-        blanda: libro?.precioTapaBlanda ? +libro.precioTapaBlanda : null,
-        dura: libro?.precioTapaDura ? +libro.precioTapaDura : null
-      }"
-      [tiposTapa]="tiposTapa"
-      [libroId]="libroId">
+      [libro]="libro">
     </app-detalle-precio>
   </div>
 </div>
