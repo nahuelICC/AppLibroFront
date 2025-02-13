@@ -38,7 +38,7 @@ export class DetallesComponent implements OnInit {
   tiposTapa: any[] = [];
   libroId: number = 0;
   mostrarFormulario: boolean = false;
-  averageRating: number = 0;
+  averageRating: number = 0; // Inicializado en 0
   totalReviews: number = 0;
   starsArray = [1, 2, 3, 4, 5];
   haComprado: boolean = false;
@@ -64,10 +64,17 @@ export class DetallesComponent implements OnInit {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
+      this.libroId = +id;
+      this.nuevaResenya.id_libro = this.libroId;
+
+      // Obtener el ID del cliente
       this.detallesLibroService.obtenerIdCliente().subscribe(response => {
         this.clienteIdActual = response.id_cliente;
+        this.verificarCompra();
       });
-      this.libroService.getLibroDetalle(+id).subscribe((data: LibroDetalleResponse) => {
+
+      // Obtener los detalles del libro
+      this.libroService.getLibroDetalle(this.libroId).subscribe((data: LibroDetalleResponse) => {
         this.libro = new LibroDetalle(
           data.libro.titulo,
           data.libro.autor,
@@ -78,29 +85,25 @@ export class DetallesComponent implements OnInit {
           data.libro.precioTapaDura
         );
         this.tiposTapa = data.tiposTapa;
-        this.libroId = +id;
-        this.nuevaResenya.id_libro = this.libroId;
 
         if (this.tiposTapa && this.tiposTapa.length > 0) {
           this.selectedTipoTapa = this.tiposTapa[0];
         }
 
+        // Obtener el promedio de las reseñas desde la base de datos
         this.fetchAverageRating();
-        this.fetchResenyas(); // Obtener reseñas
-        this.fetchTotalResenyas();
-        this.verificarCompra();
+
+        // Obtener las reseñas individuales
+        this.fetchResenyas();
       });
     }
   }
 
   verificarCompra(): void {
-    this.detallesLibroService.obtenerIdCliente().subscribe((response) => {
-      const clienteId = response.id_cliente;
-      this.libroService.verificarCompra(this.libroId, clienteId).subscribe((result) => {
-        this.haComprado = result.haComprado;
-        this.haDejadoResenya = result.haDejadoResenya;
-        this.mostrarBoton = this.haComprado && !this.haDejadoResenya;
-      });
+    this.libroService.verificarCompra(this.libroId, this.clienteIdActual).subscribe((result) => {
+      this.haComprado = result.haComprado;
+      this.haDejadoResenya = result.haDejadoResenya;
+      this.mostrarBoton = this.haComprado && !this.haDejadoResenya;
     });
   }
 
@@ -117,11 +120,15 @@ export class DetallesComponent implements OnInit {
           resena.apellido
         ));
 
-        // Recalcular la paginación
-        this.calculateTotalPages();
-
-        // Recalcular estadísticas
+        // Calcular las estadísticas de distribución de valoraciones
         this.calcularEstadisticas();
+
+        // Actualizar la paginación
+        this.calculateTotalPages();
+        this.updatePaginatedResenyas();
+
+        // Forzar la actualización de la vista
+        this.cdRef.detectChanges();
       },
       (error) => {
         console.error('Error fetching resenyas:', error);
@@ -129,20 +136,10 @@ export class DetallesComponent implements OnInit {
     );
   }
 
-  fetchTotalResenyas(): void {
-    this.detallesLibroService.countResenyas(this.libroId).subscribe(
-      (data) => {
-        this.totalReviews = data.total_resenyas;
-      },
-      (error) => {
-        console.error('Error fetching total resenyas:', error);
-      }
-    );
-  }
-
   calcularEstadisticas() {
     if (!this.resenyas || this.resenyas.length === 0) {
       this.ratingDistribution = this.ratingDistribution.map(entry => new RatingDistribution(entry.stars, 0, 0));
+      this.totalReviews = 0;
       this.cdRef.detectChanges();
       return;
     }
@@ -156,7 +153,6 @@ export class DetallesComponent implements OnInit {
       distribution[resena.valoracion - 1]++;
     });
 
-    this.averageRating = parseFloat((total / count).toFixed(1));
     this.totalReviews = count;
 
     this.ratingDistribution = distribution.map((count, index) => new RatingDistribution(
@@ -171,7 +167,15 @@ export class DetallesComponent implements OnInit {
   fetchAverageRating(): void {
     this.detallesLibroService.getMediaResenya(this.libroId).subscribe(
       (data) => {
-        this.averageRating = data.average_rating ? parseFloat(data.average_rating.toFixed(1)) : 0;
+        if (data.average_rating) {
+          this.averageRating = parseFloat(parseFloat(data.average_rating.toString()).toFixed(1));
+        } else {
+          this.averageRating = 0;
+        }
+        console.log('Average Rating from DB:', this.averageRating);
+
+        // Forzar la actualización de la vista
+        this.cdRef.detectChanges();
       },
       (error) => {
         console.error('Error fetching average rating:', error);
@@ -184,8 +188,9 @@ export class DetallesComponent implements OnInit {
       response => {
         console.log('Reseña creada con éxito', response);
 
-        // Recargar las reseñas desde el servidor
+        // Recargar las reseñas y el promedio
         this.fetchResenyas();
+        this.fetchAverageRating();
 
         // Limpiar el formulario de la nueva reseña
         this.nuevaResenya.texto = '';
@@ -193,14 +198,6 @@ export class DetallesComponent implements OnInit {
 
         // Verificar si el cliente ha comprado el libro y dejado la reseña
         this.verificarCompra();
-
-        // Reiniciar la paginación
-        this.paginacion.currentPage = 1; // Volver a la primera página
-        this.calculateTotalPages(); // Recalcular el número total de páginas
-        this.updatePaginatedResenyas(); // Actualizar las reseñas mostradas
-
-        // Recalcular estadísticas
-        this.calcularEstadisticas();
 
         // Cerrar el formulario
         this.mostrarFormulario = false;
@@ -297,22 +294,15 @@ export class DetallesComponent implements OnInit {
     // Eliminar la reseña localmente
     this.resenyas = this.resenyas.filter(resena => resena.id !== id);
 
-    // Recargar las reseñas desde el servidor
-    this.fetchResenyas();
+    // Recargar el promedio de las reseñas
+    this.fetchAverageRating();
 
-    // Reiniciar la paginación
-    this.paginacion.currentPage = 1; // Volver a la primera página
-    this.calculateTotalPages(); // Recalcular el número total de páginas
-    this.updatePaginatedResenyas(); // Actualizar las reseñas mostradas
-
-    // Recalcular estadísticas
+    // Recalcular las estadísticas de distribución de valoraciones
     this.calcularEstadisticas();
 
-    // Actualizar la media y el total de reseñas
-    this.fetchAverageRating();
-    this.fetchTotalResenyas();
-
-    // Verificar si el usuario puede dejar otra reseña
+    // Actualizar la paginación
+    this.calculateTotalPages();
+    this.updatePaginatedResenyas();
     this.verificarCompra();
 
     // Forzar la actualización de la vista
