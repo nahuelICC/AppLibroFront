@@ -6,4 +6,5 @@ export class CuadroProducto{
     autor?: string;
     genero?: string;
     id?: number;
+    numeroValoraciones?: number;
 }

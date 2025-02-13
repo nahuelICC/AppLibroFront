@@ -13,6 +13,7 @@ import {NgForOf, NgIf} from '@angular/common';
     NgForOf,
     NgIf
   ],
+  standalone: true,
   styleUrls: ['./resena.component.css']
 })
 export class ResenaComponent implements OnInit {
