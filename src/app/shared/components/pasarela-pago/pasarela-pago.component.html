@@ -241,5 +241,13 @@
     [type]="alertType"
     [isVisible]="isAlertVisible">
   </app-alert-info>
+  <app-alert-confirmar
+    *ngIf="showAlertConfirmar"
+    [message]="alertMessageConfirmar"
+    (confirm)="onConfirm()"
+    [confirmLabel]="'Aceptar'"
+    [showCancelButton]="false"
+    [showIcon]="false">
+  </app-alert-confirmar>
 
 </div>

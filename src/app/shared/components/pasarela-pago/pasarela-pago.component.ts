@@ -1,14 +1,14 @@
-import {ChangeDetectorRef, Component, OnInit, Output} from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BotonComponent } from '../boton/boton.component';
-import {CarritoService} from '../../../features/carrito/services/carrito.service';
-import {Router} from '@angular/router';
-import {PasarelaPagoService} from '../../services/pasarela-pago.service';
-import {AlertConfirmarComponent} from '../alert-confirmar/alert-confirmar.component';
-import {AlertInfoComponent, AlertType} from '../alert-info/alert-info.component';
-import {DetallesLibroService} from '../../../features/detalles_libro/services/detalles-libro.service';
-
+import { CarritoService } from '../../../features/carrito/services/carrito.service';
+import { Router } from '@angular/router';
+import { PasarelaPagoService } from '../../services/pasarela-pago.service';
+import { AlertConfirmarComponent } from '../alert-confirmar/alert-confirmar.component';
+import { AlertInfoComponent, AlertType } from '../alert-info/alert-info.component';
+import { DetallesLibroService } from '../../../features/detalles_libro/services/detalles-libro.service';
+import {AuthServiceService} from '../../../core/services/auth-service.service';
 
 @Component({
   selector: 'app-pasarela-pago',
@@ -36,9 +36,18 @@ export class PasarelaPagoComponent implements OnInit {
   genero: string | null = null;
   idTipo: string | null = null;
 
+  // Propiedades para la alerta de confirmación
+  showAlertConfirmar: boolean = false;
+  alertMessageConfirmar: string = 'Gracias por su compra';
 
-  constructor( private carritoService: CarritoService,private router:Router, private pasarelaPagoService: PasarelaPagoService,  private detallesLibroService: DetallesLibroService, private cdRef: ChangeDetectorRef) {
-  }
+  constructor(
+    private carritoService: CarritoService,
+    private router: Router,
+    private pasarelaPagoService: PasarelaPagoService,
+    private detallesLibroService: DetallesLibroService,
+    private cdRef: ChangeDetectorRef,
+    private authService: AuthServiceService
+  ) {}
 
   ngOnInit(): void {
     this.loadCartFromLocalStorage();
@@ -108,7 +117,6 @@ export class PasarelaPagoComponent implements OnInit {
     this.cdRef.detectChanges();
   }
 
-
   formData = {
     calle: '',
     codigoPostal: '',
@@ -130,7 +138,14 @@ export class PasarelaPagoComponent implements OnInit {
   selectedPaymentMethod: string | null = null;
 
   // Función para avanzar al siguiente paso
+  nextStep() {
+    if (!this.isCurrentStepValid()) return;
 
+    this.submitted = false;
+    if (this.currentStep < 4) {
+      this.currentStep++;
+    }
+  }
 
   // Función para retroceder al paso anterior
   prevStep() {
@@ -149,7 +164,6 @@ export class PasarelaPagoComponent implements OnInit {
     this.selectedPaymentMethod = method; // Guarda el método seleccionado
     this.nextStep(); // Avanza al siguiente paso
   }
-
 
   loadCartFromLocalStorage() {
     const cartData = localStorage.getItem('cart');
@@ -176,11 +190,11 @@ export class PasarelaPagoComponent implements OnInit {
     this.direccion = `${this.formData.calle}, ${this.formData.codigoPostal}, ${this.formData.localidad}, ${this.formData.provincia}`;
     // total: this.totalBooksPrice + this.shippingCost - this.discount
 
-    this.carritoService.postPedido(this.cartItems,this.totalBooksPrice,this.direccion).subscribe({
+    this.carritoService.postPedido(this.cartItems, this.totalBooksPrice, this.direccion).subscribe({
       next: (response: any) => {
         this.showConfirmEdit = false;
         this.clearCart();
-        this.router.navigate(['usuario']);
+        this.showAlertConfirmar = true; // Mostrar la alerta de confirmación
       },
       error: (error: any) => {
         console.error('Error al enviar el pedido:', error);
@@ -202,23 +216,23 @@ export class PasarelaPagoComponent implements OnInit {
   isCurrentStepValid(): boolean {
     this.submitted = true;
 
-    switch(this.currentStep) {
+    switch (this.currentStep) {
       case 1:
         return !!this.formData.calle && !!this.formData.codigoPostal &&
           !!this.formData.localidad && !!this.formData.provincia;
 
       case 3:
-        if(this.selectedPaymentMethod === 'credit-card') {
+        if (this.selectedPaymentMethod === 'credit-card') {
           return /^\d{13,19}$/.test(this.formData.cardNumber) &&
             /^(0[1-9]|1[0-2])\/[0-9]{2}$/.test(this.formData.expiry) &&
             /^\d{3,4}$/.test(this.formData.cvv) &&
             !!this.formData.cardholder;
         }
-        if(this.selectedPaymentMethod === 'paypal') {
+        if (this.selectedPaymentMethod === 'paypal') {
           return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(this.formData.paypalEmail) &&
             !!this.formData.paypalPassword;
         }
-        if(this.selectedPaymentMethod === 'other') {
+        if (this.selectedPaymentMethod === 'other') {
           return /^[0-9]{9,12}$/.test(this.formData.phone);
         }
         return false;
@@ -228,17 +242,7 @@ export class PasarelaPagoComponent implements OnInit {
     }
   }
 
-  nextStep() {
-    if (!this.isCurrentStepValid()) return;
-
-    this.submitted = false;
-    if (this.currentStep < 4) {
-      this.currentStep++;
-    }
-  }
-
   onFinalizar() {
-
     if (this.esSuscripcion) {
       // Si es suscripción, llamamos al servicio para crear la suscripción
       this.crear();
@@ -258,7 +262,7 @@ export class PasarelaPagoComponent implements OnInit {
         direccion: direccion
       };
 
-      console.log('Enviando datos de suscripción:', {idCliente: this.idCliente, tipoSuscripcion, data});
+      console.log('Enviando datos de suscripción:', { idCliente: this.idCliente, tipoSuscripcion, data });
 
       this.pasarelaPagoService.crearSuscripcion(this.idCliente, tipoSuscripcion, data)
         .subscribe({
@@ -272,7 +276,7 @@ export class PasarelaPagoComponent implements OnInit {
             localStorage.removeItem('idTipoSuscripcion');
             localStorage.removeItem('esSuscripcion');
             localStorage.removeItem('precioSuscripcion');
-
+            this.showAlertConfirmar = true; // Mostrar la alerta de confirmación
           },
           error: (error) => {
             console.error('Error al crear la suscripción:', error);
@@ -287,14 +291,20 @@ export class PasarelaPagoComponent implements OnInit {
             }
 
             this.isAlertVisible = true;
-
           }
         });
     } else {
       console.error('Faltan datos en localStorage para crear la suscripción.');
     }
-
-
   }
 
+  onConfirm() {
+    this.showAlertConfirmar = false;
+    this.router.navigate(['/main']);
+    this.authService.refreshLocalStorage();
+  }
+
+  onCancel() {
+    this.showAlertConfirmar = false;
+  }
 }

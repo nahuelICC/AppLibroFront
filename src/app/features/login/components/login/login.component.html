@@ -8,7 +8,7 @@
         <input
           type="text"
           formControlName="username"
-          placeholder="Nombre de usuario"
+          placeholder="Introduzca su nombre"
           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
         />
         <div *ngIf="loginForm.get('username')?.hasError('required') && loginForm.get('username')?.touched" class="text-red-500 text-sm mt-1">
@@ -22,7 +22,7 @@
         <input
           type="password"
           formControlName="password"
-          placeholder="Mínimo 6 caracteres"
+          placeholder="Introduzca su contraseña"
           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
         />
         <div *ngIf="loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched" class="text-red-500 text-sm mt-1">
