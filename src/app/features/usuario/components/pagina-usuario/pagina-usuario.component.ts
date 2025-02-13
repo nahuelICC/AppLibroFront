@@ -56,6 +56,7 @@ export class PaginaUsuarioComponent implements OnInit {
   generos: string[] = ["Novela Negra", "Thriller", "Novela Historica", "Romantica", "Ciencia Ficcion", "Distopia", "Aventuras", "Fantasia", "Contemporaneo", "Terror", "Paranormal", "Poesia", "Juvenil", "Infantil", "Autoayuda", "Salud Y Deporte", "Manuales", "Memorias", "Biografias", "Cocina", "Viajes", "Libros Tecnicos", "Referencia", "Divulgativos", "Libros De Texto", "Arte"];
   editandoGenero: boolean = false;
   generoSeleccionado: number = 0;
+  renovadoTipo : any;
 
   constructor(private perfilUsuarioService: PerfilUsuarioService, private fb: FormBuilder, private cdRef: ChangeDetectorRef, private zone: NgZone, private router: Router) {
     this.cambioContrasenaForm = this.fb.group({
@@ -98,6 +99,7 @@ export class PaginaUsuarioComponent implements OnInit {
         console.log('Datos cargados:', this.datosCliente);
         this.estadoSuscripcion = this.datosCliente.suscripcion.suscrito;
         this.generoSeleccionado = this.datosCliente.suscripcion.genero - 1;
+        this.renovadoTipo = this.datosCliente.renovada;
 
         if (this.datosCliente.pedidos) {
           this.datosCliente.pedidos.forEach((pedido: any) => {
@@ -518,6 +520,11 @@ export class PaginaUsuarioComponent implements OnInit {
   }
 
   cambiarSuscripcion() {
+    if (this.renovadoTipo !== ""){
+      this.router.navigate(['/infocajas', this.renovadoTipo]).then(r => {
+        localStorage.setItem('change', String(true));
+      });
+    }
     this.router.navigate(['/infocajas', this.datosCliente.suscripcion.tipoSuscripcion]).then(r => {
       localStorage.setItem('change', String(true));
     });

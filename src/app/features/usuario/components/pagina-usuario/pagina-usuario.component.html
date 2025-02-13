@@ -280,7 +280,7 @@
       <ng-container *ngIf="datosCliente.suscripcion && datosCliente.suscripcion.tipo; else noSuscripcion">
         <div class="flex justify-between ml-1 p-2">
         <span class="text-sm md:text-base font-medium self-center" [style.color]="estadoSuscripcion ? 'var(--color-texto)' : 'red'">
-          {{ datosCliente.suscripcion.tipo }} - Activa hasta {{ datosCliente.suscripcion.fechaFin | date:'dd/MM/yyyy' }}
+          {{ datosCliente.renovada != "" ? datosCliente.suscripcion.tipo + ' - Activa hasta ' + (datosCliente.suscripcion.fechaFin | date:'dd/MM/yyyy') + ' tu próxima suscripción será' + ' ' + datosCliente.nombreRenovada : datosCliente.suscripcion.tipo + ' - Activa hasta ' + (datosCliente.suscripcion.fechaFin | date:'dd/MM/yyyy') }}
         </span>
           <app-boton
             *ngIf="estadoSuscripcion"
