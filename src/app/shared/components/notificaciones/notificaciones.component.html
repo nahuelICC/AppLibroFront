@@ -1,0 +1,15 @@
+<div class="p-4">
+  <h2 class="text-xl font-bold mb-3">Notificaciones</h2>
+
+  <div *ngIf="cargando" class="text-gray-500">Cargando notificaciones...</div>
+
+  <div *ngIf="error" class="text-red-500">{{ error }}</div>
+
+  <ul *ngIf="!cargando && notificaciones.length > 0">
+    <li *ngFor="let notif of notificaciones" class="p-2 border-b border-gray-300">
+      <span class="font-semibold">{{ notif.titulo }}</span> - {{ notif.mensaje }}
+    </li>
+  </ul>
+
+  <p *ngIf="!cargando && notificaciones.length === 0" class="text-gray-500">No tienes notificaciones.</p>
+</div>

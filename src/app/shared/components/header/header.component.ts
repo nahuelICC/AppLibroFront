@@ -26,6 +26,8 @@ export class HeaderComponent implements OnInit{
 
   cantidadCarrito = 0;
   private cartSubscription!: Subscription;
+  cantidadNotificaciones = 3; // Cambiar dinámicamente con datos del backend
+
 
   ngOnInit(): void {
     // Suscribirse al contador del carrito

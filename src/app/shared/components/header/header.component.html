@@ -10,6 +10,16 @@
 
     <!-- Botón Menú Móvil -->
     <div class="md:hidden flex items-center gap-3">
+<!--      Aqui las notificaciones del movil-->
+      <a [routerLink]="['/notificaciones']">
+        <div class="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full cursor-pointer hover:bg-gray-300">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V11a6 6 0 10-12 0v3c0 .386-.149.735-.405 1.005L4 17h5m6 0a2 2 0 11-4 0" />
+          </svg>
+        </div>
+      </a>
+
       <a [routerLink]="['/carrito']">
         <div class="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full cursor-pointer hover:bg-gray-300" >
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -35,12 +45,19 @@
     <nav class="hidden md:flex items-center gap-4 lg:gap-6">
       <a href="/tienda" class="font-bold text-sm text-[#111818] hover:text-[#078080]">Tienda</a>
       <a [routerLink]="['/infocajas/1']" class="text-sm font-medium text-[#f45d48] hover:text-[#ff7562]">Suscripciones</a>
-      <a href="#" class="text-sm font-medium text-[#111818] hover:text-[#078080] truncate">Sobre nosotros</a>
-      <a href="#" class="text-sm font-medium text-[#111818] hover:text-[#078080]">Novedades</a>
-
       <!-- Botón Mi Cuenta -->
       <ng-container *ngIf="isAuthenticated; else loginRegisterButtons">
         <a [routerLink]="['/usuario']" class="text-sm font-bold text-[#078080] hover:text-[#065f5f] underline truncate">Mi cuenta</a>
+
+        <a [routerLink]="['/notificaciones']" matBadge="{{cantidadNotificaciones}}">
+          <div class="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full cursor-pointer hover:bg-gray-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V11a6 6 0 10-12 0v3c0 .386-.149.735-.405 1.005L4 17h5m6 0a2 2 0 11-4 0" />
+            </svg>
+          </div>
+        </a>
+
         <a [routerLink]="['/carrito']" matBadge="{{cantidadCarrito}}">
           <div class="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full cursor-pointer hover:bg-gray-300">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -74,8 +91,6 @@
     <div class="px-4 py-3 space-y-2 text-center">
       <a href="/tienda" class="block font-bold text-sm text-[#111818] hover:text-[#078080]">Tienda</a>
       <a href="#" class="block text-sm font-medium text-[#f45d48] hover:text-[#ff7562]">Suscripciones</a>
-      <a href="#" class="block text-sm font-medium text-[#111818] hover:text-[#078080]">Sobre nosotros</a>
-      <a href="#" class="block text-sm font-medium text-[#111818] hover:text-[#078080]">Novedades</a>
 
       <!-- Opciones de Usuario -->
       <ng-container *ngIf="isAuthenticated; else mobileLoginRegisterButtons">
