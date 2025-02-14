@@ -226,9 +226,28 @@
 
     <app-boton
       *ngIf="currentStep === 4"
-      (click)="sendOrderToBackend()"
+      (click)="onFinalizar()"
       [label]="'Finalizar'"
       [size]="'medium'">
     </app-boton>
   </div>
+  <app-alert-confirmar
+    *ngIf="showConfirmEdit" [message]="'¿Estás seguro de que quieres realizar el pedido?'"
+    (confirm)="sendOrderToBackend()" (cancel)="showConfirmEdit = false">
+  </app-alert-confirmar>
+
+<!--  <app-alert-info-->
+<!--    [message]="alertMessage"-->
+<!--    [type]="alertType"-->
+<!--    [isVisible]="isAlertVisible">-->
+<!--  </app-alert-info>-->
+  <app-alert-confirmar
+    *ngIf="showAlertConfirmar"
+    [message]="alertMessageConfirmar"
+    (confirm)="onConfirm()"
+    [confirmLabel]="'Aceptar'"
+    [showCancelButton]="false"
+    [showIcon]="false">
+  </app-alert-confirmar>
+
 </div>

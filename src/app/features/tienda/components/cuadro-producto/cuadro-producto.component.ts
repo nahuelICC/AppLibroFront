@@ -25,5 +25,6 @@ export class CuadroProductoComponent {
   @Input() price: number = 0;
   @Input() rating: number = 0
   @Input() genre: string = '';
+  @Input() numeroValoraciones: number = 0;
 
 }

@@ -1,4 +1,4 @@
-<!-- Alerta -->
+
 <div *ngIf="isVisible"
      [ngClass]="{
        'bg-white': true,
@@ -9,25 +9,35 @@
      class="fixed top-5 md:top-20 right-1 md:right-5 flex items-center w-3/4 sm:w-3/4 md:w-1/2 lg:w-80 p-4 sm:p-3 mb-4 text-gray-500 rounded-lg shadow-xl space-x-4">
 
   <!-- Icono con fondo de color según tipo -->
+  <!-- Icono con fondo de color según tipo -->
   <div class="inline-flex items-center justify-center shrink-0 w-8 h-8 sm:w-7 sm:h-7 md:w-8 md:h-8"
        [ngClass]="{
-         'bg-green-500 text-green-100': type === 'success',
-         'bg-red-500 text-red-100': type === 'error',
-         'bg-orange-500 text-orange-100': type === 'warning'
-       }">
-    <!-- Icono de éxito -->
-    <svg *ngIf="type === 'success'" class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
-    </svg>
-    <!-- Icono de error -->
-    <svg *ngIf="type === 'error'" class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z"/>
-    </svg>
-    <!-- Icono de advertencia -->
-    <svg *ngIf="type === 'warning'" class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM10 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-4a1 1 0 0 1-2 0V6a1 1 0 0 1 2 0v5Z"/>
-    </svg>
+       'bg-green-500 text-green-100': type === 'success',
+       'bg-red-500 text-red-100': type === 'error',
+       'bg-orange-500 text-orange-100': type === 'warning'
+     }">
+
+    <!-- Iconos según el tipo de alerta -->
+    <ng-container *ngIf="type === 'success'">
+      <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+      </svg>
+    </ng-container>
+
+    <ng-container *ngIf="type === 'error'">
+      <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z"/>
+      </svg>
+    </ng-container>
+
+    <ng-container *ngIf="type === 'warning'">
+      <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM10 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-4a1 1 0 0 1-2 0V6a1 1 0 0 1 2 0v5Z"/>
+      </svg>
+    </ng-container>
+
   </div>
+
 
   <!-- Mensaje de la alerta -->
   <span class="ms-3 text-sm font-normal">{{ message }}</span>

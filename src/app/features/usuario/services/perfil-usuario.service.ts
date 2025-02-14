@@ -11,6 +11,7 @@ export class PerfilUsuarioService {
   private apiUrl = '/api/clientes';
   private apiUrlPedido = '/api/lineaLibro';
   private apiUrlUsuario = '/api/usuario';
+  private apiUrlClienteSuscripcion = '/api/ClienteSuscripcion';
 
   constructor(private http: HttpClient) { }
 
@@ -33,4 +34,17 @@ export class PerfilUsuarioService {
   postCambioContrasena(datos: { actual: string, nueva: string, repetir: string }): Observable<any> {
     return this.http.post(`${this.apiUrlUsuario}/cambioContrasenya`, datos);
   }
+
+  putEditarEstado(estado:boolean): Observable<any> {
+    return this.http.put(`${this.apiUrl}/editarEstado`, { estado: estado });
+  }
+
+  putEditarGenero(genero:number): Observable<any> {
+    return this.http.put(`${this.apiUrlClienteSuscripcion}/cambiaGenero`, { genero: genero });
+  }
+
+  putEditarTipoSuscripcion(tipo: number | null, genero: number): Observable<any> {
+    return this.http.put(`${this.apiUrlClienteSuscripcion}/cambiaTipoSuscripcion`, { tipo: tipo, genero:genero });
+  }
+
 }

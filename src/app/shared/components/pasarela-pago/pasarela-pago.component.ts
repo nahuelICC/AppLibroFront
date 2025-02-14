@@ -1,15 +1,18 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BotonComponent } from '../boton/boton.component';
-import {CarritoService} from '../../../features/carrito/services/carrito.service';
-import {Router} from '@angular/router';
-import {PasarelaPagoService} from '../../services/pasarela-pago.service';
-
+import { CarritoService } from '../../../features/carrito/services/carrito.service';
+import { Router } from '@angular/router';
+import { PasarelaPagoService } from '../../services/pasarela-pago.service';
+import { AlertConfirmarComponent } from '../alert-confirmar/alert-confirmar.component';
+import { AlertInfoComponent, AlertType } from '../alert-info/alert-info.component';
+import { DetallesLibroService } from '../../../features/detalles_libro/services/detalles-libro.service';
+import {AuthServiceService} from '../../../core/services/auth-service.service';
 
 @Component({
   selector: 'app-pasarela-pago',
-  imports: [NgIf, FormsModule, BotonComponent],
+  imports: [NgIf, FormsModule, BotonComponent, AlertConfirmarComponent, AlertInfoComponent],
   templateUrl: './pasarela-pago.component.html',
   standalone: true,
   styleUrl: './pasarela-pago.component.css'
@@ -21,18 +24,60 @@ export class PasarelaPagoComponent implements OnInit {
   submitted = false;
   stepsValidity: boolean[] = [false, false, false];
   datos: any;
+  showConfirmEdit: boolean = false;
+  alertMessage: string = '';
+  alertType: AlertType = 'success';
+  isAlertVisible: boolean = false;
+  totalBooksPrice: number = 0;
+  direccion: string = '';
+  esSuscripcion: boolean = false;
+  idCliente: number = 0;
 
+  genero: string | null = null;
+  idTipo: string | null = null;
 
-  constructor( private carritoService: CarritoService,private router:Router, private pasarelaPagoService: PasarelaPagoService) {
-  }
+  // Propiedades para la alerta de confirmación
+  showAlertConfirmar: boolean = false;
+  alertMessageConfirmar: string = 'Gracias por su compra';
+
+  constructor(
+    private carritoService: CarritoService,
+    private router: Router,
+    private pasarelaPagoService: PasarelaPagoService,
+    private detallesLibroService: DetallesLibroService,
+    private cdRef: ChangeDetectorRef,
+    private authService: AuthServiceService
+  ) {}
 
   ngOnInit(): void {
     this.loadCartFromLocalStorage();
+
+    // Verificar si es una suscripción
+    const esSuscripcion = localStorage.getItem('esSuscripcion');
+    const genero = localStorage.getItem('generoSeleccionado');
+    const idTipo = localStorage.getItem('idTipoSuscripcion');
+
+    if (esSuscripcion === 'true') {
+      this.esSuscripcion = true;
+      console.log('Es una suscripción');
+    } else {
+      this.esSuscripcion = false;
+      console.log('No es una suscripción');
+    }
+
+    // Logs para verificar los datos de la suscripción
+    console.log('Generos, Precio, y Tipo de Suscripción en localStorage:');
+    console.log('generoSeleccionado:', localStorage.getItem('generoSeleccionado'));
+    console.log('precioSuscripcion:', localStorage.getItem('precioSuscripcion'));
+    console.log('idTipoSuscripcion:', localStorage.getItem('idTipoSuscripcion'));
+    console.log('esSuscripcion:', localStorage.getItem('esSuscripcion'));
+
+    // Obtener los datos de dirección y cliente (lo que ya tienes)
     this.pasarelaPagoService.getDireccionTelefono().subscribe({
       next: (response: any) => {
         this.datos = response;
         this.formData.phone = this.datos.telefono;
-        const direccionArray = this.datos['direccion'].split(',');
+        const direccionArray = this.datos['direccion'].split(', ');
         this.formData.calle = direccionArray[0];
         this.formData.codigoPostal = direccionArray[1];
         this.formData.localidad = direccionArray[2];
@@ -43,6 +88,33 @@ export class PasarelaPagoComponent implements OnInit {
         console.error('Error al obtener los datos:', error);
       }
     });
+
+    this.detallesLibroService.obtenerIdCliente().subscribe({
+      next: (response) => {
+        this.idCliente = response.id_cliente;  // Almacenamos el id_cliente
+        console.log('ID Cliente:', this.idCliente);
+      },
+      error: (error) => {
+        console.error('Error al obtener el id_cliente:', error);
+      }
+    });
+
+    // Verificar los datos de localStorage antes de crear la suscripción
+    const generoStorage = localStorage.getItem('generoSeleccionado');
+    const idTipoStorage = localStorage.getItem('idTipoSuscripcion');
+    const esSuscripcionStorage = localStorage.getItem('esSuscripcion');
+
+    if (generoStorage && idTipoStorage && esSuscripcionStorage === 'true') {
+      // Si los datos son correctos, se asignan
+      this.genero = generoStorage;
+      this.idTipo = idTipoStorage;
+      console.log('Datos obtenidos del localStorage para suscripción:', this.genero, this.idTipo);
+    } else {
+      console.log('Faltan datos en localStorage para crear la suscripción.');
+    }
+
+    // Forzar la actualización de la vista para evitar el error ExpressionChangedAfterItHasBeenCheckedError
+    this.cdRef.detectChanges();
   }
 
   formData = {
@@ -66,7 +138,14 @@ export class PasarelaPagoComponent implements OnInit {
   selectedPaymentMethod: string | null = null;
 
   // Función para avanzar al siguiente paso
+  nextStep() {
+    if (!this.isCurrentStepValid()) return;
 
+    this.submitted = false;
+    if (this.currentStep < 4) {
+      this.currentStep++;
+    }
+  }
 
   // Función para retroceder al paso anterior
   prevStep() {
@@ -86,7 +165,6 @@ export class PasarelaPagoComponent implements OnInit {
     this.nextStep(); // Avanza al siguiente paso
   }
 
-
   loadCartFromLocalStorage() {
     const cartData = localStorage.getItem('cart');
     if (cartData) {
@@ -102,50 +180,59 @@ export class PasarelaPagoComponent implements OnInit {
 
   sendOrderToBackend() {
     if (this.cartItems.length === 0) {
-      alert('El carrito está vacío. No se puede generar un pedido.');
+      this.showConfirmEdit = false;
+      this.alertMessage = 'No hay productos en el carrito.';
+      this.alertType = 'warning';
+      this.isAlertVisible = true;
       return;
     }
-
+    this.totalBooksPrice = localStorage.getItem('total') ? parseFloat(localStorage.getItem('total') as string) : 0;
+    this.direccion = `${this.formData.calle}, ${this.formData.codigoPostal}, ${this.formData.localidad}, ${this.formData.provincia}`;
     // total: this.totalBooksPrice + this.shippingCost - this.discount
 
-    this.carritoService.postPedido(this.cartItems).subscribe({
+    this.carritoService.postPedido(this.cartItems, this.totalBooksPrice, this.direccion).subscribe({
       next: (response: any) => {
-        alert('Pedido generado con éxito.');
+        this.showConfirmEdit = false;
         this.clearCart();
-        this.router.navigate(['usuario']);
+        this.showAlertConfirmar = true; // Mostrar la alerta de confirmación
       },
       error: (error: any) => {
         console.error('Error al enviar el pedido:', error);
-        alert('Ocurrió un error al enviar el pedido. Por favor, inténtalo de nuevo.');
+        this.showConfirmEdit = false;
+        this.alertMessage = 'Error al enviar el pedido.';
+        this.alertType = 'warning';
+        this.isAlertVisible = true;
       }
     });
   }
 
   clearCart() {
     this.cartItems = [];
+    this.carritoService.clearCart();
     localStorage.removeItem('cart');
+    localStorage.removeItem('total');
   }
 
   isCurrentStepValid(): boolean {
     this.submitted = true;
 
-    switch(this.currentStep) {
+    switch (this.currentStep) {
       case 1:
         return !!this.formData.calle && !!this.formData.codigoPostal &&
           !!this.formData.localidad && !!this.formData.provincia;
 
       case 3:
-        if(this.selectedPaymentMethod === 'credit-card') {
+        if (this.selectedPaymentMethod === 'credit-card') {
           return /^\d{13,19}$/.test(this.formData.cardNumber) &&
             /^(0[1-9]|1[0-2])\/[0-9]{2}$/.test(this.formData.expiry) &&
             /^\d{3,4}$/.test(this.formData.cvv) &&
             !!this.formData.cardholder;
         }
-        if(this.selectedPaymentMethod === 'paypal') {
+        if (this.selectedPaymentMethod === 'paypal') {
           return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(this.formData.paypalEmail) &&
             !!this.formData.paypalPassword;
         }
-        if(this.selectedPaymentMethod === 'other') {
+        if (this.selectedPaymentMethod === 'other') {
           return /^[0-9]{9,12}$/.test(this.formData.phone);
         }
         return false;
@@ -155,14 +242,72 @@ export class PasarelaPagoComponent implements OnInit {
     }
   }
 
-  nextStep() {
-    if (!this.isCurrentStepValid()) return;
-
-    this.submitted = false;
-    if (this.currentStep < 4) {
-      this.currentStep++;
+  onFinalizar() {
+    if (this.esSuscripcion) {
+      // Si es suscripción, llamamos al servicio para crear la suscripción
+      this.crear();
+    } else {
+      // Si no es suscripción, simplemente completamos el pedido
+      this.sendOrderToBackend();
     }
   }
 
+  crear() {
+    if (this.genero && this.idTipo) {
+      const tipoSuscripcion = parseInt(this.idTipo, 10);
+      const direccion = `${this.formData.calle}, ${this.formData.codigoPostal}, ${this.formData.localidad}, ${this.formData.provincia}`;
 
+      const data = {
+        genero: parseInt(this.genero, 10),
+        direccion: direccion
+      };
+
+      console.log('Enviando datos de suscripción:', { idCliente: this.idCliente, tipoSuscripcion, data });
+
+      this.pasarelaPagoService.crearSuscripcion(this.idCliente, tipoSuscripcion, data)
+        .subscribe({
+          next: (response) => {
+            console.log('Suscripción creada con éxito:', response);
+            this.isAlertVisible = true;
+            this.alertMessage = 'Suscripción contratada';
+            this.alertType = 'success';
+            // Limpiar datos de localStorage después de la suscripción
+            localStorage.removeItem('generoSeleccionado');
+            localStorage.removeItem('idTipoSuscripcion');
+            localStorage.removeItem('esSuscripcion');
+            localStorage.removeItem('precioSuscripcion');
+            this.showAlertConfirmar = true; // Mostrar la alerta de confirmación
+          },
+          error: (error) => {
+            console.error('Error al crear la suscripción:', error);
+
+            if (error.status === 400) {
+              this.alertMessage = 'Ya tiene una suscripción activa';
+              this.alertType = 'warning';
+              localStorage.removeItem('generoSeleccionado');
+              localStorage.removeItem('idTipoSuscripcion');
+              localStorage.removeItem('esSuscripcion');
+              localStorage.removeItem('precioSuscripcion');
+            } else {
+              this.alertMessage = 'Error al procesar la suscripción';
+              this.alertType = 'error';
+            }
+
+            this.isAlertVisible = true;
+          }
+        });
+    } else {
+      console.error('Faltan datos en localStorage para crear la suscripción.');
+    }
+  }
+
+  onConfirm() {
+    this.showAlertConfirmar = false;
+    this.router.navigate(['/main']);
+    this.authService.refreshLocalStorage();
+  }
+
+  onCancel() {
+    this.showAlertConfirmar = false;
+  }
 }

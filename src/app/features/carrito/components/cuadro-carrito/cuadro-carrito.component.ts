@@ -13,13 +13,17 @@ import {CurrencyPipe} from '@angular/common';
 export class CuadroCarritoComponent {
   @Input() portada: string = '';
   @Input() titulo: string = '';
-  @Input() idTipo: number = 0;
+  @Input() id: number = 0;
   @Input() cantidad: number = 0;
   @Input() precio: number = 0;
   @Input() tipoTapa: string = '';
 
 
-  @Output() quantityUpdated = new EventEmitter<{ idTipo: number; cantidad: number }>();
+  @Output() quantityUpdated = new EventEmitter<{ id: number; cantidad: number }>();
+
+  private emitQuantityUpdate() {
+    this.quantityUpdated.emit({ id: this.id, cantidad: this.cantidad }); // ✅ Usar id
+  }
 
   incrementQuantity() {
     if (this.cantidad < 10) {
@@ -38,8 +42,5 @@ export class CuadroCarritoComponent {
     }
   }
 
-  private emitQuantityUpdate() {
-    this.quantityUpdated.emit({ idTipo: this.idTipo, cantidad: this.cantidad });
-  }
 
 }

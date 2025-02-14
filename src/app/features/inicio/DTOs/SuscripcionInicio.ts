@@ -3,5 +3,6 @@ export class SuscripcionInicio{
   precio?: number;
   nombre?: string;
   descripcion?: string;
+  id_tipo?: number;
 
 }

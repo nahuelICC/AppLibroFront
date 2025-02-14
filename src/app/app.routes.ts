@@ -26,4 +26,10 @@ export const routes: Routes = [
   { path: 'admin', component: AdminComponent },
   { path: 'admin/anyadirLibro', component: AnyadirLibroComponent }
 
+  { path: 'activar/:token', component: ActivacionComponent },
+  { path: 'infocajas/:id', component: InfoCajasComponent },
+  { path: 'carritosuscripcion', component: CarritoSuscripcionComponent },
+  { path: 'resetPassword', component: CambioPasswordComponent },
+  { path: 'formResetPassword', component: FormularioCambioPasswordComponent },
+
 ];

@@ -1,11 +1,14 @@
 <div class="p-6">
-  <h2 class="text-3xl font-bold text-red-500">{{ price }}€</h2>
+  <div class="flex items-center gap-2">
+    <h2 class="text-xl font-semibold">Precio:</h2>
+    <h2 class="text-3xl font-bold text-red-500">{{ price }}€</h2>
+  </div>
 
   <div class="mt-4">
     <p class="font-bold mb-3">Tipo de tapa:</p>
-    <label *ngFor="let tipo of tiposTapa" class="block border rounded-xl p-4 mb-4 cursor-pointer">
-      <input type="radio" name="cover" [value]="tipo" (change)="selectCover(tipo)"
-             [checked]="selectedTipoTapa?.id_tipo_tapa === tipo.id_tipo_tapa" class="mr-2 w-4 h-4">
+    <label *ngFor="let tipo of libro?.tiposTapa" class="block border rounded-xl p-4 mb-4 cursor-pointer">
+      <input type="radio" name="cover" [value]="tipo" [checked]="selectedTipoTapa?.id === tipo.id"
+      (change)="selectCover(tipo)">
       {{ tipo.descripcion }}
     </label>
   </div>

@@ -1,48 +1,48 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { NgForOf, NgIf } from '@angular/common';
-import { MatIcon } from '@angular/material/icon';
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { DetallesLibroService } from '../../services/detalles-libro.service';
+import {MatIcon} from '@angular/material/icon';
 import {AlertConfirmarComponent} from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
+import {NgForOf, NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-resena',
-  imports: [
-    NgForOf,
-    MatIcon,
-    NgIf,
-    AlertConfirmarComponent
-  ],
   templateUrl: './resena.component.html',
+  imports: [
+    MatIcon,
+    AlertConfirmarComponent,
+    NgForOf,
+    NgIf
+  ],
   standalone: true,
   styleUrls: ['./resena.component.css']
 })
-export class ResenaComponent {
+export class ResenaComponent implements OnInit {
   @Input() nombre: string = '';
   @Input() apellido: string = '';
   @Input() date: string = '';
   @Input() rating: number = 5;
   @Input() comment: string = '';
   @Input() id: number = 0;
-  @Input() idClienteResena!: number; // ID del cliente que publicó la reseña
+  @Input() idClienteResena!: number;
   @Input() idClienteActual!: number;
   @Output() resenyaDeleted: EventEmitter<number> = new EventEmitter<number>();
 
-  // Variable para mostrar la alerta de confirmación
   showConfirmDelete: boolean = false;
+
+  ngOnInit() {
+    this.rating = Number(this.rating); // Ensure rating is a number
+  }
 
   constructor(private detallesLibroService: DetallesLibroService) {}
 
-  // Función para eliminar la reseña
   deleteResenya(): void {
-    console.log('ID de la reseña:', this.id);
     if (this.id !== undefined && this.id !== null) {
       this.detallesLibroService.deleteResenya(this.id).subscribe(
-        response => {
-          console.log('Reseña eliminada con éxito', response);
-          this.resenyaDeleted.emit(this.id); // Emitir el ID después de la eliminación
-          this.showConfirmDelete = false; // Cerrar la alerta
+        (response: any) => {
+          this.resenyaDeleted.emit(this.id);
+          this.showConfirmDelete = false;
         },
-        error => {
+        (error: any) => {
           console.error('Error al eliminar la reseña', error);
         }
       );
@@ -52,6 +52,8 @@ export class ResenaComponent {
   }
 
   cancelDelete(): void {
-    this.showConfirmDelete = false; // Cerrar la alerta
+    this.showConfirmDelete = false;
   }
+
+  protected readonly Array = Array;
 }

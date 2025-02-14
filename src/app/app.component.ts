@@ -4,6 +4,7 @@ import {BotonComponent} from './shared/components/boton/boton.component';
 import {FooterComponent} from './shared/components/footer/footer.component';
 import {HeaderComponent} from './shared/components/header/header.component';
 import { CuadroProductoComponent } from './features/tienda/components/cuadro-producto/cuadro-producto.component';
+import {CarritoService} from './features/carrito/services/carrito.service';
 
 @Component({
   selector: 'app-root',
@@ -20,4 +21,10 @@ import { CuadroProductoComponent } from './features/tienda/components/cuadro-pro
 })
 export class AppComponent {
   title = 'AppLibro';
+
+  constructor(private cartService: CarritoService) {}
+
+  ngOnInit(): void {
+    this.cartService.loadCartFromLocalStorage();
+  }
 }

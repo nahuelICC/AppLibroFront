@@ -1,10 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { PerfilUsuarioService } from '../../services/perfil-usuario.service';
 import { BotonComponent } from '../../../../shared/components/boton/boton.component';
 import { MatIcon } from '@angular/material/icon';
-import {CurrencyPipe, DatePipe, NgForOf, NgIf} from '@angular/common';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {EditaUsuarioDTO} from '../../DTOs/EditaUsuarioDTO';
+import { CurrencyPipe, DatePipe, NgForOf, NgIf, TitleCasePipe } from '@angular/common';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { EditaUsuarioDTO } from '../../DTOs/EditaUsuarioDTO';
+import { AlertConfirmarComponent } from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
+import { AlertInfoComponent, AlertType } from '../../../../shared/components/alert-info/alert-info.component';
+import { jsPDF } from "jspdf";
+import html2canvas from 'html2canvas';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-pagina-usuario',
@@ -15,7 +20,12 @@ import {EditaUsuarioDTO} from '../../DTOs/EditaUsuarioDTO';
     NgForOf,
     CurrencyPipe,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AlertConfirmarComponent,
+    AlertInfoComponent,
+    MatIcon,
+    TitleCasePipe,
+    RouterLink
   ],
   templateUrl: './pagina-usuario.component.html',
   standalone: true,
@@ -27,20 +37,33 @@ export class PaginaUsuarioComponent implements OnInit {
   datosCliente: any = { pedidos: [] };
   editandoPerfil = false;
   datosClienteOriginal: any;
-  datosEdicion:EditaUsuarioDTO = new EditaUsuarioDTO();
+  datosEdicion: EditaUsuarioDTO = new EditaUsuarioDTO();
   editandoDireccion = false;
   direccionPartes: string[] = ["", "", "", ""];
   mostrandoCambioContrasena = false;
   cambioContrasenaForm: FormGroup;
   currentPage: number = 1;
   itemsPerPage: number = 3;
+  showConfirmEdit: boolean = false;
+  alertMessage: string = '';
+  alertType: AlertType = 'success';
+  isAlertVisible: boolean = false;
+  provincias: string[] = ['Álava', 'Albacete', 'Alicante', 'Almería', 'Asturias', 'Ávila', 'Badajoz', 'Barcelona', 'Burgos', 'Cáceres', 'Cádiz', 'Cantabria', 'Castellón', 'Ciudad Real', 'Córdoba', 'Cuenca', 'Gerona', 'Granada', 'Guadalajara', 'Guipúzcoa', 'Huelva', 'Huesca', 'Islas Baleares', 'Jaén', 'La Coruña', 'La Rioja', 'Las Palmas', 'León', 'Lérida', 'Lugo', 'Madrid', 'Málaga', 'Murcia', 'Navarra', 'Orense', 'Palencia', 'Pontevedra', 'Salamanca', 'Santa Cruz de Tenerife', 'Segovia', 'Sevilla', 'Soria', 'Tarragona', 'Teruel', 'Toledo', 'Valencia', 'Valladolid', 'Vizcaya', 'Zamora', 'Zaragoza'];
+  estadoSuscripcion: boolean = true;
+  showGestionSuscripcion: boolean = false;
+  showConfirmCancel: boolean = false;
+  showConfirmRenew: boolean = false;
+  generos: string[] = ["Novela Negra", "Thriller", "Novela Historica", "Romantica", "Ciencia Ficcion", "Distopia", "Aventuras", "Fantasia", "Contemporaneo", "Terror", "Paranormal", "Poesia", "Juvenil", "Infantil", "Autoayuda", "Salud Y Deporte", "Manuales", "Memorias", "Biografias", "Cocina", "Viajes", "Libros Tecnicos", "Referencia", "Divulgativos", "Libros De Texto", "Arte"];
+  editandoGenero: boolean = false;
+  generoSeleccionado: number = 0;
+  renovadoTipo : any;
 
-  constructor(private perfilUsuarioService: PerfilUsuarioService,private fb: FormBuilder) {
+  constructor(private perfilUsuarioService: PerfilUsuarioService, private fb: FormBuilder, private cdRef: ChangeDetectorRef, private zone: NgZone, private router: Router) {
     this.cambioContrasenaForm = this.fb.group({
       actual: ['', Validators.required],
       nueva: ['', [
         Validators.required,
-        Validators.minLength(6),
+        Validators.minLength(8),
         Validators.pattern(/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/)
       ]],
       repetir: ['', Validators.required]
@@ -69,14 +92,18 @@ export class PaginaUsuarioComponent implements OnInit {
     this.currentPage++;
   }
 
-
-
   private cargarDatosCliente(): void {
     this.perfilUsuarioService.getDatosCliente().subscribe({
       next: (data) => {
         this.datosCliente = data;
+        console.log('Datos cargados:', this.datosCliente);
+        this.estadoSuscripcion = this.datosCliente.suscripcion.suscrito;
+        this.generoSeleccionado = this.datosCliente.suscripcion.genero - 1;
+        this.renovadoTipo = this.datosCliente.renovada;
+
         if (this.datosCliente.pedidos) {
           this.datosCliente.pedidos.forEach((pedido: any) => {
+            pedido.genero = pedido.genero.replace("_", " ");
             this.pedidosAbiertos[pedido.id] = false;
             this.pedidosCargados[pedido.id] = false;
           });
@@ -110,6 +137,180 @@ export class PaginaUsuarioComponent implements OnInit {
     });
   }
 
+  descargarDetalles(pedidoId: number): void {
+    this.perfilUsuarioService.getDetallesPedido(pedidoId).subscribe({
+      next: (detalles) => {
+        const pedidoIndex = this.datosCliente.pedidos.findIndex((p: any) => p.id === pedidoId);
+        const pedido = this.datosCliente.pedidos[pedidoIndex];
+        if (pedidoIndex > -1) {
+          this.datosCliente.pedidos[pedidoIndex].detalles = detalles;
+
+          // Generar el PDF
+          this.generarPDF(detalles, pedido, this.datosCliente);
+        }
+      },
+      error: (err) => console.error('Error al descargar detalles:', err)
+    });
+  }
+
+  generarPDF(detalles: any, pedido: any, datosCliente: any): void {
+    const div = document.createElement('div');
+    div.innerHTML = `
+  <div class="container">
+    <div class="header">
+      <div class="image-container">
+        <img src="assets/Logo.png" alt="Tinteka">
+      </div>
+      <h1>Factura del Pedido</h1>
+      <p>Número de Factura: ${pedido.referencia}</p>
+      <p>Fecha del Pedido: ${new Date(pedido.fecha).toLocaleDateString()}</p>
+    </div>
+    <div>
+      <h3>Datos del Cliente</h3>
+      <p>${datosCliente.nombre} ${datosCliente.apellido}</p>
+      <p>Dirección de Envío: ${pedido.direccion}</p>
+    </div>
+    <div class="details">
+      <h3>Detalles del Pedido</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Libro</th>
+            <th>Cantidad</th>
+            <th>Precio (IVA incl.)</th>
+            <th>Precio (IVA excl.)</th>
+            <th>IVA (4%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${detalles.map((linea: any) => `
+            <tr>
+              <td>${linea.titulo}</td>
+              <td>${linea.cantidad}</td>
+              <td>${linea.precio} €</td>
+              <td>${(linea.precio * 0.96).toFixed(2)} €</td>
+              <td>${(linea.precio - (linea.precio * 0.96)).toFixed(2)} €</td>
+            </tr>
+          `).join('')}
+          <tr>
+            <td class="total" colspan="4">Gastos de Envío (IVA incl.):</td>
+            <td>${pedido.total < 5 ? 5 : 0} €</td>
+          </tr>
+          <tr>
+            <td class="total" colspan="4">Total (IVA incl.):</td>
+            <td>${pedido.total} €</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3>Datos del Vendedor</h3>
+      <p>Tinteka</p>
+      <p>Email: <a href="mailto:contacto.tinteka@gmail.com">contacto.tinteka@gmail.com</a></p>
+    </div>
+    <div class="footer">
+      <p>Si tienes alguna pregunta, contacta con nosotros en <a href="mailto:contacto.tinteka@gmail.com">contacto.tinteka@gmail.com</a>.</p>
+    </div>
+  </div>
+`;
+
+    // Estilos
+    const styles = document.createElement('style');
+    styles.innerHTML = `
+  body {
+    font-family: 'Work Sans', sans-serif;
+    background-color: #f8f9fa;
+    padding: 20px;
+  }
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .header {
+    text-align: center;
+  }
+  .image-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .header img {
+    height: 50px;
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: bold;
+    color: #232323;
+  }
+  h3 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #232323;
+    margin-top: 20px;
+  }
+  .details table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  .details th, .details td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  .details th {
+    background-color: #f4f4f4;
+  }
+  .total {
+    text-align: right;
+    font-weight: bold;
+  }
+  .footer {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 20px;
+    color: #555;
+  }
+  .footer a {
+    color: #078080;
+    text-decoration: none;
+  }
+`;
+
+    div.appendChild(styles);
+    document.body.appendChild(div);
+
+    // Generación del PDF
+    html2canvas(div, {
+      scale: 2,
+      windowWidth: 190 * 3.78,
+      useCORS: true
+    }).then((canvas) => {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const imgWidth = pageWidth - 20; // Ancho de contenido con márgenes
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      // Calcular posición horizontal centrada
+      const horizontalPosition = (pageWidth - imgWidth) / 2;
+
+      let currentHeight = 10;
+      if (currentHeight + imgHeight > pdf.internal.pageSize.getHeight()) {
+        pdf.addPage();
+        currentHeight = 10;
+      }
+
+      // Aplicar posición horizontal centrada
+      pdf.addImage(canvas, 'PNG', horizontalPosition, currentHeight, imgWidth, imgHeight);
+      pdf.save(`factura_pedido_${pedido.referencia}.pdf`);
+      document.body.removeChild(div);
+    });
+  }
+
   calcularTotalPedido(pedido: any): number {
     return pedido.detalles.reduce((total: number, producto: any) => {
       return total + (producto.precio * producto.cantidad);
@@ -120,7 +321,7 @@ export class PaginaUsuarioComponent implements OnInit {
     if (this.editandoPerfil) {
       this.guardarCambios();
     } else {
-      this.datosClienteOriginal = {...this.datosCliente};
+      this.datosClienteOriginal = { ...this.datosCliente };
     }
     this.editandoPerfil = !this.editandoPerfil;
   }
@@ -139,29 +340,57 @@ export class PaginaUsuarioComponent implements OnInit {
     this.perfilUsuarioService.putEdicionPerfil(this.datosEdicion).subscribe({
       next: (response) => {
         console.log('Perfil actualizado:', response);
+        this.alertMessage = 'Perfil actualizado correctamente';
+        this.alertType = 'success';
+        this.isAlertVisible = true;
       },
-      error: (err) => console.error('Error actualizando perfil:', err)
+      error: (err) => {
+        console.error('Error actualizando perfil:', err)
+        this.alertMessage = 'Error al editar el perfil';
+        this.alertType = 'warning';
+        this.isAlertVisible = true;
+      }
+
     });
+    setTimeout(() => {
+      this.zone.run(() => {
+        this.isAlertVisible = false;
+        this.cdRef.detectChanges(); // Asegura que Angular detecte el cambio
+      });
+    }, 5000);
   }
 
   toggleEditarDireccion() {
     if (this.editandoDireccion) {
-
+      // Verifica que todos los campos estén completos
       if (this.direccionPartes.some(part => part === "")) {
         console.log('Todos los campos son obligatorios');
         return;
       }
 
-      this.datosCliente.direccion = this.direccionPartes.join(",");
+      this.datosCliente.direccion = this.direccionPartes.join(", ");
       this.perfilUsuarioService.putEdicionDireccion(this.datosCliente.direccion).subscribe({
         next: (response) => {
           console.log('Dirección actualizada:', response);
+          this.alertMessage = 'Dirección actualizada correctamente';
+          this.alertType = 'success';
+          this.isAlertVisible = true;
         },
-        error: (err) => console.error('Error actualizando dirección:', err)
+        error: (err) => {
+          console.error('Error actualizando dirección:', err);
+          this.alertMessage = 'Error al actualizar la dirección';
+          this.alertType = 'warning';
+          this.isAlertVisible = true;
+        }
       });
+      setTimeout(() => {
+        this.zone.run(() => {
+          this.isAlertVisible = false;
+          this.cdRef.detectChanges();
+        });
+      }, 5000);
     } else {
-      // Dividir la dirección en partes
-      this.direccionPartes = this.datosCliente.direccion.split(",");
+      this.direccionPartes = this.datosCliente.direccion.split(", ");
     }
     this.editandoDireccion = !this.editandoDireccion;
   }
@@ -183,17 +412,122 @@ export class PaginaUsuarioComponent implements OnInit {
 
     this.perfilUsuarioService.postCambioContrasena(this.cambioContrasenaForm.value).subscribe({
       next: (response) => {
+        this.showConfirmEdit = false;
+        this.alertMessage = 'Contraseña cambiada correctamente';
+        this.alertType = 'success';
+        this.isAlertVisible = true;
         console.log('Contraseña cambiada:', response);
-        this.toggleCambioContrasena(); // Cierra el formulario solo si fue exitoso
+        this.toggleCambioContrasena();
+        // Cierra el formulario solo si fue exitoso
       },
       error: (err) => {
         console.error('Error cambiando contraseña:', err);
+        this.showConfirmEdit = false;
+        this.alertMessage = 'Error al cambiar la contraseña';
+        this.alertType = 'warning';
+        this.isAlertVisible = true;
         // Opcional: mantener el formulario abierto en caso de error
       }
+
     });
+    setTimeout(() => {
+      this.zone.run(() => {
+        this.isAlertVisible = false;
+        this.cdRef.detectChanges(); // Asegura que Angular detecte el cambio
+      });
+    }, 5000);
   }
 
   get nuevaContrasena() {
     return this.cambioContrasenaForm.get('nueva');
   }
+
+  editarEstadoSuscripcion() {
+    if (this.estadoSuscripcion) {
+      this.perfilUsuarioService.putEditarEstado(this.estadoSuscripcion).subscribe({
+        next: (response) => {
+          console.log('Suscripción cancelada:', response);
+          this.alertMessage = 'Suscripción cancelada correctamente';
+          this.alertType = 'success';
+          this.isAlertVisible = true;
+          this.showGestionSuscripcion = false;
+          this.showConfirmCancel = false;
+          this.estadoSuscripcion = false;
+        },
+        error: (err) => {
+          console.error('Error cancelando suscripción:', err);
+          this.alertMessage = 'Error al cancelar la suscripción';
+          this.alertType = 'warning';
+          this.showConfirmCancel = false;
+          this.isAlertVisible = true;
+        }
+      });
+    } else {
+      this.perfilUsuarioService.putEditarEstado(this.estadoSuscripcion).subscribe({
+        next: (response) => {
+          console.log('Suscripción renovada:', response);
+          this.alertMessage = 'Suscripción renovada correctamente';
+          this.alertType = 'success';
+          this.isAlertVisible = true;
+          this.showGestionSuscripcion = false;
+          this.showConfirmRenew = false;
+          this.estadoSuscripcion = true;
+
+        },
+        error: (err) => {
+          console.log(this.estadoSuscripcion);
+          console.error('Error renovando suscripción:', err);
+          this.alertMessage = 'Error al renovar la suscripción';
+          this.alertType = 'warning';
+          this.showConfirmRenew = false;
+          this.isAlertVisible = true;
+        }
+      });
+
+    }
+    setTimeout(() => {
+      this.zone.run(() => {
+        this.isAlertVisible = false;
+        this.cdRef.detectChanges();
+      });
+    }, 5000);
+
+  }
+
+  cambiarGenero() {
+    let genero = Number(this.generoSeleccionado) + 1;
+    this.perfilUsuarioService.putEditarGenero(genero).subscribe({
+      next: (response) => {
+        console.log('Género cambiado:', response);
+        this.alertMessage = 'Género cambiado correctamente';
+        this.alertType = 'success';
+        this.isAlertVisible = true;
+        this.editandoGenero = false;
+      },
+      error: (err) => {
+        console.error('Error cambiando género:', err);
+        this.alertMessage = 'Error al cambiar el género';
+        this.alertType = 'warning';
+        this.isAlertVisible = true;
+      }
+    });
+    setTimeout(() => {
+      this.zone.run(() => {
+        this.isAlertVisible = false;
+        this.cdRef.detectChanges();
+      });
+    }, 5000);
+  }
+
+  cambiarSuscripcion() {
+    if (this.renovadoTipo !== ""){
+      this.router.navigate(['/infocajas', this.renovadoTipo]).then(r => {
+        localStorage.setItem('change', String(true));
+      });
+    }
+    this.router.navigate(['/infocajas', this.datosCliente.suscripcion.tipoSuscripcion]).then(r => {
+      localStorage.setItem('change', String(true));
+    });
+  }
+
 }

@@ -1,10 +1,11 @@
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 import {MatIcon} from '@angular/material/icon';
 import {NgForOf} from '@angular/common';
-import {ChangeDetectorRef, Component, Input, NgZone, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {LibroDetalle} from '../../DTOs/LibroDetalle';
 import {DetallesLibroService} from '../../services/detalles-libro.service';
 import {AlertInfoComponent, AlertType} from '../../../../shared/components/alert-info/alert-info.component';
+import {CarritoService} from '../../../carrito/services/carrito.service';
 
 @Component({
   selector: 'app-detalle-precio',
@@ -21,131 +22,141 @@ import {AlertInfoComponent, AlertType} from '../../../../shared/components/alert
 export class DetallePrecioComponent implements OnChanges, OnInit {
   @Input() precios: { blanda: number | null, dura: number | null } = { blanda: null, dura: null };
   @Input() tiposTapa: any[] = [];
-  @Input() libroId: number | null = null;
+  libroId: number = 0;
   @Input() libro: LibroDetalle | null = null;
-  price: number = 0;
+  price: number = this.libro?.tiposTapa?.[0]?.precio;
   quantity: number = 1;
   selectedTipoTapa: any = null;
   alertMessage: string = '';
   alertType: AlertType = 'success';
   isAlertVisible: boolean = false;
 
-  constructor(private detallesLibroService: DetallesLibroService, private cdRef: ChangeDetectorRef, private zone: NgZone) {}
+  constructor(private detallesLibroService: DetallesLibroService, private cdRef: ChangeDetectorRef,  private cartService:CarritoService) {}
 
   ngOnInit() {
     console.log('tiposTapa en ngOnInit:', this.tiposTapa);
-    if (this.tiposTapa.length > 0) {
-      this.selectedTipoTapa = this.tiposTapa[0];
-      this.updatePrice(); // Actualizar el precio automáticamente
-      this.cdRef.detectChanges(); // Forzar la detección de cambios
+    this.libroId = this.libro?.id || 0;
+    const initialTipo = this.libro?.tiposTapa?.[0];
+    if (initialTipo) {
+      this.selectedTipoTapa = { ...initialTipo, id_tipo: initialTipo.id };
+    } else {
+      this.selectedTipoTapa = null;
     }
+    this.price = initialTipo?.precio || 0;
+    this.cdRef.detectChanges();
+
+
+    //   this.selectedTipoTapa = this.libro?.tiposTapa?.[0]?.id;
+    //   // this.updatePrice();
+    //   this.price =  this.libro?.tiposTapa?.[0]?.precio;
+
+
   }
-
-
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['tiposTapa'] && this.tiposTapa.length > 0) {
-      this.selectedTipoTapa = this.tiposTapa[0]; // Seleccionar el primer tipo de tapa
+      this.selectedTipoTapa = this.tiposTapa[0];
       this.updatePrice();
     }
   }
-
 
   updateQuantity(amount: number) {
     if (this.quantity + amount > 0 && this.quantity + amount <= 10) {
       this.quantity += amount;
     } else if (this.quantity + amount > 10) {
-      this.quantity = 10; // Limitar la cantidad máxima a 15
+      this.quantity = 10;
     } else {
       console.warn('La cantidad no puede ser menor que 1');
     }
   }
 
-
   selectCover(tipo: any) {
-    // Asigna el objeto completo del tipo de tapa al valor de selectedTipoTapa
-    this.selectedTipoTapa = tipo;
+    this.selectedTipoTapa = { ...tipo };
     console.log('Tipo de tapa seleccionado:', this.selectedTipoTapa);
-
-    // Reinicia la cantidad a 1 cuando se cambia el tipo de tapa
     this.quantity = 1;
-
-    // Luego puedes llamar a updatePrice o cualquier otra función necesaria
     this.updatePrice();
+
+
+    // this.selectedTipoTapa = { ...tipo, id_tipo: tipo.id }; // Asegurar que id_tipo se asigne correctamente
+    // console.log('Tipo de tapa seleccionado:', this.selectedTipoTapa);
+    // this.quantity = 1;
+    // this.updatePrice();
   }
-
-
-
 
   updatePrice() {
-    if (this.selectedTipoTapa && this.selectedTipoTapa.id_tipo_tapa && this.libroId) {
-      console.log('Enviando al backend:', this.libroId, this.selectedTipoTapa.id_tipo_tapa);
-      this.detallesLibroService.getPrecioTapa(this.libroId, this.selectedTipoTapa.id_tipo_tapa).subscribe(
-        (data) => {
-          console.log('Precio recibido:', data);
-          this.price = data.precio;  // Actualiza el precio en tu interfaz
 
-          // Asegúrate de actualizar el id_tipo en selectedTipoTapa
-          this.selectedTipoTapa.id_tipo = data.id_tipo; // Asigna el id_tipo de la respuesta
-        },
-        (error) => {
-          console.error('Error al obtener el precio:', error);
-        }
-      );
-    } else {
-      console.error('selectedTipoTapa o libroId no definidos');
+    const tipoTapaActual = this.libro?.tiposTapa?.find(
+      tipo => tipo.id === this.selectedTipoTapa?.id_tipo
+    );
+    if (tipoTapaActual) {
+      this.price = tipoTapaActual.precio;
     }
+
+    // let tipoTapaActual = this.libro?.tiposTapa?.find(tipo => tipo.id_tipo_tapa === this.selectedTipoTapa?.id_tipo_tapa);
+    // this.price = tipoTapaActual?.precio || 0;
+    // this.selectedTipoTapa.id_tipo = tipoTapaActual.id;
+
+
+
+    // if (this.selectedTipoTapa && this.selectedTipoTapa.id_tipo_tapa && this.libroId) {
+    //   console.log('Enviando al backend:', this.libroId, this.selectedTipoTapa.id_tipo_tapa);
+    //
+    //   this.detallesLibroService.getPrecioTapa(this.libroId, this.selectedTipoTapa.id_tipo_tapa).subscribe(
+    //     (data) => {
+    //       console.log('Precio recibido:', data);
+    //       this.price = data.precio;  // Actualiza el precio en tu interfaz
+    //
+    //       // Asegúrate de actualizar el id_tipo en selectedTipoTapa
+    //       this.selectedTipoTapa.id_tipo = data.id_tipo; // Asigna el id_tipo de la respuesta
+    //     },
+    //     (error) => {
+    //       console.error('Error al obtener el precio:', error);
+    //     }
+    //   );
+    // } else {
+    //   console.error('selectedTipoTapa o libroId no definidos');
+    // }
   }
 
-
-
-    // Nueva propiedad para el tipo de alerta
-
-
   anadirAlCarrito() {
-    if (!this.libroId || !this.selectedTipoTapa || !this.selectedTipoTapa.id_tipo) {
+    if (!this.libroId || !this.selectedTipoTapa) {
+
+      console.log(this.libroId);
+      console.log(this.selectedTipoTapa);
       console.error('Datos incompletos para agregar al carrito');
       return;
     }
-
+    console.log('ID del tipo:', this.selectedTipoTapa.id); // Verifica que sea numérico
+    console.log('Cantidad:', this.quantity);
     const cartItem = {
-      id_tipo: this.selectedTipoTapa.id_tipo,
-      cantidad: this.quantity
+      id: this.selectedTipoTapa.id, // Cambiado a id
+      cantidad: this.quantity,
     };
 
-    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const existingItem = cart.find((item: any) => item.id_tipo === cartItem.id_tipo);
+    const existingItemIndex = this.cartService.cartItems.findIndex(
+      (item) => item.id === cartItem.id // Cambiado a id
+    );
 
-    if (existingItem) {
-      const newQuantity = existingItem.cantidad + cartItem.cantidad;
+    this.alertType = 'success';
+    this.alertMessage = 'Producto añadido al carrito';
+
+    if (existingItemIndex !== -1) {
+      const newQuantity = this.cartService.cartItems[existingItemIndex].cantidad + cartItem.cantidad;
       if (newQuantity > 10) {
         this.alertMessage = 'No se puede añadir más de 10 unidades del mismo libro.';
-        this.alertType = 'warning'; // Tipo de alerta 'warning'
+        this.alertType = 'warning';
       } else {
-        existingItem.cantidad = newQuantity;
-        this.alertMessage = 'Libro añadido al carrito correctamente';
-        this.alertType = 'success'; // Tipo de alerta 'success'
+        this.cartService.cartItems[existingItemIndex].cantidad = newQuantity;
+        this.cartService.updateCartInLocalStorage();
       }
     } else {
-      cart.push(cartItem);
-      this.alertMessage = 'Libro añadido al carrito correctamente';
-      this.alertType = 'success'; // Tipo de alerta 'success'
+      this.cartService.addItemToCart(cartItem);
     }
 
-    localStorage.setItem('cart', JSON.stringify(cart));
-
-    // Mostrar la alerta
     this.isAlertVisible = true;
 
-    // Forzar la detección de cambios
-    this.cdRef.detectChanges();
-
-    // Ocultar la alerta después de 2 segundos
     setTimeout(() => {
-      this.zone.run(() => {
-        this.isAlertVisible = false;
-        this.cdRef.detectChanges(); // Asegura que Angular detecte el cambio
-      });
+      this.isAlertVisible = false;
     }, 2000);
   }
 

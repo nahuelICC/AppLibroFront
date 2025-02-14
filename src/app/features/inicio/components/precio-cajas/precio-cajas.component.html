@@ -2,22 +2,22 @@
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     <div *ngFor="let suscripcion of suscripciones" class="bg-white rounded-lg shadow-md relative p-6">
       <!-- Etiqueta diferente según el tipo de suscripción -->
-      <div class="absolute top-0 right-0 bg-[#078080] text-white px-2 py-1 rounded-3xl mt-8 mr-8 text-sm md:text-base max-w-[100px] text-center">
+      <div
+        class="absolute top-8 right-8 sm:top-4 sm:right-4 md:top-6 md:right-6 bg-[#078080] text-white px-3 py-1 rounded-3xl text-xs sm:text-sm md:text-base flex items-center justify-center max-w-[120px] sm:max-w-[140px] md:max-w-[180px] lg:max-w-[200px] text-center break-words"
+      >
         {{ getEtiqueta(suscripcion.nombre ?? '') }}
       </div>
-
-
-      <h5 class="text-xl font-semibold mb-2">{{ suscripcion.nombre }}</h5>
+      <!-- Añadimos un margen superior al título -->
+      <h5 class="text-xl font-semibold mb-2 mt-8 lg:mt-0">{{ suscripcion.nombre }}</h5>
       <p class="text-2xl font-bold mb-4">{{ suscripcion.precio }}€ /mes</p>
-
       <div class="flex justify-center mb-4">
-        <app-boton [label]="'Más información'" [color]="'#e74c3c'" [size]="'small'"></app-boton>
+        <app-boton [label]="'Más información'" [routerLink]="['/infocajas', suscripcion.id_tipo]" [color]="'#e74c3c'" [size]="'small'"></app-boton>
       </div>
 
       <ul class="list-none mt-4">
         <li class="flex items-center gap-2" *ngFor="let parte of getDescripcionParts(suscripcion.descripcion ?? '')">
-          <mat-icon class="text-green-500 text-base">check</mat-icon> <!-- Ajuste de tamaño y alineación -->
-          <span class="text-sm md:text-base">{{ parte }}</span> <!-- Ajuste del tamaño del texto -->
+          <mat-icon class="text-green-500 text-base">check</mat-icon>
+          <span class="text-sm md:text-base">{{ parte }}</span>
         </li>
       </ul>
     </div>
