@@ -8,6 +8,7 @@ import { Validators } from '@angular/forms';
 import {PedidoService} from "./services/pedido.service";
 import {PedidosTablaDTO} from "./DTO/PedidosTablaDTO";
 import {NgIf} from '@angular/common';
+import {LibrosService} from './services/libros.service';
 
 @Component({
   selector: 'app-admin',
@@ -21,34 +22,39 @@ import {NgIf} from '@angular/common';
 })
 export class AdminComponent implements OnInit{
   titulo: string = 'Clientes';
-  activeTabId: string = 'clientes';
+  idTablaActiva: string = 'clientes';
 
   clientesData: any[] = [];
   pedidosData: any[] = [];
+  librosData: any[] = [];
 
   clientesColumnas: any[] = [];
   pedidosColumnas: any[] = [];
+  librosColumnas: any[] = [];
 
   clientesValidadores: any = {};
   pedidosValidadores: any = {};
+  librosValidadores: any = {};
 
   clientesCargados: boolean = false;
   pedidosCargados: boolean = false;
-
+  librosCargados: boolean = false;
 
   configurarTablaHijo!: (tipoTabla: string) => void;
 
   constructor(private clienteService: ClienteService,
-              private pedidoService: PedidoService) {
+              private pedidoService: PedidoService,
+              private librosService: LibrosService) {
   }
 
   ngOnInit(): void {
     this.cargarClientes();
   }
 
-  showTable(tablaId: string, btnActual: EventTarget | null): void {
-    this.activeTabId = tablaId;
-    this.titulo = tablaId === 'clientes' ? 'Clientes' : 'Pedidos';
+  muestraTabla(tablaId: string, btnActual: EventTarget | null): void {
+    this.idTablaActiva = tablaId;
+
+    this.titulo = tablaId.charAt(0).toUpperCase() + tablaId.slice(1);
 
     if (tablaId === 'clientes' && !this.clientesCargados) {
       this.cargarClientes();
@@ -56,6 +62,9 @@ export class AdminComponent implements OnInit{
     } else if (tablaId === 'pedidos' && !this.pedidosCargados) {
       this.cargarPedidos();
       this.pedidosCargados = true;
+    }else if (tablaId === 'libros' && !this.librosCargados) {
+      this.cargarLibros();
+      this.librosCargados = true;
     }
 
     this.estiloBotones(btnActual);
@@ -64,6 +73,7 @@ export class AdminComponent implements OnInit{
   private estiloBotones(btnActual: EventTarget | null | HTMLElement) {
     document.getElementById('btnUsuarios')?.classList.remove('bg-gray-200');
     document.getElementById('btnPedidos')?.classList.remove('bg-gray-200',);
+      document.getElementById('btnLibros')?.classList.remove('bg-gray-200',);
     if (btnActual instanceof HTMLElement) {
       btnActual.classList.add('bg-gray-200');
     }
@@ -126,7 +136,33 @@ export class AdminComponent implements OnInit{
     });
   }
 
-  onActualizarFila(item: any) {
+  //carga de tabla pedidos
+  private cargarLibros() {
+    this.librosColumnas = [
+      { titulo: 'Titulo', campo: 'titulo', editable: false, isEstado: false},
+      { titulo: 'Precio', campo: 'precio', editable: true, isEstado: false},
+      { titulo: 'Tapa', campo: 'tipoTapa', editable: false, isEstado: false}
+    ];
+
+    this.librosValidadores = {
+      precio : [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/)]
+    };
+
+    this.librosData = [];
+
+    this.librosService.getLibrosTabla().subscribe({
+      next: (res: any[]) => {
+        this.librosData = res;
+        this.librosCargados = true;
+      },
+      error: (err) => {
+        console.error('Error cargando pedidos:', err);
+        this.librosCargados = false;
+      }
+    });
+  }
+
+  actualizarRegistro(item: any) {
     if (this.titulo === 'Clientes') {
       this.clienteService.modificarCliente(item).subscribe(
         response => console.log('Usuario actualizado', response),
@@ -137,7 +173,12 @@ export class AdminComponent implements OnInit{
         reponse => console.log('Pedido actualizado', reponse),
         error => console.error('Error al actualizar pedido', error)
       );
-    } else {
+    } else if(this.titulo=== 'Libros') {
+      this.librosService.modifcarLibro(item).subscribe(
+        reponse => console.log('Precio del libro actualizado', reponse),
+        error => console.error('Error al actualizar precio', error)
+      );
+    }else {
 
     }
   }

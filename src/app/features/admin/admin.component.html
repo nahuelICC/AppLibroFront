@@ -1,39 +1,47 @@
 <div class="flex h-screen">
-  <!-- Sidebar: slider izquierdo -->
   <aside class="w-64 bg-white shadow-md ms-4 mt-4 rounded-lg">
     <nav class="p-4">
       <ul>
         <li>
           <button id="btnUsuarios"
                   class="w-full text-left p-2 rounded-2xl bg-gray-200 px-4 mb-2 hover:bg-gray-200 transition"
-                  (click)="showTable('clientes', $event.target)">Clientes</button>
+                  (click)="muestraTabla('clientes', $event.target)">Clientes</button>
         </li>
         <li>
           <button id="btnPedidos"
                   class="w-full text-left p-2 px-4 mb-2 rounded-2xl hover:bg-gray-200 transition"
-                  (click)="showTable('pedidos', $event.target)">Pedidos</button>
+                  (click)="muestraTabla('pedidos', $event.target)">Pedidos</button>
+        </li>
+        <li>
+          <button id="btnLibros"
+                  class="w-full text-left p-2 px-4 mb-2 rounded-2xl hover:bg-gray-200 transition"
+                  (click)="muestraTabla('libros', $event.target)">Libros1</button>
         </li>
       </ul>
     </nav>
   </aside>
-  <!-- Contenido principal -->
   <main class="flex-1 p-6">
     <h1 id="tituloSeccion" class="text-2xl font-bold mb-4">{{ titulo }}</h1>
-    <app-tabla *ngIf="activeTabId === 'clientes'"
+    <app-tabla *ngIf="idTablaActiva === 'clientes'"
                [tablaActiva]="'clientes'"
                [datos]="clientesData"
                [columnas]="clientesColumnas"
                [validadores]="clientesValidadores"
-               (actualizarFila)="onActualizarFila($event)">
+               (actualizarFila)="actualizarRegistro($event)">
     </app-tabla>
-
-    <!-- Tabla Pedidos -->
-    <app-tabla *ngIf="activeTabId === 'pedidos'"
+    <app-tabla *ngIf="idTablaActiva === 'pedidos'"
                [tablaActiva]="'pedidos'"
                [datos]="pedidosData"
                [columnas]="pedidosColumnas"
                [validadores]="pedidosValidadores"
-               (actualizarFila)="onActualizarFila($event)">
+               (actualizarFila)="actualizarRegistro($event)">
+    </app-tabla>
+    <app-tabla *ngIf="idTablaActiva === 'libros'"
+               [tablaActiva]="'libros'"
+               [datos]="librosData"
+               [columnas]="librosColumnas"
+               [validadores]="librosValidadores"
+               (actualizarFila)="actualizarRegistro($event)">
     </app-tabla>
   </main>
 </div>
