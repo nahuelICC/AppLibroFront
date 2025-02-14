@@ -48,7 +48,7 @@ export class RegistroComponent implements OnInit {
   ngOnInit() {
     this.registroForm = this.fb.group({
       username: ['', [Validators.required]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required, Validators.minLength(8) , Validators.pattern(/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/)]],
       confirmPassword: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       nombre: ['', [Validators.required, Validators.pattern(/\S+/)]],

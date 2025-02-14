@@ -63,7 +63,7 @@ export class PaginaUsuarioComponent implements OnInit {
       actual: ['', Validators.required],
       nueva: ['', [
         Validators.required,
-        Validators.minLength(6),
+        Validators.minLength(8),
         Validators.pattern(/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/)
       ]],
       repetir: ['', Validators.required]
