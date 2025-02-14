@@ -186,7 +186,7 @@
                 {{ pedido.direccion }}
               </p>
               <div class="flex justify-between w-full">
-              <p class="text-sm md:text-base mt-1" [style.color]="'var(--color-texto)'">
+              <p class="text-sm md:text-base mt-1 mb-4" [style.color]="'var(--color-texto)'">
                 Estado de pedido: <b>{{ pedido.estadoNombre }}</b>
               </p>
               <mat-icon  (click)="descargarDetalles(pedido.id); $event.stopPropagation()">download</mat-icon>
@@ -196,10 +196,10 @@
           </div>
 
           <!-- Contenido Desplegable Dinámico -->
-          <div class="overflow-hidden transition-all duration-300"
+          <div class="overflow-x-hidden overflow-y-auto transition-all duration-300 pr-4"
                [class.max-h-0]="!pedidosAbiertos[pedido.id]"
                [class.max-h-[500px]]="pedidosAbiertos[pedido.id]">
-            <div class="pt-4 border-t border-gray-300 mt-4">
+            <div class="pt-4 border-t border-gray-300 ">
               <!-- Estado de Carga -->
               <div *ngIf="!pedido.detalles" class="text-center py-2">
                 <span class="text-sm text-gray-500">Cargando detalles del pedido...</span>

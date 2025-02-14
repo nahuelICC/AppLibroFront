@@ -1,0 +1,14 @@
+/* En tu CSS */
+.custom-dialog-container .mat-dialog-container {
+  padding: 0;
+  overflow: auto;
+  max-height: 80vh;
+}
+
+@media (max-width: 600px) {
+  .custom-dialog-container {
+    margin-top: 50px !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+}
