@@ -167,6 +167,9 @@
           <div *ngIf="registroForm.hasError('mismatch') && registroForm.get('confirmPassword')?.touched" class="text-red-500 text-sm mt-1">
             Las contraseñas no coinciden.
           </div>
+          <div *ngIf="registroForm.get('password')?.errors?.['pattern']" class="text-red-500 text-sm mt-1">
+            Debe contener al menos una mayúscula, un número y un carácter especial
+          </div>
         </div>
       </div>
 

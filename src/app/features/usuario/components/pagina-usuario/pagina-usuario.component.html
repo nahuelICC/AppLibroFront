@@ -92,7 +92,7 @@
                  [class.border-red-500]="nuevaContrasena?.invalid && nuevaContrasena?.touched">
           <div *ngIf="nuevaContrasena?.invalid && nuevaContrasena?.touched" class="text-red-500 text-sm mt-1">
             <div *ngIf="nuevaContrasena?.errors?.['required']">Este campo es requerido</div>
-            <div *ngIf="nuevaContrasena?.errors?.['minlength']">Mínimo 6 caracteres</div>
+            <div *ngIf="nuevaContrasena?.errors?.['minlength']">Mínimo 8 caracteres</div>
             <div *ngIf="nuevaContrasena?.errors?.['pattern']">
               Debe contener al menos una mayúscula, un número y un carácter especial
             </div>
