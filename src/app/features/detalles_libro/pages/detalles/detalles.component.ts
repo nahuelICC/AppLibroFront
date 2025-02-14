@@ -73,20 +73,28 @@ export class DetallesComponent implements OnInit {
           this.selectedTipoTapa = this.libro.tiposTapa[0];
         }
 
+        // Obtener el promedio de las reseñas desde la base de datos
         this.fetchAverageRating();
-        this.fetchResenyas(); // Obtener reseñas
+
+        // Obtener las reseñas individuales
+        this.fetchResenyas();
+
+        // Verificar compra
         this.verificarCompra();
       });
     }
   }
 
   verificarCompra(): void {
-    this.detallesLibroService.obtenerIdCliente().subscribe((response) => {
-      const clienteId = response.id_cliente;
-      this.libroService.verificarCompra(this.libroId, clienteId).subscribe((result) => {
-        this.haComprado = result.haComprado;
-        this.haDejadoResenya = result.haDejadoResenya;
-        this.mostrarBoton = this.haComprado && !this.haDejadoResenya;
+    this.libroService.verificarCompra(this.libroId, this.clienteIdActual).subscribe((result) => {
+      this.haComprado = result.haComprado; // Verifica si el cliente ha comprado el libro
+      this.haDejadoResenya = result.haDejadoResenya; // Verifica si el cliente ya ha dejado una reseña
+      this.mostrarBoton = this.haComprado && !this.haDejadoResenya; // Muestra el botón solo si ha comprado y no ha dejado reseña
+
+      console.log('Verificar compra:', {
+        haComprado: this.haComprado,
+        haDejadoResenya: this.haDejadoResenya,
+        mostrarBoton: this.mostrarBoton
       });
     });
   }
