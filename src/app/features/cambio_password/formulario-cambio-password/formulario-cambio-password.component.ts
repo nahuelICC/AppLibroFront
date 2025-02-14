@@ -4,13 +4,17 @@ import {NgIf} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import {CambioPasswordService} from '../services/cambio-password.service';
 import {BotonComponent} from '../../../shared/components/boton/boton.component';
+import {AlertConfirmarComponent} from '../../../shared/components/alert-confirmar/alert-confirmar.component';
+import {AlertInfoComponent, AlertType} from '../../../shared/components/alert-info/alert-info.component';
 
 @Component({
   selector: 'app-formulario-cambio-password',
   imports: [
     ReactiveFormsModule,
     NgIf,
-    BotonComponent
+    BotonComponent,
+    AlertConfirmarComponent,
+    AlertInfoComponent
   ],
   templateUrl: './formulario-cambio-password.component.html',
   standalone: true,
@@ -29,6 +33,10 @@ export class FormularioCambioPasswordComponent implements OnInit {
   tokenValid = false;
   errorMessage: string | null = null;
   isLoading = false;
+  showAlertConfirmar = false;
+  alertMessage = 'Contraseña cambiada con éxito';
+  isAlertVisible = false;
+  alertType: AlertType = 'warning';
 
   constructor(
     private route: ActivatedRoute,
@@ -54,10 +62,26 @@ export class FormularioCambioPasswordComponent implements OnInit {
         this.form.value.password,
         this.form.value.confirmPassword
       ).subscribe({
-        next: () => this.router.navigate(['/login']),
-        error: (err) => alert('Error: ' + err.error.error)
+        next: () =>{
+          this.alertMessage = 'Contraseña cambiada con éxito';
+          this.showAlertConfirmar = true;
+          this.form.reset();
+        },
+        error: (err) => {
+          this.alertMessage = 'Error al camnbiar la contraseña';
+          this.alertType = 'warning';
+          this.isAlertVisible = true;
+          console.error(err);
+
+        }
       });
     }
+  }
+
+  onConfirm() {
+    this.showAlertConfirmar = false;
+    this.router.navigate(['/login']);
+
   }
 
 }
