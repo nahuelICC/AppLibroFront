@@ -11,6 +11,10 @@ import {PasarelaPagoComponent} from './shared/components/pasarela-pago/pasarela-
 import {ActivacionComponent} from './features/registro/componentes/activacion/activacion.component';
 import {InfoCajasComponent} from './features/info-caja/pages/info-cajas/info-cajas.component';
 import {CarritoSuscripcionComponent} from './features/info-caja/carrito-suscripcion/carrito-suscripcion.component';
+import {CambioPasswordComponent} from './features/cambio_password/cambio-password/cambio-password.component';
+import {
+  FormularioCambioPasswordComponent
+} from './features/cambio_password/formulario-cambio-password/formulario-cambio-password.component';
 
 export const routes: Routes = [
   {path : '', redirectTo: '/main', pathMatch: 'full'},
@@ -25,4 +29,7 @@ export const routes: Routes = [
   { path: 'activar/:token', component: ActivacionComponent },
   { path: 'infocajas/:id', component: InfoCajasComponent },
   { path: 'carritosuscripcion', component: CarritoSuscripcionComponent },
+  { path: 'resetPassword', component: CambioPasswordComponent },
+  { path: 'formResetPassword', component: FormularioCambioPasswordComponent },
+
 ];
