@@ -95,15 +95,24 @@ export class DetallesComponent implements OnInit {
 
         // Obtener las reseñas individuales
         this.fetchResenyas();
+
+        // Verificar compra
+        this.verificarCompra();
       });
     }
   }
 
   verificarCompra(): void {
     this.libroService.verificarCompra(this.libroId, this.clienteIdActual).subscribe((result) => {
-      this.haComprado = result.haComprado;
-      this.haDejadoResenya = result.haDejadoResenya;
-      this.mostrarBoton = this.haComprado && !this.haDejadoResenya;
+      this.haComprado = result.haComprado; // Verifica si el cliente ha comprado el libro
+      this.haDejadoResenya = result.haDejadoResenya; // Verifica si el cliente ya ha dejado una reseña
+      this.mostrarBoton = this.haComprado && !this.haDejadoResenya; // Muestra el botón solo si ha comprado y no ha dejado reseña
+
+      console.log('Verificar compra:', {
+        haComprado: this.haComprado,
+        haDejadoResenya: this.haDejadoResenya,
+        mostrarBoton: this.mostrarBoton
+      });
     });
   }
 
