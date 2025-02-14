@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthServiceService } from '../../../../core/services/auth-service.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { NgIf } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
@@ -23,6 +23,7 @@ import {BotonComponent} from '../../../../shared/components/boton/boton.componen
     MatButtonModule,
     MatSnackBarModule,
     BotonComponent,
+    RouterLink,
     // Para mostrar mensajes de error
   ],
 })
