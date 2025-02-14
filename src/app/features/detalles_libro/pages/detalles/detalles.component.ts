@@ -122,7 +122,7 @@ export class DetallesComponent implements OnInit {
 
   calcularEstadisticas() {
     if (!this.resenyas || this.resenyas.length === 0) {
-      this.ratingDistribution = this.ratingDistribution.map(entry => new RatingDistribution(entry.stars, 0, 0));
+      this.ratingDistribution = this.ratingDistribution.map(entry => new RatingDistribution(entry.stars!, 0, 0));
       this.totalReviews = 0;
       this.cdRef.detectChanges();
       return;
