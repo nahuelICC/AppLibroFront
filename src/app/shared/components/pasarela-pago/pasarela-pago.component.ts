@@ -284,7 +284,10 @@ export class PasarelaPagoComponent implements OnInit {
             if (error.status === 400) {
               this.alertMessage = 'Ya tiene una suscripción activa';
               this.alertType = 'warning';
+              localStorage.removeItem('generoSeleccionado');
+              localStorage.removeItem('idTipoSuscripcion');
               localStorage.removeItem('esSuscripcion');
+              localStorage.removeItem('precioSuscripcion');
             } else {
               this.alertMessage = 'Error al procesar la suscripción';
               this.alertType = 'error';
