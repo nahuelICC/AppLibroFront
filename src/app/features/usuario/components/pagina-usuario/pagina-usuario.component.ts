@@ -286,26 +286,60 @@ export class PaginaUsuarioComponent implements OnInit {
 
     // Generación del PDF
     html2canvas(div, {
-      scale: 2,
-      windowWidth: 190 * 3.78,
-      useCORS: true
+      scale: 3, // Aumentamos la calidad de renderizado
+      useCORS: true,
+      windowWidth: 794, // Ancho equivalente a 210mm (A4) en pixels (210mm * 3.78px/mm)
+      windowHeight: div.scrollHeight * 3, // Alto proporcional
+      scrollY: -window.scrollY // Elimina espacios blancos no deseados
     }).then((canvas) => {
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const imgWidth = pageWidth - 20; // Ancho de contenido con márgenes
+      const pageWidth = 210; // Ancho A4 en mm
+      const pageHeight = 297; // Alto A4 en mm
+      const margin = 10; // Márgenes de 10mm
+
+      // Calculamos dimensiones manteniendo relación de aspecto
+      const imgWidth = pageWidth - (margin * 2);
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-      // Calcular posición horizontal centrada
-      const horizontalPosition = (pageWidth - imgWidth) / 2;
+      let position = 0; // Posición inicial vertical
 
-      let currentHeight = 10;
-      if (currentHeight + imgHeight > pdf.internal.pageSize.getHeight()) {
-        pdf.addPage();
-        currentHeight = 10;
+      // Dividimos en páginas
+      while (position < imgHeight) {
+        if (position > 0) pdf.addPage(); // Nueva página excepto la primera
+
+        const sectionHeight = Math.min(pageHeight - margin * 2, imgHeight - position);
+
+        // Creamos un canvas temporal para cada sección
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = (sectionHeight / imgHeight) * canvas.height;
+
+        // Dibujamos la sección correspondiente
+        tempCtx!.drawImage(
+          canvas,
+          0, (position / imgHeight) * canvas.height,
+          canvas.width, tempCanvas.height,
+          0, 0,
+          canvas.width, tempCanvas.height
+        );
+
+        // Añadimos al PDF con márgenes
+        pdf.addImage(
+          tempCanvas,
+          'PNG',
+          margin, // Margen izquierdo
+          margin, // Margen superior
+          imgWidth,
+          sectionHeight,
+          undefined,
+          'FAST'
+        );
+
+        position += sectionHeight;
       }
 
-      // Aplicar posición horizontal centrada
-      pdf.addImage(canvas, 'PNG', horizontalPosition, currentHeight, imgWidth, imgHeight);
       pdf.save(`factura_pedido_${pedido.referencia}.pdf`);
       document.body.removeChild(div);
     });
