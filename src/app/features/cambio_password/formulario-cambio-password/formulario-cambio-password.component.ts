@@ -82,6 +82,6 @@ export class FormularioCambioPasswordComponent implements OnInit {
     this.showAlertConfirmar = false;
     this.router.navigate(['/login']);
 
-  }
+  };
 
 }
