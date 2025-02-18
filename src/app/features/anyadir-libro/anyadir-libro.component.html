@@ -120,13 +120,14 @@
       <label for="portada" class="block text-sm font-medium text-gray-700">Portada:</label>
       <input type="file" id="portada" accept="image/*" (change)="onFileSelect($event)"
              class="w-full p-2 border rounded focus:outline-none focus:border-blue-500">
-      <p *ngIf="!portadaSeleccionada" class="text-red-500 text-xs mt-1">
+      <p *ngIf="!portadaSubida && !isEditMode" class="text-red-500 text-xs mt-1">
         La portada es obligatoria.
       </p>
     </div>
 
     <div *ngIf="imagenPreview" class="mt-2">
       <img [src]="imagenPreview" alt="Vista previa de portada" class="w-32 h-auto border rounded shadow">
+      <p *ngIf="isEditMode" class="text-sm text-gray-500 mt-1">Imagen actual del libro</p>
     </div>
 
     <div class="md:col-span-2">
