@@ -10,6 +10,7 @@ export class DetallesLibroService {
   private apiUrlResenya = '/api/resenya';
   private apiUrlCliente = '/api/clientes';
   private apiUrlTapa= 'api/tipoTapa';
+  private apiUrlNotificaciones = '/api/notificaciones';
 
   constructor(private http: HttpClient) { }
 
@@ -40,6 +41,10 @@ export class DetallesLibroService {
 
   getPrecioTapa(id_libro: number, id_tipo_tapa: number): Observable<{ id_tipo: number, precio: number }> {
     return this.http.get<{ id_tipo: number, precio: number }>(`${this.apiUrlTapa}/precio/${id_libro}/${id_tipo_tapa}`);
+  }
+
+  postDenuciarResenya(id: number): Observable<any> {
+    return this.http.post(`${this.apiUrlNotificaciones}/notificacionDenuncia`, {id_resenya: id});
   }
 
 
