@@ -75,14 +75,7 @@ export class ChatbotComponent implements OnInit {
     this.scrollToBottom();
   }
 
-  selectQuestion() {
-    if (this.selectedQuestion) {
-      this.userInput = this.selectedQuestion;
-      this.sendMessage();
-      this.selectedQuestion = '';
-      this.cdr.detectChanges(); // Forzar la detección de cambios
-    }
-  }
+
 
   handleButtonClick(action: string) {
     this.messages.push({ text: action, isUser: true });
@@ -173,10 +166,17 @@ export class ChatbotComponent implements OnInit {
 
   clearChat() {
     this.messages = [{ text: '¿En qué puedo ayudarte hoy?', isUser: false }]; // Restablecer mensajes
-    this.selectedQuestion = ''; // Limpiar la pregunta seleccionada en el select
-    this.userInput = ''; // Limpiar la entrada del usuario
+    this.selectedQuestion = '';
+    this.userInput = '';
     this.cdr.detectChanges(); // Forzar la detección de cambios
     this.scrollToBottom(); // Asegurarse de que el scroll esté abajo
+  }
+  selectQuestion() {
+    if (this.selectedQuestion) {
+      this.userInput = this.selectedQuestion;
+      this.sendMessage();
+      this.cdr.detectChanges(); // Forzar la detección de cambios
+    }
   }
 
   scrollToBottom() {
