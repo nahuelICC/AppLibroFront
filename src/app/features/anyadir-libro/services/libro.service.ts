@@ -19,4 +19,7 @@ export class LibroService {
   getIdiomas(): Observable<IdiomaDTO[]>{
     return this.http.get<IdiomaDTO[]>(`${this.apiUrl}/idiomas`);
   }
+  postLibro(libro: any): Observable<Object> {
+    return this.http.post(`${this.apiUrl}/admin/crearLibro`, libro);
+  }
 }
