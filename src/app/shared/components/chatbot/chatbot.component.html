@@ -1,52 +1,57 @@
 <div *ngIf="isChatbotVisible" class="fixed bottom-4 right-4 z-50">
-  <!-- Chat Container -->
-  <div *ngIf="isChatOpen" class="bg-white shadow-lg rounded-lg w-96 transition-all duration-300 ease-in-out transform" [class.opacity-0]="!isChatOpen" [class.opacity-100]="isChatOpen" [class.scale-95]="!isChatOpen" [class.scale-100]="isChatOpen">
-    <!-- Chat Header -->
-    <div class="bg-[#078080] text-white p-4 rounded-t-lg flex justify-between items-center">
-      <span class="font-semibold">Chat de Soporte</span>
-      <button (click)="toggleChat()" class="text-white hover:text-gray-200">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-
-    <!-- Chat Messages -->
-    <div class="p-4 h-64 overflow-y-auto" #chatContainer>
-      <div *ngFor="let message of messages" [class.justify-end]="message.isUser" class="flex mb-2">
-        <div [class.bg-[#078080]]="!message.isUser" [class.bg-gray-200]="message.isUser" class="rounded-lg p-2 max-w-[70%]">
-          <span [class.text-white]="!message.isUser" [class.text-gray-800]="message.isUser" [innerHTML]="message.text"></span>
+    <!-- Chat Container -->
+    <div *ngIf="isChatOpen" class="bg-white shadow-lg rounded-lg w-96 transition-all duration-300 ease-in-out transform" [class.opacity-0]="!isChatOpen" [class.opacity-100]="isChatOpen" [class.scale-95]="!isChatOpen" [class.scale-100]="isChatOpen">
+        <!-- Chat Header -->
+        <div class="bg-[#078080] text-white p-4 rounded-t-lg flex justify-between items-center">
+            <span class="font-semibold">Chat de Soporte</span>
+            <button (click)="toggleChat()" class="text-white hover:text-gray-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
-      </div>
+
+        <!-- Chat Messages -->
+        <div class="p-4 h-64 overflow-y-auto" #chatContainer>
+            <div *ngFor="let message of messages" [class.justify-end]="message.isUser" class="flex mb-2">
+                <div [class.bg-[#078080]]="!message.isUser" [class.bg-gray-200]="message.isUser" class="rounded-lg p-2 max-w-[70%]">
+                    <span [class.text-white]="!message.isUser" [class.text-gray-800]="message.isUser" [innerHTML]="message.text"></span>
+                    <div *ngIf="message.buttons" class="mt-2">
+                        <button *ngFor="let button of message.buttons" (click)="handleButtonClick(button.action)" class="bg-[#078080] text-white p-2 rounded-lg hover:bg-[#056b6b] transition-all duration-300 ease-in-out transform hover:scale-105 mr-2 mb-2">
+                            {{ button.text }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Input and Buttons -->
+        <div class="p-4 border-t">
+            <!-- Predefined Questions Dropdown -->
+            <select [(ngModel)]="selectedQuestion" (change)="selectQuestion()" class="w-full p-2 border rounded-lg mb-2 text-gray-700">
+                <option value="" disabled selected>Selecciona una pregunta</option>
+                <option *ngFor="let question of predefinedQuestions" [value]="question">{{ question }}</option>
+            </select>
+
+            <!-- User Input -->
+            <input [(ngModel)]="userInput" (keyup.enter)="sendMessage()" class="w-full p-2 border rounded-lg mb-2 text-gray-700" placeholder="Escribe tu mensaje..." />
+
+            <!-- Buttons (Grid Layout) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <button (click)="sendMessage()" class="w-full bg-[#078080] text-white p-2 rounded-lg hover:bg-[#056b6b] transition-all duration-300 ease-in-out transform hover:scale-105">
+                    Enviar
+                </button>
+                <button (click)="clearChat()" class="w-full bg-red-500 text-white p-2 rounded-lg hover:bg-red-700 transition-all duration-300 ease-in-out transform hover:scale-105">
+                    Limpiar
+                </button>
+            </div>
+        </div>
     </div>
 
-    <!-- Chat Input and Buttons -->
-    <div class="p-4 border-t">
-      <!-- Predefined Questions Dropdown -->
-      <select [(ngModel)]="selectedQuestion" (change)="selectQuestion()" class="w-full p-2 border rounded-lg mb-2 text-gray-700">
-        <option value="" disabled selected>Selecciona una pregunta</option>
-        <option *ngFor="let question of predefinedQuestions" [value]="question">{{ question }}</option>
-      </select>
-
-      <!-- User Input -->
-      <input [(ngModel)]="userInput" (keyup.enter)="sendMessage()" class="w-full p-2 border rounded-lg mb-2 text-gray-700" placeholder="Escribe tu mensaje..." />
-
-      <!-- Buttons (Grid Layout) -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-        <button (click)="sendMessage()" class="w-full bg-[#078080] text-white p-2 rounded-lg hover:bg-[#056b6b] transition-all duration-300 ease-in-out transform hover:scale-105">
-          Enviar
-        </button>
-        <button (click)="clearChat()" class="w-full bg-red-500 text-white p-2 rounded-lg hover:bg-red-700 transition-all duration-300 ease-in-out transform hover:scale-105">
-          Limpiar
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Chat Toggle Button -->
-  <button *ngIf="!isChatOpen" (click)="toggleChat()" class="bg-[#078080] text-white p-3 rounded-full shadow-lg hover:bg-[#056b6b] transition-all duration-300 ease-in-out transform hover:scale-110">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-    </svg>
-  </button>
+    <!-- Chat Toggle Button -->
+    <button *ngIf="!isChatOpen" (click)="toggleChat()" class="bg-[#078080] text-white p-3 rounded-full shadow-lg hover:bg-[#056b6b] transition-all duration-300 ease-in-out transform hover:scale-110">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+    </button>
 </div>
