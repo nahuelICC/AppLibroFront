@@ -9,12 +9,15 @@ import {PedidoService} from "./services/pedido.service";
 import {PedidosTablaDTO} from "./DTO/PedidosTablaDTO";
 import {NgIf} from '@angular/common';
 import {LibrosService} from './services/libros.service';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
   selector: 'app-admin',
   imports: [
     TablaComponent,
-    NgIf
+    NgIf,
+    MatIcon
   ],
   templateUrl: './admin.component.html',
   standalone: true,
@@ -42,13 +45,28 @@ export class AdminComponent implements OnInit{
 
   configurarTablaHijo!: (tipoTabla: string) => void;
 
+  isMenuOpen = true;
+  isMobile = false;
+
   constructor(private clienteService: ClienteService,
               private pedidoService: PedidoService,
-              private librosService: LibrosService) {
+              private librosService: LibrosService,
+              private breakpointObserver: BreakpointObserver) {
   }
 
   ngOnInit(): void {
     this.cargarClientes();
+    this.breakpointObserver.observe([
+      Breakpoints.Handset,
+      Breakpoints.Tablet
+    ]).subscribe(result => {
+      this.isMobile = result.matches;
+      this.isMenuOpen = !this.isMobile;
+    });
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
   }
 
   muestraTabla(tablaId: string, btnActual: EventTarget | null): void {

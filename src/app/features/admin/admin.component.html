@@ -1,27 +1,49 @@
-<div class="flex h-screen">
-  <aside class="w-40 bg-white shadow-md ms-4 mt-4 rounded-lg">
-    <nav class="p-4">
-      <ul>
+<!-- admin.component.html -->
+<div class="flex min-h-screen mt-4 gap-6 relative">
+  <!-- Botón hamburguesa para móvil/tablet -->
+  <button (click)="toggleMenu()"
+          class="md:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-lg transition-transform hover:scale-105 flex items-center justify-center "
+          [style.left]="isMenuOpen ? 'calc(10rem + 1rem)' : '1rem'">
+    <mat-icon>{{ isMenuOpen ? 'close' : 'menu'}}</mat-icon>
+  </button>
+
+  <!-- Menú lateral -->
+  <aside [class.left-0]="isMenuOpen"
+         [class.-left-full]="!isMenuOpen"
+         class=" w-40 bg-white shadow-lg ms-4 rounded-lg fixed md:relative md:left-0 top-4 md:top-0 h-[calc(100vh-2rem)] md:h-auto transition-all duration-300 z-40 md:transform-none">
+    <nav class="p-4 h-full">
+      <ul class="space-y-2">
+        <!-- Tus elementos del menú aquí -->
         <li>
           <button id="btnUsuarios"
-                  class="w-full text-left p-2 rounded-2xl bg-gray-200 px-4 mb-2 hover:bg-gray-200 transition"
-                  (click)="muestraTabla('clientes', $event.target)">Clientes</button>
+                  class="w-full text-left p-3 rounded-xl hover:bg-gray-100 transition flex items-center gap-2"
+                  (click)="muestraTabla('clientes', $event.target)">
+            <mat-icon>people</mat-icon>
+            Clientes
+          </button>
         </li>
         <li>
           <button id="btnPedidos"
-                  class="w-full text-left p-2 px-4 mb-2 rounded-2xl hover:bg-gray-200 transition"
-                  (click)="muestraTabla('pedidos', $event.target)">Pedidos</button>
+                  class="w-full text-left p-3 rounded-xl hover:bg-gray-100 transition flex items-center gap-2"
+                  (click)="muestraTabla('pedidos', $event.target)">
+            <mat-icon>shopping_cart</mat-icon>
+            Pedidos
+          </button>
         </li>
         <li>
           <button id="btnLibros"
-                  class="w-full text-left p-2 px-4 mb-2 rounded-2xl hover:bg-gray-200 transition"
-                  (click)="muestraTabla('libros', $event.target)">Libros</button>
+                  class="w-full text-left p-3 rounded-xl hover:bg-gray-100 transition flex items-center gap-2"
+                  (click)="muestraTabla('libros', $event.target)">
+            <mat-icon>menu_book</mat-icon>
+            Libros
+          </button>
         </li>
       </ul>
     </nav>
   </aside>
-  <main class="flex-1 p-6">
-    <h1 id="tituloSeccion" class="text-2xl font-bold mb-4">{{ titulo }}</h1>
+
+  <main class="flex-1 max-h-full md:mx-4 pt-6 md:pt-0 flex flex-col items-center">
+    <h1 id="tituloSeccion" class="text-4xl font-bold mb-4 px-4 md:px-0">{{ titulo }}</h1>
     <app-tabla *ngIf="idTablaActiva === 'clientes'"
                [tablaActiva]="'clientes'"
                [datos]="clientesData"
