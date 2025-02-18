@@ -47,4 +47,8 @@ export class PerfilUsuarioService {
     return this.http.put(`${this.apiUrlClienteSuscripcion}/cambiaTipoSuscripcion`, { tipo: tipo, genero:genero });
   }
 
+  rolUsuario(): Observable<any> {
+    return this.http.get(`${this.apiUrlUsuario}/rol`);
+  }
+
 }
