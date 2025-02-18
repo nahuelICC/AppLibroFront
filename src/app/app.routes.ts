@@ -31,6 +31,7 @@ export const routes: Routes = [
   { path: 'activar/:token', component: ActivacionComponent },
   { path: 'admin', component: AdminComponent },
   { path: 'admin/anyadirLibro', component: AnyadirLibroComponent },
+  { path: 'admin/anyadirLibro/:id', component: AnyadirLibroComponent },
   { path: 'activar/:token', component: ActivacionComponent },
   { path: 'infocajas/:id', component: InfoCajasComponent },
   { path: 'carritosuscripcion', component: CarritoSuscripcionComponent },
