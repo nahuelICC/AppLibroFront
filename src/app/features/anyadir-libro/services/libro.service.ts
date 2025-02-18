@@ -22,4 +22,11 @@ export class LibroService {
   postLibro(libro: any): Observable<Object> {
     return this.http.post(`${this.apiUrl}/admin/crearLibro`, libro);
   }
+  getLibroById(id: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/admin/libro/${id}`);
+  }
+
+  putLibro(id: string, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/admin/actualizarLibro/${id}`, data);
+  }
 }
