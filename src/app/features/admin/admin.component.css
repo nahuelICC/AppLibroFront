@@ -1,0 +1,18 @@
+/* admin.component.css */
+/* Opcional: Añadir transición suave */
+aside {
+  transition: left 0.3s ease-in-out;
+}
+
+/* Ocultar scroll en móvil */
+@media (max-width: 767px) {
+  aside {
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+  }
+
+  aside::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+}

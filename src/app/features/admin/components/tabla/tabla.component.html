@@ -1,0 +1,175 @@
+<div id="{{tablaActiva}}" class="bg-white p-4 rounded-lg shadow-md md:max-w-[calc(100vw-16rem)] max-w-[calc(100vw-1rem)]">
+  <!-- Barra de búsqueda y botón -->
+  <div class="flex items-center justify-between gap-4 mb-4">
+    <!-- Barra de búsqueda -->
+    <div class="flex items-center border rounded-lg p-2 flex-grow">
+      <span class="text-gray-500 mr-2 flex">
+        <mat-icon class="self-center">search</mat-icon>
+      </span>
+      <!-- Al cambiar la búsqueda se reinicia la página actual -->
+      <input type="text" placeholder="Buscar" [(ngModel)]="buscador" (ngModelChange)="onSearchChange()"
+             class="w-full outline-none bg-transparent">
+    </div>
+    <a *ngIf="tablaActiva === 'libros'"
+       class="bg-[#078080] text-white rounded-lg hover:bg-[#078080C5] transition-colors flex-shrink-0 flex items-center justify-center w-10 h-10 p-2 md:w-auto md:h-auto md:px-4 md:py-2"
+       [routerLink]="['/admin/anyadirLibro']">
+      <mat-icon>add</mat-icon>
+      <span class="hidden md:inline ml-2">Añadir libro</span>
+    </a>
+  </div>
+
+  <!-- Contenedor de tabla -->
+  <div class="relative rounded-lg border border-gray-200 overflow-x-auto max-w-full">
+    <table class="w-full border-collapse border border-gray-300 rounded-lg table-fixed">
+      <thead class="bg-gray-50 border-b-2 border-gray-200">
+      <tr>
+        <th *ngFor="let col of columnas"
+            class="p-3 text-sm font-semibold text-gray-600 text-left whitespace-nowrap w-[200px] min-w-[200px]">
+          {{ col.titulo }}
+        </th>
+        <th class="p-3 text-sm font-semibold text-gray-600 text-left whitespace-nowrap w-[180px] min-w-[180px]">
+          Acciones
+        </th>
+      </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+      <!-- Se recorre la data paginada. La variable "i" es el índice relativo en la página;
+           para obtener el índice global se usa la función getGlobalIndex(i) -->
+      <tr *ngFor="let item of paginatedData; let i = index" class="hover:bg-gray-50 transition-colors">
+        <td *ngFor="let col of columnas"
+            class="p-3 text-sm text-gray-700 whitespace-nowrap w-[200px] min-w-[200px] max-w-[200px]">
+          <div class="relative overflow-visible">
+            <!-- Modo visualización normal -->
+            <ng-container *ngIf="editingRow !== getGlobalIndex(i); else editField">
+              <div class="truncate">
+                <ng-container *ngIf="isBoolean(item[col.campo]); else textField">
+                    <span class="flex items-center">
+                      <mat-icon [ngClass]="item[col.campo] ? 'text-green-500' : 'text-red-500'">
+                        {{ item[col.campo] ? 'check_circle' : 'cancel' }}
+                      </mat-icon>
+                    </span>
+                </ng-container>
+                <ng-template #textField>
+                  <span class="truncate"> {{ item[col.campo] }} </span>
+                </ng-template>
+              </div>
+            </ng-container>
+
+            <!-- Modo edición -->
+            <ng-template #editField>
+              <ng-container *ngIf="col.editable; else nonEditable">
+                <ng-container *ngIf="isBoolean(item[col.campo]); else editTextField">
+                  <input type="checkbox" hidden
+                         [formControl]="getFormControl(col.campo)"
+                         (change)="toggleCheck(col.campo)">
+                  <label class="flex items-center cursor-pointer">
+                    <mat-icon
+                      [ngClass]="getFormControl(col.campo)?.value ? 'text-green-500' : 'text-red-500'"
+                      (click)="toggleCheck(col.campo)">
+                      {{ getFormControl(col.campo)?.value ? 'check_circle' : 'cancel' }}
+                    </mat-icon>
+                  </label>
+                </ng-container>
+
+                <!-- Campo de texto editable -->
+                <ng-template #editTextField>
+                  <div class="relative w-full">
+                    <ng-container *ngIf="col.isEstado; else standardTextInput">
+                      <select [formControl]="getFormControl(col.campo)"
+                              class="w-full border p-1 rounded focus:outline-none focus:border-blue-500 truncate">
+                        <option *ngFor="let estado of estados"
+                                [value]="estado"
+                                [selected]="estado === item[col.campo]">
+                          {{ estado }}
+                        </option>
+                      </select>
+                    </ng-container>
+
+                    <ng-template #standardTextInput>
+                      <input type="text"
+                             [formControl]="getFormControl(col.campo)"
+                             class="w-full border p-1 rounded focus:outline-none focus:border-blue-500 truncate">
+                    </ng-template>
+
+                    <!-- Tooltip de error posicionado fuera del flujo normal -->
+                    <div *ngIf="getFormControl(col.campo)?.invalid && getFormControl(col.campo)?.touched"
+                         class="absolute left-0 -top-2 transform -translate-y-full
+                                    bg-white text-red-500 text-xs px-3 py-1 border border-red-300
+                                    rounded shadow-lg z-[9999] min-w-[200px]">
+                      {{ getControlError(col.campo) }}
+                      <!-- Flecha del tooltip -->
+                      <div class="absolute top-full left-4 w-0 h-0
+                                      border-l-8 border-l-transparent
+                                      border-r-8 border-r-transparent
+                                      border-t-8 border-t-red-300"></div>
+                    </div>
+                  </div>
+                </ng-template>
+              </ng-container>
+
+              <ng-template #nonEditable>
+                <div class="overflow-hidden w-full">
+                  <span class="">{{ item[col.campo] }}</span>
+                </div>
+              </ng-template>
+            </ng-template>
+          </div>
+        </td>
+
+        <!-- Columna de acciones -->
+        <td class="p-3 text-sm text-gray-700 whitespace-nowrap w-[150px] min-w-[150px] space-x-2">
+          <ng-container *ngIf="editingRow !== getGlobalIndex(i); else editButtons">
+            <!-- Botón Editar para Libros (redirige) -->
+            <a *ngIf="tablaActiva === 'libros'"
+               [routerLink]="['/admin/anyadirLibro', item.idLibro]"
+               class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded cursor-pointer">
+              Editar
+            </a>
+
+            <!-- Botón Editar normal para otras tablas -->
+            <button *ngIf="tablaActiva !== 'libros'"
+                    (click)="editRow(getGlobalIndex(i))"
+                    class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded">
+              Editar
+            </button>
+          </ng-container>
+
+          <ng-template #editButtons>
+            <button (click)="saveRow()"
+                    class="bg-green-500 hover:bg-green-600 text-white py-1 px-2 rounded">
+              Guardar
+            </button>
+            <button (click)="cancelEdit()"
+                    class="bg-gray-500 hover:bg-gray-600 text-white py-1 px-2 rounded">
+              Cancelar
+            </button>
+          </ng-template>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  <div *ngIf="paginacion.totalPages > 1" class="flex justify-center mt-6">
+    <button (click)="previousPage()" [disabled]="paginacion.currentPage === 1"
+            class="px-3 py-1 rounded-lg text-[#111818] hover:bg-[#f0f5f5] disabled:opacity-50 disabled:cursor-not-allowed">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="flex items-center gap-1">
+      <ng-container *ngFor="let page of paginacion.displayedPages">
+        <button *ngIf="page !== '...'" (click)="setPage(page)"
+                [class.bg-[#f0f5f5]]="paginacion.currentPage === page"
+                class="w-8 h-8 rounded-full flex items-center justify-center text-sm hover:bg-[#f0f5f5] transition-colors"
+                [class.font-bold]="paginacion.currentPage === page">
+          {{ page }}
+        </button>
+        <span *ngIf="page === '...'" class="px-2">...</span>
+      </ng-container>
+    </div>
+    <button (click)="nextPage()" [disabled]="paginacion.currentPage === paginacion.totalPages"
+            class="px-3 py-1 rounded-lg text-[#111818] hover:bg-[#f0f5f5] disabled:opacity-50 disabled:cursor-not-allowed">
+      <mat-icon>arrow_forward</mat-icon>
+    </button>
+  </div>
+</div>

@@ -9,6 +9,8 @@ import {CarritoComponent} from './features/carrito/carrito.component';
 import {InicioComponent} from './features/inicio/pages/inicio/inicio.component';
 import {PasarelaPagoComponent} from './shared/components/pasarela-pago/pasarela-pago.component';
 import {ActivacionComponent} from './features/registro/componentes/activacion/activacion.component';
+import {AdminComponent} from './features/admin/admin.component';
+import {AnyadirLibroComponent} from './features/anyadir-libro/anyadir-libro.component';
 import {InfoCajasComponent} from './features/info-caja/pages/info-cajas/info-cajas.component';
 import {CarritoSuscripcionComponent} from './features/info-caja/carrito-suscripcion/carrito-suscripcion.component';
 import {CambioPasswordComponent} from './features/cambio_password/cambio-password/cambio-password.component';
@@ -27,9 +29,12 @@ export const routes: Routes = [
   { path: 'main', component: InicioComponent },
   { path: 'pago', component: PasarelaPagoComponent, canActivate:[AuthGuard]},
   { path: 'activar/:token', component: ActivacionComponent },
+  { path: 'admin', component: AdminComponent },
+  { path: 'admin/anyadirLibro', component: AnyadirLibroComponent },
+  { path: 'admin/anyadirLibro/:id', component: AnyadirLibroComponent },
+  { path: 'activar/:token', component: ActivacionComponent },
   { path: 'infocajas/:id', component: InfoCajasComponent },
   { path: 'carritosuscripcion', component: CarritoSuscripcionComponent },
   { path: 'resetPassword', component: CambioPasswordComponent },
   { path: 'formResetPassword', component: FormularioCambioPasswordComponent },
-
 ];

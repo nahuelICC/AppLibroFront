@@ -1,0 +1,154 @@
+<div class="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6 mt-6">
+  <h2 class="text-2xl font-semibold text-gray-700 mb-4">Añadir Libro</h2>
+
+  <form [formGroup]="libroForm" (ngSubmit)="enviarFormulario($event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Título</label>
+      <input type="text" formControlName="titulo"
+             class="w-full mt-1 p-2 border rounded focus:outline-none focus:border-blue-500">
+      <p *ngIf="campoInvalido('titulo')" class="text-red-500 text-xs mt-1">
+        El título es obligatorio.
+      </p>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Autor</label>
+      <input type="text" formControlName="autor"
+             class="w-full mt-1 p-2 border rounded focus:outline-none focus:border-blue-500">
+      <p *ngIf="campoInvalido('autor')" class="text-red-500 text-xs mt-1">
+        El autor es obligatorio.
+      </p>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Género</label>
+      <select formControlName="genero"
+              class="w-full mt-1 p-2 border rounded focus:outline-none focus:border-blue-500">
+        <option *ngFor="let g of generos" [value]="g.numero">{{ g.nombre | nombreGenero }}</option>
+      </select>
+      <p *ngIf="campoInvalido('genero')" class="text-red-500 text-xs mt-1">
+        Seleccione un género.
+      </p>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Editorial</label>
+      <input type="text" formControlName="editorial"
+             class="w-full mt-1 p-2 border rounded focus:outline-none focus:border-blue-500">
+      <p *ngIf="campoInvalido('editorial')" class="text-red-500 text-xs mt-1">
+        La editorial es obligatoria.
+      </p>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700">ISBN</label>
+      <input type="text" formControlName="isbn"
+             class="w-full mt-1 p-2 border rounded focus:outline-none focus:border-blue-500">
+      <p *ngIf="campoInvalido('isbn')" class="text-red-500 text-xs mt-1">
+        ISBN debe tener entre 10 y 13 dígitos.
+      </p>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Idioma</label>
+      <select formControlName="idioma"
+              class="w-full mt-1 p-2 border rounded focus:outline-none focus:border-blue-500">
+        <option *ngFor="let idioma of idiomas" [value]="idioma.numero">{{ idioma.nombre | nombreGenero }}</option>
+      </select>
+      <p *ngIf="campoInvalido('idioma')" class="text-red-500 text-xs mt-1">
+        Seleccione un idioma.
+      </p>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Fecha de Publicación</label>
+      <input type="date" formControlName="fechaPublicacion"
+             class="w-full mt-1 p-2 border rounded focus:outline-none focus:border-blue-500">
+      <p *ngIf="campoInvalido('fechaPublicacion')" class="text-red-500 text-xs mt-1">
+        La fecha no puede ser futura.
+      </p>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Número de Páginas</label>
+      <input type="number" formControlName="paginas"
+             class="w-full mt-1 p-2 border rounded focus:outline-none focus:border-blue-500">
+      <p *ngIf="campoInvalido('paginas')" class="text-red-500 text-xs mt-1">
+        Debe ser mayor a 0.
+      </p>
+    </div>
+    <div class="md:col-span-2">
+      <label class="block text-sm font-medium text-gray-700">Tipo de Tapa:</label>
+    </div>
+
+    <div class="md:col-span-2 flex items-center gap-4">
+      <div class="flex items-center w-1/2">
+        <input type="checkbox" formControlName="tapaBlanda" id="tapaBlanda"
+               class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+        <label for="tapaBlanda" class="ml-2 text-sm text-gray-700">Tapa Blanda</label>
+      </div>
+
+      <div class="w-1/2" *ngIf="libroForm.get('tapaBlanda')?.value">
+        <input type="number" formControlName="precioTapaBlanda"
+               class="w-full p-2 border rounded focus:outline-none focus:border-blue-500"
+               placeholder="Precio (Blanda)" min="1">
+        <p *ngIf="campoInvalido('precioTapaBlanda')" class="text-red-500 text-xs mt-1">
+          Precio requerido.
+        </p>
+      </div>
+    </div>
+
+    <div class="md:col-span-2 flex items-center gap-4">
+      <div class="flex items-center w-1/2">
+        <input type="checkbox" formControlName="tapaDura" id="tapaDura"
+               class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+        <label for="tapaDura" class="ml-2 text-sm text-gray-700">Tapa Dura</label>
+      </div>
+
+      <div class="w-1/2" *ngIf="libroForm.get('tapaDura')?.value">
+        <input type="number" formControlName="precioTapaDura"
+               class="w-full p-2 border rounded focus:outline-none focus:border-blue-500"
+               placeholder="Precio (Dura)" min="1">
+        <p *ngIf="campoInvalido('precioTapaDura')" class="text-red-500 text-xs mt-1">
+          Precio requerido.
+        </p>
+      </div>
+    </div>
+
+    <div class="md:col-span-2">
+      <label for="portada" class="block text-sm font-medium text-gray-700">Portada:</label>
+      <input type="file" id="portada" accept="image/*" (change)="onFileSelect($event)"
+             class="w-full p-2 border rounded focus:outline-none focus:border-blue-500">
+      <p *ngIf="!portadaSubida && !isEditMode" class="text-red-500 text-xs mt-1">
+        La portada es obligatoria.
+      </p>
+    </div>
+
+    <div *ngIf="imagenPreview" class="mt-2">
+      <img [src]="imagenPreview" alt="Vista previa de portada" class="w-32 h-auto border rounded shadow">
+      <p *ngIf="isEditMode" class="text-sm text-gray-500 mt-1">Imagen actual del libro</p>
+    </div>
+
+    <div class="md:col-span-2">
+      <label class="block text-sm font-medium text-gray-700">Descripción (Sinopsis)</label>
+      <textarea formControlName="descripcion"
+                class="w-full mt-1 p-2 border rounded focus:outline-none focus:border-blue-500 resize-y"
+                rows="4"></textarea>
+      <p *ngIf="campoInvalido('descripcion')" class="text-red-500 text-xs mt-1">
+        La descripción es obligatoria.
+      </p>
+    </div>
+
+
+    <div class="md:col-span-2 flex justify-end">
+      <button type="submit" [disabled]="libroForm.invalid || !portadaSubida"
+              class="bg-[#078080] text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400">
+        Guardar Libro
+      </button>
+    </div>
+
+
+  </form>
+</div>
+

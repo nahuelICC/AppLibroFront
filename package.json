@@ -21,6 +21,7 @@
     "@angular/platform-browser": "^19.1.0",
     "@angular/platform-browser-dynamic": "^19.1.0",
     "@angular/router": "^19.1.0",
+    "cloudinary-core": "^2.13.1",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.2",
     "ng5-slider": "^1.2.6",
