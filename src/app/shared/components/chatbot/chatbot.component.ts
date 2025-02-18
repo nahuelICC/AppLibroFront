@@ -22,9 +22,7 @@ export class ChatbotComponent implements OnInit {
   isLoggedIn: boolean = false;
   predefinedQuestions: string[] = [
     'Tengo duda/consulta sobre mi pedido',
-    '¿Cómo puedo cambiar mi suscripción?',
-    '¿Cuándo termina mi suscripción?',
-    '¿Cómo contactar con soporte?',
+    'Tengo duda/consulta sobre mi suscripción'
   ];
   selectedQuestion: string = '';
   datosCliente: any = { pedidos: [], suscripcion: { fechaFin: '', suscrito: false } };
@@ -75,8 +73,6 @@ export class ChatbotComponent implements OnInit {
     this.scrollToBottom();
   }
 
-
-
   handleButtonClick(action: string) {
     this.messages.push({ text: action, isUser: true });
     const response = this.getResponse(action);
@@ -91,6 +87,23 @@ export class ChatbotComponent implements OnInit {
       const pedidosFiltrados = this.datosCliente.pedidos.filter((pedido: any) => !pedido.referencia.startsWith('MISTERY'));
       const buttons = pedidosFiltrados.map((pedido: any) => ({ text: pedido.referencia, action: `Consulta sobre ${pedido.referencia}` }));
       return { text: 'Selecciona tu pedido:', isUser: false, buttons };
+    } else if (lowerInput.includes('tengo duda/consulta sobre mi suscripción')) {
+      if (this.datosCliente.suscripcion === "Todavía no te has suscrito") {
+        return { text: 'No estás suscrito. Puedes visitar la sección de suscripciones para hacerlo.', isUser: false };
+      } else {
+        return {
+          text: '¿Qué consulta tienes sobre tu suscripción?',
+          isUser: false,
+          buttons: [
+            { text: '¿Cuándo termina mi suscripción?', action: '¿Cuándo termina mi suscripción?' },
+            { text: 'Tengo duda sobre mi Mystery Box', action: 'Tengo duda sobre mi Mystery Box' }
+          ]
+        };
+      }
+    } else if (lowerInput.includes('tengo duda sobre mi mystery box')) {
+      const pedidosMistery = this.datosCliente.pedidos.filter((pedido: any) => pedido.referencia.startsWith('MISTERY'));
+      const buttons = pedidosMistery.map((pedido: any) => ({ text: pedido.referencia, action: `Consulta sobre ${pedido.referencia}` }));
+      return { text: 'Selecciona tu pedido Mystery Box:', isUser: false, buttons };
     } else if (lowerInput.includes('consulta sobre')) {
       const pedidoReferencia = userInput.split('Consulta sobre ')[1];
       const pedido = this.datosCliente.pedidos.find((p: any) => p.referencia === pedidoReferencia);
@@ -112,29 +125,19 @@ export class ChatbotComponent implements OnInit {
         let mensaje = '';
 
         switch (pedido.estado) {
-          case 1: // Nuevo
+          case 1:
             fechaLlegada.setDate(fechaLlegada.getDate() + 5);
-            mensaje = `Su pedido aún no ha sido procesado. Se entregará aproximadamente el ${this.datePipe.transform(fechaLlegada, 'dd/MM/yyyy')}.`;
+            mensaje = `Se entregará aproximadamente el ${this.datePipe.transform(fechaLlegada, 'dd/MM/yyyy')}.`;
             break;
-          case 2: // EnProceso
-            fechaLlegada.setDate(fechaLlegada.getDate() + 5);
-            mensaje = `Su pedido está en proceso. Se entregará aproximadamente el ${this.datePipe.transform(fechaLlegada, 'dd/MM/yyyy')}.`;
-            break;
-          case 3: // Enviado
+          case 3:
             fechaLlegada.setDate(fechaLlegada.getDate() + 2);
-            mensaje = `Su pedido ha sido enviado. Se entregará aproximadamente el ${this.datePipe.transform(fechaLlegada, 'dd/MM/yyyy')}.`;
+            mensaje = `Su pedido ha sido enviado y llegará aproximadamente el ${this.datePipe.transform(fechaLlegada, 'dd/MM/yyyy')}.`;
             break;
-          case 4: // EnReparto
+          case 4:
             mensaje = 'Su pedido está en reparto. Se entregará hoy.';
             break;
-          case 5: // Entregado
-            mensaje = 'Este pedido aparece como entregado. Si tiene problemas, consulte con contacto.tinteka@gmail.com.';
-            break;
-          case 6: // Devuelto
-            mensaje = 'Este pedido aparece como devuelto en el sistema. Si tiene problemas, consulte con contacto.tinteka@gmail.com.';
-            break;
-          case 7: // Cancelado
-            mensaje = 'Este pedido aparece como cancelado en el sistema. Si tiene problemas, consulte con contacto.tinteka@gmail.com.';
+          case 5:
+            mensaje = 'Este pedido ya ha sido entregado.';
             break;
           default:
             mensaje = 'No se pudo determinar el estado del pedido.';
@@ -145,37 +148,34 @@ export class ChatbotComponent implements OnInit {
       } else {
         return { text: 'No se encontró el pedido.', isUser: false };
       }
-    } else if (lowerInput.includes('cambiar mi suscripción')) {
-      return { text: 'Puedes cambiar tu suscripción desde la sección de "Mis Suscripciones" en tu perfil.', isUser: false };
-    } else if (lowerInput.includes('cuándo termina mi suscripción')) {
+    } else if (lowerInput.includes('¿cuándo termina mi suscripción?')) {
       const fechaFin = this.datosCliente.suscripcion.fechaFin;
       const isSubscribed = this.datosCliente.suscripcion.suscrito;
-      const renovacion = isSubscribed ? ' Se renovará automáticamente.' : '';
-      if (fechaFin) {
-        const formattedDate = this.datePipe.transform(fechaFin, 'dd/MM/yyyy');
-        return { text: `Tu suscripción termina el ${formattedDate}. Puedes renovarla en cualquier momento.${renovacion}`, isUser: false };
-      } else {
-        return { text: 'No se pudo obtener la fecha de finalización de tu suscripción.', isUser: false };
-      }
-    } else if (lowerInput.includes('contactar con soporte')) {
-      return { text: 'Puedes enviar un correo a contacto.tinteka@gmail.com y te responderemos lo antes posible.', isUser: false };
+      const renovacion = isSubscribed ? ' Se renovará automáticamente.' : ' Puedes volver a suscribirte desde "Mi cuenta".';
+      return {
+        text: `Tu suscripción termina el ${this.datePipe.transform(fechaFin, 'dd/MM/yyyy')}.${renovacion}`,
+        isUser: false,
+        buttons: this.predefinedQuestions.map(q => ({ text: q, action: q }))
+      };
     } else {
       return { text: 'No puedo resolver tu duda. Por favor, envía un correo a contacto.tinteka@gmail.com para obtener ayuda.', isUser: false };
     }
   }
 
+
   clearChat() {
-    this.messages = [{ text: '¿En qué puedo ayudarte hoy?', isUser: false }]; // Restablecer mensajes
+    this.messages = [{ text: '¿En qué puedo ayudarte hoy?', isUser: false }];
     this.selectedQuestion = '';
     this.userInput = '';
-    this.cdr.detectChanges(); // Forzar la detección de cambios
-    this.scrollToBottom(); // Asegurarse de que el scroll esté abajo
+    this.cdr.detectChanges();
+    this.scrollToBottom();
   }
+
   selectQuestion() {
     if (this.selectedQuestion) {
       this.userInput = this.selectedQuestion;
       this.sendMessage();
-      this.cdr.detectChanges(); // Forzar la detección de cambios
+      this.cdr.detectChanges();
     }
   }
 
