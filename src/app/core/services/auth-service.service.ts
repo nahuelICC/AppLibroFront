@@ -2,6 +2,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -10,12 +11,17 @@ export class AuthServiceService {
   private tokenKey = 'token';
   private loggedKey = 'logged';
   private apiClienteSuscripcionUrl = '/api/ClienteSuscripcion';
+  private isLoggedInSubject = new BehaviorSubject<boolean>(this.isLogged());
+
+  isLoggedIn$ = this.isLoggedInSubject.asObservable();
 
   constructor(private http: HttpClient, private router: Router) {}
 
   setToken(token: string): void {
     localStorage.setItem(this.tokenKey, token);
     localStorage.setItem(this.loggedKey, 'true');
+    this.isLoggedInSubject.next(true); // Notificar a los componentes que el usuario ha iniciado sesión
+
     this.isSuscribed().subscribe(tipoSuscripcion => {
       localStorage.setItem('isSuscribed', tipoSuscripcion !== 0 ? 'true' : 'false');
       if (tipoSuscripcion !== 0) {
@@ -31,6 +37,7 @@ export class AuthServiceService {
   clearToken(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.loggedKey);
+    this.isLoggedInSubject.next(false); // Notificar que el usuario cerró sesión
   }
 
   isLogged(): boolean {

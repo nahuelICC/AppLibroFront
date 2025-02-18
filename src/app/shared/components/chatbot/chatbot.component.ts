@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PerfilUsuarioService } from '../../../features/usuario/services/perfil-usuario.service';
+import { AuthServiceService } from '../../../core/services/auth-service.service';
 
 @Component({
   selector: 'app-chatbot',
@@ -27,23 +28,33 @@ export class ChatbotComponent implements OnInit {
     '¿Cómo contactar con soporte?',
   ];
   selectedQuestion: string = '';
+  selectedPedido: string = '';
+  selectedPedidoQuestion: string = '';
+  showPedidosOptions: boolean = false;
+  showPedidoDetails: boolean = false;
   datosCliente: any = { pedidos: [], suscripcion: { fechaFin: '', suscrito: false } };
 
   constructor(
     private perfilUsuarioService: PerfilUsuarioService,
+    private authService: AuthServiceService,
     private datePipe: DatePipe
   ) {}
 
   ngOnInit() {
-    this.checkLoginStatus();
-    this.listenForLogin();
+    this.authService.isLoggedIn$.subscribe((isLogged) => {
+      this.isLoggedIn = isLogged;
+      this.isChatbotVisible = isLogged;
+      if (isLogged) {
+        this.cargarDatosCliente();
+      }
+    });
   }
 
   checkLoginStatus() {
     const logged = localStorage.getItem('logged');
     this.isLoggedIn = logged === 'true';
+    this.isChatbotVisible = this.isLoggedIn;
     if (this.isLoggedIn) {
-      this.isChatbotVisible = true;
       this.cargarDatosCliente();
     }
   }
@@ -71,7 +82,7 @@ export class ChatbotComponent implements OnInit {
     if (this.isChatOpen && this.messages.length === 0) {
       this.messages.push({ text: '¿En qué puedo ayudarte hoy?', isUser: false });
     }
-    this.scrollToBottom(); // Asegura que el scroll esté abajo al abrir el chat
+    this.scrollToBottom();
   }
 
   sendMessage() {
@@ -82,15 +93,47 @@ export class ChatbotComponent implements OnInit {
     this.messages.push({ text: response, isUser: false });
 
     this.userInput = '';
-    this.scrollToBottom(); // Asegura que el scroll esté abajo al enviar un mensaje
+    this.scrollToBottom();
   }
 
   selectQuestion() {
-    if (this.selectedQuestion) {
-      this.userInput = this.selectedQuestion;
-      this.sendMessage();
-      this.selectedQuestion = '';
+    if (this.selectedQuestion === 'pedido') {
+      this.showPedidosOptions = true;
+      this.showPedidoDetails = false;
+      if (this.datosCliente.pedidos.length === 0) {
+        this.messages.push({ text: 'No tienes pedidos, puedes ir a la Tienda para realizar tu compra.', isUser: false });
+      }
+    } else if (this.selectedQuestion === 'suscripcion') {
+      this.showPedidosOptions = false;
+      this.showPedidoDetails = false;
+      this.messages.push({ text: this.getResponse('cuándo termina mi suscripción'), isUser: false });
+    } else if (this.selectedQuestion === 'cambiar_suscripcion') {
+      this.showPedidosOptions = false;
+      this.showPedidoDetails = false;
+      this.messages.push({ text: this.getResponse('cambiar mi suscripción'), isUser: false });
     }
+    this.selectedQuestion = '';
+  }
+
+  selectPedido() {
+    if (this.selectedPedido) {
+      this.showPedidoDetails = true;
+    }
+  }
+
+  selectPedidoQuestion() {
+    if (this.selectedPedidoQuestion === 'llegada') {
+      const pedido = this.datosCliente.pedidos.find((p: any) => p.referencia === this.selectedPedido);
+      if (pedido) {
+        const fechaPedido = new Date(pedido.fecha);
+        const fechaLlegada = new Date(fechaPedido.setDate(fechaPedido.getDate() + 5));
+        const formattedDate = this.datePipe.transform(fechaLlegada, 'dd/MM/yyyy');
+        this.messages.push({ text: `Tu pedido llegará entre 3 y 5 días hábiles, aproximadamente el ${formattedDate}.`, isUser: false });
+      }
+    } else if (this.selectedPedidoQuestion === 'cancelar') {
+      this.messages.push({ text: 'La funcionalidad para cancelar pedidos estará disponible pronto.', isUser: false });
+    }
+    this.selectedPedidoQuestion = '';
   }
 
   getResponse(userInput: string): string {
@@ -139,7 +182,7 @@ export class ChatbotComponent implements OnInit {
 
   clearChat() {
     this.messages = [{ text: '¿En qué puedo ayudarte hoy?', isUser: false }];
-    this.scrollToBottom(); // Asegura que el scroll esté abajo al limpiar el chat
+    this.scrollToBottom();
   }
 
   scrollToBottom() {
