@@ -5,6 +5,7 @@ import {LibroService} from './services/libro.service';
 import {GeneroDTO} from '../tienda/DTOs/GeneroDTO';
 import {NombreGeneroPipe} from '../tienda/pipes/nombre-genero.pipe';
 import {IdiomaDTO} from './DTO/IdiomaDTO';
+import {ActivatedRoute, Router} from '@angular/router';
 
 declare var cloudinary: any;
 
@@ -29,7 +30,11 @@ export class AnyadirLibroComponent implements OnInit{
   imagenPreview: string | null = null;
   cloudinaryUrl: string | null = null;
 
-  constructor(private fb: FormBuilder, private libroService: LibroService) {
+  isEditMode: boolean = false;
+  libroId: string | null = null;
+  existingPortadaUrl: string | null = null;
+
+  constructor(private fb: FormBuilder, private libroService: LibroService, private route: ActivatedRoute, private router: Router) {
     this.libroForm = this.fb.group({
       titulo: ['', Validators.required],
       autor: ['', Validators.required],
@@ -64,6 +69,13 @@ export class AnyadirLibroComponent implements OnInit{
   }
 
   ngOnInit(): void {
+    this.libroId = this.route.snapshot.paramMap.get('id');
+    this.isEditMode = !!this.libroId;
+
+    if (this.isEditMode) {
+      this.cargarLibroExistente();
+    }
+
     this.libroService.getGeneros().subscribe({
       next: (res: any[]) => {
         this.generos = res;
@@ -80,6 +92,30 @@ export class AnyadirLibroComponent implements OnInit{
         console.error('Error al cargar idiomas:', err);
       }
     })
+  }
+
+  cargarLibroExistente(): void {
+    this.libroService.getLibroById(this.libroId!).subscribe(libro => {
+      this.libroForm.patchValue({
+        titulo: libro.titulo,
+        autor: libro.autor,
+        genero: libro.genero.numero,
+        editorial: libro.editorial,
+        isbn: libro.isbn,
+        idioma: libro.idioma.numero,
+        fechaPublicacion: libro.fechaPublicacion.split('T')[0],
+        paginas: libro.paginas,
+        tapaBlanda: libro.tapaBlanda,
+        precioTapaBlanda: libro.precioBlanda || '',
+        tapaDura: libro.tapaDura,
+        precioTapaDura: libro.precioDura || '',
+        descripcion: libro.descripcion
+      });
+
+      this.existingPortadaUrl = libro.portada;
+      this.imagenPreview = libro.portada;
+      this.portadaSubida = true;
+    });
   }
 
 
@@ -134,49 +170,47 @@ export class AnyadirLibroComponent implements OnInit{
 
   enviarFormulario(event: Event): void {
     event.preventDefault();
-    if (this.libroForm.invalid || !this.portadaSeleccionada) {
+    if (this.libroForm.invalid || (!this.portadaSubida && !this.isEditMode)) {
       this.libroForm.markAllAsTouched();
       return;
     }
 
-    this.uploadImageToCloudinary(this.portadaSeleccionada).then((url) => {
-      this.cloudinaryUrl = url; // Save the URL
+    const submitData = (portadaUrl: string) => {
+      const formData = {
+        ...this.libroForm.value,
+        portada: portadaUrl,
+        genero: +this.libroForm.value.genero,
+        idioma: +this.libroForm.value.idioma
+      };
 
-      const formData = new FormData();
-      formData.append('titulo', this.libroForm.get('titulo')?.value);
-      formData.append('autor', this.libroForm.get('autor')?.value);
-      formData.append('genero', this.libroForm.get('genero')?.value);
-      formData.append('editorial', this.libroForm.get('editorial')?.value);
-      formData.append('isbn', this.libroForm.get('isbn')?.value);
-      formData.append('idioma', this.libroForm.get('idioma')?.value);
-      formData.append('fechaPublicacion', this.libroForm.get('fechaPublicacion')?.value);
-      formData.append('paginas', this.libroForm.get('paginas')?.value);
-      formData.append('descripcion', this.libroForm.get('descripcion')?.value);
-      formData.append('portada', this.cloudinaryUrl);
-
-      if (this.libroForm.get('tapaBlanda')?.value) {
-        formData.append('tapaBlanda', 'true');
-        formData.append('precioBlanda', this.libroForm.get('precioTapaBlanda')?.value);
+      if (this.isEditMode) {
+        this.libroService.putLibro(this.libroId!, formData).subscribe({
+          next: () => {
+            alert('Libro actualizado con éxito');
+            this.router.navigate(['/admin/libros']);
+          },
+          error: () => alert('Error al actualizar el libro')
+        });
       } else {
-        formData.append('tapaBlanda', 'false');
+        this.libroService.postLibro(formData).subscribe({
+          next: () => {
+            alert('Libro guardado con éxito');
+            this.router.navigate(['/admin/libros']);
+          },
+          error: () => alert('Error al guardar el libro')
+        });
       }
+    };
 
-      if (this.libroForm.get('tapaDura')?.value) {
-        formData.append('tapaDura', 'true');
-        formData.append('precioDura', this.libroForm.get('precioTapaDura')?.value);
-      } else {
-        formData.append('tapaDura', 'false');
-      }
-
-      this.libroService.postLibro(formData).subscribe({
-        next: (res) => alert('Libro guardado con éxito'),
-        error: (err) => alert('Error al guardar el libro'),
-      });
-    }).catch((err) => {
-      console.error(err);
-      alert('Error al subir la imagen');
-    });
+    if (this.portadaSeleccionada) {
+      this.uploadImageToCloudinary(this.portadaSeleccionada)
+        .then(submitData)
+        .catch(() => alert('Error al subir la imagen'));
+    } else {
+      submitData(this.existingPortadaUrl!);
+    }
   }
+
 
 
 }
