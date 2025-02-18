@@ -45,12 +45,6 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
     this.price = initialTipo?.precio || 0;
     this.cdRef.detectChanges();
 
-
-    //   this.selectedTipoTapa = this.libro?.tiposTapa?.[0]?.id;
-    //   // this.updatePrice();
-    //   this.price =  this.libro?.tiposTapa?.[0]?.precio;
-
-
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -76,46 +70,17 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
     this.quantity = 1;
     this.updatePrice();
 
-
-    // this.selectedTipoTapa = { ...tipo, id_tipo: tipo.id }; // Asegurar que id_tipo se asigne correctamente
-    // console.log('Tipo de tapa seleccionado:', this.selectedTipoTapa);
-    // this.quantity = 1;
-    // this.updatePrice();
   }
 
   updatePrice() {
 
     const tipoTapaActual = this.libro?.tiposTapa?.find(
-      tipo => tipo.id === this.selectedTipoTapa?.id_tipo
+      tipo => tipo.id === this.selectedTipoTapa?.id
     );
     if (tipoTapaActual) {
       this.price = tipoTapaActual.precio;
     }
 
-    // let tipoTapaActual = this.libro?.tiposTapa?.find(tipo => tipo.id_tipo_tapa === this.selectedTipoTapa?.id_tipo_tapa);
-    // this.price = tipoTapaActual?.precio || 0;
-    // this.selectedTipoTapa.id_tipo = tipoTapaActual.id;
-
-
-
-    // if (this.selectedTipoTapa && this.selectedTipoTapa.id_tipo_tapa && this.libroId) {
-    //   console.log('Enviando al backend:', this.libroId, this.selectedTipoTapa.id_tipo_tapa);
-    //
-    //   this.detallesLibroService.getPrecioTapa(this.libroId, this.selectedTipoTapa.id_tipo_tapa).subscribe(
-    //     (data) => {
-    //       console.log('Precio recibido:', data);
-    //       this.price = data.precio;  // Actualiza el precio en tu interfaz
-    //
-    //       // Asegúrate de actualizar el id_tipo en selectedTipoTapa
-    //       this.selectedTipoTapa.id_tipo = data.id_tipo; // Asigna el id_tipo de la respuesta
-    //     },
-    //     (error) => {
-    //       console.error('Error al obtener el precio:', error);
-    //     }
-    //   );
-    // } else {
-    //   console.error('selectedTipoTapa o libroId no definidos');
-    // }
   }
 
   anadirAlCarrito() {

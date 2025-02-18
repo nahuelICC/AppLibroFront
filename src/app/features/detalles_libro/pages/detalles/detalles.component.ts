@@ -174,6 +174,13 @@ export class DetallesComponent implements OnInit {
       }
     );
   }
+  scrollToReviews() {
+    const reviewsSection = document.getElementById('reseñas');
+    if (reviewsSection) {
+      reviewsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
 
   submitReview() {
     this.detallesLibroService.addResenya(this.nuevaResenya).subscribe(
