@@ -564,4 +564,35 @@ export class PaginaUsuarioComponent implements OnInit {
     });
   }
 
+  showConfirmCancelPedidoId: number | null = null;
+
+  showConfirmCancelPedido(pedidoId: number): void {
+    this.showConfirmCancelPedidoId = pedidoId;
+  }
+
+  cancelarPedido(pedidoId: number): void {
+    this.perfilUsuarioService.cancelarPedido(pedidoId).subscribe({
+      next: (response) => {
+        console.log('Pedido cancelado:', response);
+        this.alertMessage = 'Pedido cancelado correctamente';
+        this.alertType = 'success';
+        this.isAlertVisible = true;
+        // Actualiza la lista de pedidos
+        this.datosCliente.pedidos = this.datosCliente.pedidos.filter((pedido: any) => pedido.id !== pedidoId);
+      },
+      error: (err) => {
+        console.error('Error cancelando pedido:', err);
+        this.alertMessage = 'Error al cancelar el pedido';
+        this.alertType = 'warning';
+        this.isAlertVisible = true;
+      }
+    });
+    setTimeout(() => {
+      this.zone.run(() => {
+        this.isAlertVisible = false;
+        this.cdRef.detectChanges();
+      });
+    }, 5000);
+  }
+
 }

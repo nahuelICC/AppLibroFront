@@ -189,7 +189,12 @@
               <p class="text-sm md:text-base mt-1 mb-4" [style.color]="'var(--color-texto)'">
                 Estado de pedido: <b>{{ pedido.estadoNombre }}</b>
               </p>
-              <mat-icon  (click)="descargarDetalles(pedido.id); $event.stopPropagation()">download</mat-icon>
+              <div class="flex flex-col items-center gap-4">
+                <mat-icon  (click)="descargarDetalles(pedido.id); $event.stopPropagation()">download</mat-icon>
+
+                <app-boton *ngIf="pedido.estado === 1 && pedido.referencia.startsWith('PED')" [color]="'#f45d48'" [label]="'Cancelar'" [size]="'small'" (click)="showConfirmCancelPedido(pedido.id); $event.stopPropagation()"></app-boton>
+              </div>
+
               </div>
             </div>
 
@@ -365,6 +370,11 @@
     *ngIf="showConfirmRenew" [message]="'¿Estás seguro de que quieres renovar tu suscripción?'"
     (confirm)="editarEstadoSuscripcion()" (cancel)="showConfirmRenew = false">
 
+  </app-alert-confirmar>
+
+  <app-alert-confirmar
+    *ngIf="showConfirmCancelPedidoId !== null" [message]="'¿Estás seguro de que quieres cancelar el pedido?'"
+    (confirm)="cancelarPedido(showConfirmCancelPedidoId); showConfirmCancelPedidoId = null" (cancel)="showConfirmCancelPedidoId = null">
   </app-alert-confirmar>
 
   <app-alert-info

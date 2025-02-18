@@ -12,6 +12,7 @@ export class PerfilUsuarioService {
   private apiUrlPedido = '/api/lineaLibro';
   private apiUrlUsuario = '/api/usuario';
   private apiUrlClienteSuscripcion = '/api/ClienteSuscripcion';
+  private apiUrlCancelar = 'api/pedido';
 
   constructor(private http: HttpClient) { }
 
@@ -45,6 +46,10 @@ export class PerfilUsuarioService {
 
   putEditarTipoSuscripcion(tipo: number | null, genero: number): Observable<any> {
     return this.http.put(`${this.apiUrlClienteSuscripcion}/cambiaTipoSuscripcion`, { tipo: tipo, genero:genero });
+  }
+
+  cancelarPedido(id: number): Observable<any> {
+    return this.http.post(`${this.apiUrlCancelar}/cancelarpedido/${id}`, {});
   }
 
 }
