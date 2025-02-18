@@ -83,11 +83,6 @@ export class AnyadirLibroComponent implements OnInit{
   }
 
 
-  guardarLibro() {
-    if (this.libroForm.valid && this.portadaSubida) {
-      console.log("Libro guardado:", this.libroForm.value);
-    }
-  }
 
   campoInvalido(campo: string) {
     return this.libroForm.get(campo)?.invalid && this.libroForm.get(campo)?.touched;
@@ -126,61 +121,61 @@ export class AnyadirLibroComponent implements OnInit{
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.portadaSeleccionada = input.files[0];
+      this.portadaSubida = true;
 
-      // Subir la imagen y obtener la URL de Cloudinary
-      this.uploadImageToCloudinary(this.portadaSeleccionada).then((url) => {
-        this.cloudinaryUrl = url; // Guardar la URL
-        this.portadaSubida = true;
-
-        // Generar vista previa
-        const reader = new FileReader();
-        reader.onload = () => {
-          this.imagenPreview = reader.result as string;
-        };
-        reader.readAsDataURL(this.portadaSeleccionada as Blob);
-      }).catch((err) => {
-        console.error(err);
-        this.portadaSubida = false;
-      });
+      // Generate preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagenPreview = reader.result as string;
+      };
+      reader.readAsDataURL(this.portadaSeleccionada as Blob);
     }
   }
 
-  enviarFormulario(): void {
-    if (this.libroForm.invalid || !this.cloudinaryUrl) {
+  enviarFormulario(event: Event): void {
+    event.preventDefault();
+    if (this.libroForm.invalid || !this.portadaSeleccionada) {
       this.libroForm.markAllAsTouched();
       return;
     }
 
-    const formData = new FormData();
-    formData.append('titulo', this.libroForm.get('titulo')?.value);
-    formData.append('autor', this.libroForm.get('autor')?.value);
-    formData.append('genero', this.libroForm.get('genero')?.value);
-    formData.append('editorial', this.libroForm.get('editorial')?.value);
-    formData.append('isbn', this.libroForm.get('isbn')?.value);
-    formData.append('idioma', this.libroForm.get('idioma')?.value);
-    formData.append('fechaPublicacion', this.libroForm.get('fechaPublicacion')?.value);
-    formData.append('paginas', this.libroForm.get('paginas')?.value);
-    formData.append('descripcion', this.libroForm.get('descripcion')?.value);
-    formData.append('portada', this.cloudinaryUrl);
+    this.uploadImageToCloudinary(this.portadaSeleccionada).then((url) => {
+      this.cloudinaryUrl = url; // Save the URL
 
-    if (this.libroForm.get('tapaBlanda')?.value) {
-      formData.append('tapaBlanda', 'true');
-      formData.append('precioTapaBlanda', this.libroForm.get('precioTapaBlanda')?.value);
-    } else {
-      formData.append('tapaBlanda', 'false');
-    }
+      const formData = new FormData();
+      formData.append('titulo', this.libroForm.get('titulo')?.value);
+      formData.append('autor', this.libroForm.get('autor')?.value);
+      formData.append('genero', this.libroForm.get('genero')?.value);
+      formData.append('editorial', this.libroForm.get('editorial')?.value);
+      formData.append('isbn', this.libroForm.get('isbn')?.value);
+      formData.append('idioma', this.libroForm.get('idioma')?.value);
+      formData.append('fechaPublicacion', this.libroForm.get('fechaPublicacion')?.value);
+      formData.append('paginas', this.libroForm.get('paginas')?.value);
+      formData.append('descripcion', this.libroForm.get('descripcion')?.value);
+      formData.append('portada', this.cloudinaryUrl);
 
-    if (this.libroForm.get('tapaDura')?.value) {
-      formData.append('tapaDura', 'true');
-      formData.append('precioTapaDura', this.libroForm.get('precioTapaDura')?.value);
-    } else {
-      formData.append('tapaDura', 'false');
-    }
-    // Enviar al backend
-    // this.http.post('URL_DEL_BACKEND', formData).subscribe({
-    //   next: (res) => alert('Libro guardado con éxito'),
-    //   error: (err) => alert('Error al guardar el libro'),
-    // });
+      if (this.libroForm.get('tapaBlanda')?.value) {
+        formData.append('tapaBlanda', 'true');
+        formData.append('precioBlanda', this.libroForm.get('precioTapaBlanda')?.value);
+      } else {
+        formData.append('tapaBlanda', 'false');
+      }
+
+      if (this.libroForm.get('tapaDura')?.value) {
+        formData.append('tapaDura', 'true');
+        formData.append('precioDura', this.libroForm.get('precioTapaDura')?.value);
+      } else {
+        formData.append('tapaDura', 'false');
+      }
+
+      this.libroService.postLibro(formData).subscribe({
+        next: (res) => alert('Libro guardado con éxito'),
+        error: (err) => alert('Error al guardar el libro'),
+      });
+    }).catch((err) => {
+      console.error(err);
+      alert('Error al subir la imagen');
+    });
   }
 
 

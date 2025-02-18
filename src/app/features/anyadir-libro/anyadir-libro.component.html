@@ -1,9 +1,8 @@
 <div class="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6 mt-6">
   <h2 class="text-2xl font-semibold text-gray-700 mb-4">Añadir Libro</h2>
 
-  <form [formGroup]="libroForm" (ngSubmit)="enviarFormulario()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <form [formGroup]="libroForm" (ngSubmit)="enviarFormulario($event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-    <!-- Título -->
     <div>
       <label class="block text-sm font-medium text-gray-700">Título</label>
       <input type="text" formControlName="titulo"
@@ -13,7 +12,6 @@
       </p>
     </div>
 
-    <!-- Autor -->
     <div>
       <label class="block text-sm font-medium text-gray-700">Autor</label>
       <input type="text" formControlName="autor"
@@ -23,7 +21,6 @@
       </p>
     </div>
 
-    <!-- Género -->
     <div>
       <label class="block text-sm font-medium text-gray-700">Género</label>
       <select formControlName="genero"
@@ -35,7 +32,6 @@
       </p>
     </div>
 
-    <!-- Editorial -->
     <div>
       <label class="block text-sm font-medium text-gray-700">Editorial</label>
       <input type="text" formControlName="editorial"
@@ -45,7 +41,6 @@
       </p>
     </div>
 
-    <!-- ISBN -->
     <div>
       <label class="block text-sm font-medium text-gray-700">ISBN</label>
       <input type="text" formControlName="isbn"
@@ -55,7 +50,6 @@
       </p>
     </div>
 
-    <!-- Idioma -->
     <div>
       <label class="block text-sm font-medium text-gray-700">Idioma</label>
       <select formControlName="idioma"
@@ -67,7 +61,6 @@
       </p>
     </div>
 
-    <!-- Fecha Publicación -->
     <div>
       <label class="block text-sm font-medium text-gray-700">Fecha de Publicación</label>
       <input type="date" formControlName="fechaPublicacion"
@@ -77,7 +70,6 @@
       </p>
     </div>
 
-    <!-- Número de Páginas -->
     <div>
       <label class="block text-sm font-medium text-gray-700">Número de Páginas</label>
       <input type="number" formControlName="paginas"
@@ -86,12 +78,10 @@
         Debe ser mayor a 0.
       </p>
     </div>
-    <!-- Tipo de tapa (título) -->
     <div class="md:col-span-2">
       <label class="block text-sm font-medium text-gray-700">Tipo de Tapa:</label>
     </div>
 
-    <!-- Checkbox Tapa Blanda + Input de Precio -->
     <div class="md:col-span-2 flex items-center gap-4">
       <div class="flex items-center w-1/2">
         <input type="checkbox" formControlName="tapaBlanda" id="tapaBlanda"
@@ -99,7 +89,6 @@
         <label for="tapaBlanda" class="ml-2 text-sm text-gray-700">Tapa Blanda</label>
       </div>
 
-      <!-- Input de precio a la derecha -->
       <div class="w-1/2" *ngIf="libroForm.get('tapaBlanda')?.value">
         <input type="number" formControlName="precioTapaBlanda"
                class="w-full p-2 border rounded focus:outline-none focus:border-blue-500"
@@ -110,7 +99,6 @@
       </div>
     </div>
 
-    <!-- Checkbox Tapa Dura + Input de Precio -->
     <div class="md:col-span-2 flex items-center gap-4">
       <div class="flex items-center w-1/2">
         <input type="checkbox" formControlName="tapaDura" id="tapaDura"
@@ -118,7 +106,6 @@
         <label for="tapaDura" class="ml-2 text-sm text-gray-700">Tapa Dura</label>
       </div>
 
-      <!-- Input de precio a la derecha -->
       <div class="w-1/2" *ngIf="libroForm.get('tapaDura')?.value">
         <input type="number" formControlName="precioTapaDura"
                class="w-full p-2 border rounded focus:outline-none focus:border-blue-500"
@@ -129,7 +116,6 @@
       </div>
     </div>
 
-    <!-- Portada -->
     <div class="md:col-span-2">
       <label for="portada" class="block text-sm font-medium text-gray-700">Portada:</label>
       <input type="file" id="portada" accept="image/*" (change)="onFileSelect($event)"
@@ -139,12 +125,10 @@
       </p>
     </div>
 
-    <!-- Vista previa de la imagen seleccionada -->
     <div *ngIf="imagenPreview" class="mt-2">
       <img [src]="imagenPreview" alt="Vista previa de portada" class="w-32 h-auto border rounded shadow">
     </div>
 
-    <!-- Descripción -->
     <div class="md:col-span-2">
       <label class="block text-sm font-medium text-gray-700">Descripción (Sinopsis)</label>
       <textarea formControlName="descripcion"
@@ -155,10 +139,10 @@
       </p>
     </div>
 
-    <!-- Botón Guardar -->
+
     <div class="md:col-span-2 flex justify-end">
       <button type="submit" [disabled]="libroForm.invalid || !portadaSubida"
-              class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400">
+              class="bg-[#078080] text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400">
         Guardar Libro
       </button>
     </div>
