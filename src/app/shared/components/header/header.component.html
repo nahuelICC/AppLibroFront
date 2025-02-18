@@ -20,7 +20,7 @@
         </div>
       </a>
 
-      <a [routerLink]="['/carrito']">
+      <a [routerLink]="['/carrito']" matBadge="{{cantidadCarrito}}">
         <div class="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full cursor-pointer hover:bg-gray-300" >
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l1 5h13l1-5h2M5 8h14l-1 9H6L5 8zm5 13a1 1 0 100-2 1 1 0 000 2zm6 0a1 1 0 100-2 1 1 0 000 2z" />
@@ -46,7 +46,7 @@
       <a href="/tienda" class="font-bold text-sm text-[#111818] hover:text-[#078080]">Tienda</a>
       <a [routerLink]="['/infocajas/1']" class="text-sm font-medium text-[#f45d48] hover:text-[#ff7562]">Suscripciones</a>
       <!-- Botón Mi Cuenta -->
-      <ng-container *ngIf="isAuthenticated; else loginRegisterButtons">
+      <ng-container *ngIf="isAuthenticated">
         <a [routerLink]="['/usuario']" class="text-sm font-bold text-[#078080] hover:text-[#065f5f] underline truncate">Mi cuenta</a>
 
         <a (click)="openNotifications($event) "  matBadge="{{cantidadNotificaciones}}">
@@ -58,6 +58,8 @@
           </div>
         </a>
 
+      </ng-container>
+
         <a [routerLink]="['/carrito']" matBadge="{{cantidadCarrito}}">
           <div class="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full cursor-pointer hover:bg-gray-300">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -65,6 +67,8 @@
             </svg>
           </div>
         </a>
+
+      <ng-container *ngIf="isAuthenticated; else loginRegisterButtons">
         <button
           class="rounded-xl px-6 md:px-9 py-2 bg-[#f45d48] text-white text-sm font-bold leading-normal hover:bg-[#ff7562]"
           (click)="logout()">
