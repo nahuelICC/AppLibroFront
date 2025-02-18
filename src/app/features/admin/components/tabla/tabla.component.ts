@@ -14,6 +14,7 @@ import { FiltroBuscadorPipe } from '../../pipes/filtro-buscador.pipe';
 import {PedidoService} from "../../services/pedido.service";
 import {PedidosTablaDTO} from "../../DTO/PedidosTablaDTO";
 import {EstadoDTO} from "../../DTO/EstadoDTO";
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-tabla',
@@ -25,7 +26,8 @@ import {EstadoDTO} from "../../DTO/EstadoDTO";
     NgIf,
     NgClass,
     MatIcon,
-    FiltroBuscadorPipe
+    FiltroBuscadorPipe,
+    RouterLink
   ],
   templateUrl: './tabla.component.html',
   styleUrls: ['./tabla.component.css']
@@ -150,4 +152,6 @@ export class TablaComponent implements OnInit {
   getFormControl(campo: string): FormControl {
     return this.editingForm?.get(campo) as FormControl;
   }
+
+
 }
