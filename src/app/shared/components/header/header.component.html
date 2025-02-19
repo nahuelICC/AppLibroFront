@@ -1,10 +1,16 @@
-<header class="w-full border-b shadow-lg bg-[#fafaf8]">
+<header [ngClass]="{'bg-[#dceff5]': authService.isAdmin(), 'bg-[#fafaf8]': !authService.isAdmin()}" class="w-full border-b shadow-lg">
   <div class="w-full flex items-center justify-between px-4 sm:px-6 py-3 gap-2">
     <!-- Logo -->
     <div class="flex items-center">
       <a [routerLink]="['/main']">
         <img src="../assets/logo_nombre_hd.png" alt="Logo Tinteka"
              class="h-10 sm:h-12 w-auto max-w-[120px] sm:max-w-[160px]" />
+      </a>
+    </div>
+
+    <div *ngIf="authService.isAdmin()" class="flex items-center">
+      <a [routerLink]="['/admin']">
+        <h2 class="text-2xl font-bold truncate sm:block hidden text-[#f45d48] ">Administrador</h2>
       </a>
     </div>
 
