@@ -2,7 +2,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthServiceService } from '../../../core/services/auth-service.service';
-import { NgIf } from '@angular/common';
+import {NgClass, NgIf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {MatBadge} from '@angular/material/badge';
 import {CarritoService} from '../../../features/carrito/services/carrito.service';
@@ -17,7 +17,8 @@ import {NotificacionesService} from '../../services/notificaciones.service';
     RouterLink,
     NgIf,
     MatIcon,
-    MatBadge
+    MatBadge,
+    NgClass
   ],
   templateUrl: './header.component.html',
   standalone: true,
@@ -32,6 +33,7 @@ export class HeaderComponent implements OnInit, OnDestroy{
   cantidadNotificaciones = 0;
   private notificationsSubscription!: Subscription;
   notificationsDialogRef: MatDialogRef<NotificacionesComponent> | null = null;// Cambiar dinámicamente con datos del backend
+  admin: boolean = false;
 
 
   ngOnInit(): void {
@@ -131,4 +133,6 @@ export class HeaderComponent implements OnInit, OnDestroy{
   get isAuthenticated(): boolean {
     return this.authService.isLogged();
   }
+
+
 }
