@@ -13,105 +13,56 @@ export class LibroServiceService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   public loading$ = this.loadingSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
-
   private generateCacheKey(page: number, filters: any): string {
     const sortedFilters = filters ?
-      Object.keys(filters).sort().reduce((acc, key) => ({
-        ...acc,
-        [key]: filters[key]?.toString().toLowerCase()
-      }), {})
+      Object.keys(filters).sort().reduce((acc, key) => ({ ...acc, [key]: filters[key] }), {})
       : {};
     return `${page}_${JSON.stringify(sortedFilters)}`;
   }
 
-  getLibrosTienda(
-    page: number,
-    itemsPerPage: number,
-    filters?: any
-  ): Observable<{ libros: CuadroProducto[], total: number }> {
-    this.loadingSubject.next(true);
+  constructor(private http: HttpClient) {}
+
+  getLibrosTienda(page: number, itemsPerPage: number, filters?: any): Observable<{ libros: CuadroProducto[], total: number }> {
+    this.loadingSubject.next(true); // Inicia carga
+
     const key = this.generateCacheKey(page, filters);
 
-    // Verificar caché primero
     if (this.cache.has(key)) {
-      setTimeout(() => this.loadingSubject.next(false), 50); // Pequeño delay para consistencia UI
+      this.loadingSubject.next(false); // Si está en caché, no hay carga
       return of(this.cache.get(key)!);
     }
 
-    // Configurar parámetros de la solicitud
     let params = new HttpParams()
       .set('page', page.toString())
       .set('limit', itemsPerPage.toString());
 
     if (filters) {
       Object.keys(filters).forEach(k => {
-        const value = filters[k];
-        if (value !== null && value !== undefined && value !== '') {
-          params = params.set(k, value.toString());
+        if (filters[k] !== null && filters[k] !== undefined) {
+          params = params.set(k, filters[k].toString());
         }
       });
     }
 
-    // Realizar la solicitud HTTP
-    return this.http.get<{ libros: CuadroProducto[], total: number }>(
-      `${this.apiUrl}/librosTienda`,
-      { params }
-    ).pipe(
+    return this.http.get<{ libros: CuadroProducto[], total: number }>(`${this.apiUrl}/librosTienda`, { params }).pipe(
       tap({
         next: (response) => {
-          this.handleSuccessfulResponse(page, itemsPerPage, filters, response, key);
+          const totalPages = Math.ceil(response.total / itemsPerPage);
+          this.cache.set(key, response);
+
+          // Precarga silenciosa (sin activar el loading)
+          if (page < 3 && page < totalPages) { // Precarga solo primeras 3 páginas
+            const nextPageKey = this.generateCacheKey(page + 1, filters);
+            if (!this.cache.has(nextPageKey)) {
+              this.getLibrosTienda(page + 1, itemsPerPage, filters).subscribe();
+            }
+          }
+          this.loadingSubject.next(false);
         },
         error: () => this.loadingSubject.next(false),
         finalize: () => this.loadingSubject.next(false)
       })
     );
-  }
-
-  private handleSuccessfulResponse(
-    currentPage: number,
-    itemsPerPage: number,
-    filters: any,
-    response: { libros: CuadroProducto[], total: number },
-    cacheKey: string
-  ): void {
-    // Almacenar en caché
-    this.cache.set(cacheKey, response);
-
-    // Calcular páginas totales
-    const totalPages = Math.ceil(response.total / itemsPerPage);
-
-    // Precargar páginas relacionadas
-    this.autoPreloadPages(currentPage, itemsPerPage, filters, totalPages);
-  }
-
-  private autoPreloadPages(
-    currentPage: number,
-    itemsPerPage: number,
-    filters: any,
-    totalPages: number
-  ): void {
-    const pagesToPreload = [];
-
-    // Estrategia de precarga diferente para la primera página
-    if (currentPage === 1) {
-      for (let i = 2; i <= Math.min(3, totalPages); i++) {
-        pagesToPreload.push(i);
-      }
-    } else {
-      // Precargar páginas adyacentes
-      pagesToPreload.push(currentPage - 1, currentPage + 1);
-    }
-
-    // Precargar páginas necesarias
-    pagesToPreload.forEach(page => {
-      if (page > 0 && page <= totalPages) {
-        const pageKey = this.generateCacheKey(page, filters);
-        if (!this.cache.has(pageKey)) {
-          this.getLibrosTienda(page, itemsPerPage, filters).subscribe();
-        }
-      }
-    });
   }
 
   resetCache(): void {

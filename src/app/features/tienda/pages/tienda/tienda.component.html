@@ -96,7 +96,7 @@
 
     <div class="flex items-center gap-1">
       <ng-container *ngFor="let page of displayedPages">
-        <button *ngIf="page !== '...'" (click)="setPage(page)"
+        <button *ngIf="page !== '...'"
                 [class.bg-[#f0f5f5]]="currentPage === page" class="w-8 h-8 rounded-full flex items-center justify-center text-sm hover:bg-[#f0f5f5] transition-colors"
                 [class.font-bold]="currentPage === page">{{ page }}</button>
         <span *ngIf="page === '...'" class="px-2">...</span>
