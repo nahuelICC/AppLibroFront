@@ -3,13 +3,13 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthServiceService } from '../../../../core/services/auth-service.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import {Router, RouterLink} from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { NgIf } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import {BotonComponent} from '../../../../shared/components/boton/boton.component';
+import { BotonComponent } from '../../../../shared/components/boton/boton.component';
 
 @Component({
   selector: 'app-login',
@@ -24,14 +24,13 @@ import {BotonComponent} from '../../../../shared/components/boton/boton.componen
     MatSnackBarModule,
     BotonComponent,
     RouterLink,
-    // Para mostrar mensajes de error
   ],
 })
 export class LoginComponent {
   loginForm: FormGroup;
   apiUrl = '/api/login_check';
   errorMessage: string | null = null;
-  isLoading = false; // Para manejar el estado de carga
+  isLoading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -41,8 +40,8 @@ export class LoginComponent {
     private snackBar: MatSnackBar,
   ) {
     this.loginForm = this.fb.group({
-      username: ['', [Validators.required]], // Valida que el campo no esté vacío
-      password: ['', [Validators.required]], // Valida que la contraseña tenga al menos 6 caracteres
+      username: ['', [Validators.required]],
+      password: ['', [Validators.required]],
     });
   }
 
@@ -52,8 +51,8 @@ export class LoginComponent {
       return;
     }
 
-    this.isLoading = true; // Activa el estado de carga
-    this.errorMessage = null; // Limpia el mensaje de error anterior
+    this.isLoading = true;
+    this.errorMessage = null;
 
     this.http.post<{ token: string }>(this.apiUrl, this.loginForm.value).subscribe({
       next: (response) => {
@@ -66,8 +65,8 @@ export class LoginComponent {
         this.isLoading = false; // Desactiva el estado de carga
       },
       error: (error: HttpErrorResponse) => {
-        this.isLoading = false; // Desactiva el estado de carga
-        this.handleError(error); // Maneja el error
+        this.isLoading = false;
+        this.handleError(error);
       },
     });
   }

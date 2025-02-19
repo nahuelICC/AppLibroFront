@@ -4,12 +4,22 @@
     <span class="text-2xl" *ngFor="let star of Array(rating).fill(0)">★</span>
   </div>
   <p class="text-gray-700">{{ comment }}</p>
-  <button *ngIf="idClienteResena === idClienteActual" (click)="showConfirmDelete = true" class="absolute bottom-0 right-0 mb-2 mr-2">
+  <div class="flex justify-end mt-2">
+    <button *ngIf="rol !== 1" (click)="showDenunciaButton = true" class="mb-2 mr-2">
+      <mat-icon>report</mat-icon>
+    </button>
+  <button *ngIf="showDeleteButton" (click)="showConfirmDelete = true" class="mb-2 mr-2">
     <mat-icon>delete</mat-icon>
   </button>
+
+  </div>
 
   <!-- Alerta de Confirmación -->
   <app-alert-confirmar *ngIf="showConfirmDelete" [message]="'¿Estás seguro de que quieres eliminar esta reseña?'"
                        (confirm)="deleteResenya()" (cancel)="showConfirmDelete = false">
+  </app-alert-confirmar>
+
+  <app-alert-confirmar *ngIf="showDenunciaButton" [message]="'¿Estás seguro de que quieres denunciar esta reseña?'"
+                       (confirm)="denunciaResenya()" (cancel)="showDenunciaButton = false">
   </app-alert-confirmar>
 </div>

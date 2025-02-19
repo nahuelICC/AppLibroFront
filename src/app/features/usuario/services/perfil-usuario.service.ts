@@ -52,4 +52,8 @@ export class PerfilUsuarioService {
     return this.http.post(`${this.apiUrlCancelar}/cancelarpedido/${id}`, {});
   }
 
+  rolUsuario(): Observable<any> {
+    return this.http.get(`${this.apiUrlUsuario}/rol`);
+  }
+
 }

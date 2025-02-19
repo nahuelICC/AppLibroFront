@@ -3,6 +3,7 @@ import { DetallesLibroService } from '../../services/detalles-libro.service';
 import {MatIcon} from '@angular/material/icon';
 import {AlertConfirmarComponent} from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
 import {NgForOf, NgIf} from '@angular/common';
+import {PerfilUsuarioService} from '../../../usuario/services/perfil-usuario.service';
 
 @Component({
   selector: 'app-resena',
@@ -28,12 +29,27 @@ export class ResenaComponent implements OnInit {
   @Output() resenyaDeleted: EventEmitter<number> = new EventEmitter<number>();
 
   showConfirmDelete: boolean = false;
+  showDeleteButton: boolean = false;
+  showDenunciaButton: boolean = false;
+  rol: number = 0;
 
   ngOnInit() {
-    this.rating = Number(this.rating); // Ensure rating is a number
+    this.rating = Number(this.rating);// Ensure rating is a number
+    this.usuarioService.rolUsuario().subscribe(
+      (response: any) => {
+        this.rol = response.rol;
+        console.log('Rol del usuario:', this.rol);
+        if (this.idClienteResena === this.idClienteActual || this.rol === 1) {
+          this.showDeleteButton = true;
+        }
+      },
+      (error: any) => {
+        console.error('Error al obtener el rol del usuario', error);
+      }
+    )
   }
 
-  constructor(private detallesLibroService: DetallesLibroService) {}
+  constructor(private detallesLibroService: DetallesLibroService, private usuarioService: PerfilUsuarioService) {}
 
   deleteResenya(): void {
     if (this.id !== undefined && this.id !== null) {
@@ -53,6 +69,22 @@ export class ResenaComponent implements OnInit {
 
   cancelDelete(): void {
     this.showConfirmDelete = false;
+  }
+
+  denunciaResenya(): void {
+    if (this.id !== undefined && this.id !== null) {
+      this.detallesLibroService.postDenuciarResenya(this.id).subscribe(
+        (response: any) => {
+          console.log('Reseña denunciada');
+        },
+        (error: any) => {
+          console.error('Error al denunciar la reseña', error);
+        }
+      );
+    } else {
+      console.error('ID de reseña no válido');
+    }
+    this.showDenunciaButton = false;
   }
 
   protected readonly Array = Array;
