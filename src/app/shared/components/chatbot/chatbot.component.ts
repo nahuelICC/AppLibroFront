@@ -21,6 +21,7 @@ export class ChatbotComponent implements OnInit {
   messages: { text: string, isUser: boolean, buttons?: { text: string, action: string }[] }[] = [];
   userInput: string = '';
   isLoggedIn: boolean = false;
+  isSendingEmail: boolean = false;
   predefinedQuestions: string[] = [
     'Tengo duda/consulta sobre mi pedido',
     'Tengo duda/consulta sobre mi suscripción',
@@ -69,16 +70,18 @@ export class ChatbotComponent implements OnInit {
     if (this.userInput.trim() === '') return;
 
     const lastMessage = this.messages[this.messages.length - 1];
+
     if (lastMessage && lastMessage.text.includes('Escribe tu duda en el campo de texto y presiona enviar.')) {
-      this.sendSupportEmail();
+      this.sendSupportEmail(); // Si es una consulta de soporte, usa este método
     } else {
       this.messages.push({ text: this.userInput, isUser: true });
+
       const response = this.getResponse(this.userInput);
       this.messages.push(response);
-    }
 
-    this.userInput = '';
-    this.scrollToBottom();
+      this.userInput = '';
+      this.scrollToBottom();
+    }
   }
 
   handleButtonClick(action: string) {
@@ -201,9 +204,13 @@ export class ChatbotComponent implements OnInit {
   }
 
   sendSupportEmail() {
-    const selectedOption = this.messages[this.messages.length - 2].text;
-    const username = this.datosCliente.username;
-    const email = this.datosCliente.email;
+    if (!this.userInput.trim()) return;
+
+    this.isSendingEmail = true; // Desactiva el botón y cambia el texto
+
+    const selectedOption = this.messages[this.messages.length - 2]?.text || 'Otros';
+    const username = this.datosCliente?.username || 'Desconocido';
+    const email = this.datosCliente?.email || 'sin-email@example.com';
     const referencia = selectedOption.includes('Pedido') ? selectedOption.split(' ')[2] : 'Otros';
     const mensaje = this.userInput;
 
@@ -216,12 +223,16 @@ export class ChatbotComponent implements OnInit {
       next: (response) => {
         console.log('Correo enviado correctamente', response);
         this.messages.push({ text: 'Su email se ha enviado con éxito, le responderemos lo antes posible.', isUser: false });
+        this.isSendingEmail = false; // Reactiva el botón
       },
       error: (err) => {
         console.error('Error enviando correo:', err);
         this.messages.push({ text: 'Hubo un error al enviar su email. Por favor, inténtelo de nuevo más tarde.', isUser: false });
+        this.isSendingEmail = false; // Reactiva el botón aunque haya error
       }
     });
+
+    this.userInput = ''; // Limpiar campo de entrada
   }
 
   clearChat() {

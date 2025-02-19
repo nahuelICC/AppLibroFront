@@ -38,8 +38,10 @@
 
       <!-- Buttons (Grid Layout) -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-        <button (click)="sendMessage()" class="w-full bg-[#078080] text-white p-2 rounded-lg hover:bg-[#056b6b] transition-all duration-300 ease-in-out transform hover:scale-105">
-          Enviar
+        <button (click)="sendMessage()"
+                [disabled]="isSendingEmail"
+                class="w-full bg-[#078080] text-white p-2 rounded-lg hover:bg-[#056b6b] transition-all duration-300 ease-in-out transform hover:scale-105">
+          {{ isSendingEmail ? 'Enviando...' : 'Enviar' }}
         </button>
         <button (click)="clearChat()" class="w-full bg-red-500 text-white p-2 rounded-lg hover:bg-red-700 transition-all duration-300 ease-in-out transform hover:scale-105">
           Limpiar
