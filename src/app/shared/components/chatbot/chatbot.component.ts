@@ -3,6 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PerfilUsuarioService } from '../../../features/usuario/services/perfil-usuario.service';
 import { AuthServiceService } from '../../../core/services/auth-service.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-chatbot',
@@ -22,7 +23,8 @@ export class ChatbotComponent implements OnInit {
   isLoggedIn: boolean = false;
   predefinedQuestions: string[] = [
     'Tengo duda/consulta sobre mi pedido',
-    'Tengo duda/consulta sobre mi suscripción'
+    'Tengo duda/consulta sobre mi suscripción',
+    'Contactar con soporte'
   ];
   selectedQuestion: string = '';
   datosCliente: any = { pedidos: [], suscripcion: { fechaFin: '', suscrito: false } };
@@ -31,7 +33,8 @@ export class ChatbotComponent implements OnInit {
     private perfilUsuarioService: PerfilUsuarioService,
     private authService: AuthServiceService,
     private datePipe: DatePipe,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private http: HttpClient
   ) {}
 
   ngOnInit() {
@@ -65,9 +68,14 @@ export class ChatbotComponent implements OnInit {
   sendMessage() {
     if (this.userInput.trim() === '') return;
 
-    this.messages.push({ text: this.userInput, isUser: true });
-    const response = this.getResponse(this.userInput);
-    this.messages.push(response);
+    const lastMessage = this.messages[this.messages.length - 1];
+    if (lastMessage && lastMessage.text.includes('Escribe tu duda en el campo de texto y presiona enviar.')) {
+      this.sendSupportEmail();
+    } else {
+      this.messages.push({ text: this.userInput, isUser: true });
+      const response = this.getResponse(this.userInput);
+      this.messages.push(response);
+    }
 
     this.userInput = '';
     this.scrollToBottom();
@@ -81,15 +89,26 @@ export class ChatbotComponent implements OnInit {
   }
 
   getResponse(userInput: string): { text: string, isUser: boolean, buttons?: { text: string, action: string }[] } {
-    const lowerInput = userInput.toLowerCase();
+    let lowerInput = userInput.toLowerCase();
 
-    if (lowerInput.includes('tengo duda/consulta sobre mi pedido')) {
+    if (lowerInput === 'pedido') {
+      userInput = 'Tengo duda/consulta sobre mi pedido';
+      lowerInput = userInput.toLowerCase();
+    } else if (lowerInput === 'suscripción' || lowerInput === 'suscripcion') {
+      userInput = 'Tengo duda/consulta sobre mi suscripción';
+      lowerInput = userInput.toLowerCase();
+    }else if (lowerInput === 'soporte') {
+      userInput = 'Contactar con soporte';
+      lowerInput = userInput.toLowerCase();
+    }
+
+    if (lowerInput === 'tengo duda/consulta sobre mi pedido') {
       const pedidosFiltrados = this.datosCliente.pedidos.filter((pedido: any) => !pedido.referencia.startsWith('MISTERY'));
       const buttons = pedidosFiltrados.map((pedido: any) => ({ text: pedido.referencia, action: `Consulta sobre ${pedido.referencia}` }));
       return { text: 'Selecciona tu pedido:', isUser: false, buttons };
-    } else if (lowerInput.includes('tengo duda/consulta sobre mi suscripción')) {
-      if (this.datosCliente.suscripcion === "Todavía no te has suscrito") {
-        return { text: 'No estás suscrito. Puedes visitar la sección de suscripciones para hacerlo.', isUser: false };
+    } else if (lowerInput === 'tengo duda/consulta sobre mi suscripción') {
+      if (this.datosCliente.suscripcion === "todavía no te has suscrito") {
+        return { text: 'No estás suscrito. Puedes visitar la sección de Suscripciones para hacerlo.', isUser: false };
       } else {
         return {
           text: '¿Qué consulta tienes sobre tu suscripción?',
@@ -100,11 +119,11 @@ export class ChatbotComponent implements OnInit {
           ]
         };
       }
-    } else if (lowerInput.includes('tengo duda sobre mi mystery box')) {
+    } else if (lowerInput === 'tengo duda sobre mi mystery box') {
       const pedidosMistery = this.datosCliente.pedidos.filter((pedido: any) => pedido.referencia.startsWith('MISTERY'));
       const buttons = pedidosMistery.map((pedido: any) => ({ text: pedido.referencia, action: `Consulta sobre ${pedido.referencia}` }));
       return { text: 'Selecciona tu pedido Mystery Box:', isUser: false, buttons };
-    } else if (lowerInput.includes('consulta sobre')) {
+    } else if (lowerInput.startsWith('consulta sobre')) {
       const pedidoReferencia = userInput.split('Consulta sobre ')[1];
       const pedido = this.datosCliente.pedidos.find((p: any) => p.referencia === pedidoReferencia);
       if (pedido) {
@@ -117,7 +136,7 @@ export class ChatbotComponent implements OnInit {
       } else {
         return { text: 'No se encontró el pedido.', isUser: false };
       }
-    } else if (lowerInput.includes('cuándo llegará mi pedido')) {
+    } else if (lowerInput.startsWith('¿cuándo llegará mi pedido')) {
       const pedidoReferencia = userInput.split('¿Cuándo llegará mi pedido ')[1].replace('?', '');
       const pedido = this.datosCliente.pedidos.find((p: any) => p.referencia === pedidoReferencia);
       if (pedido) {
@@ -148,20 +167,62 @@ export class ChatbotComponent implements OnInit {
       } else {
         return { text: 'No se encontró el pedido.', isUser: false };
       }
-    } else if (lowerInput.includes('¿cuándo termina mi suscripción?')) {
+    } else if (lowerInput === '¿cuándo termina mi suscripción?') {
       const fechaFin = this.datosCliente.suscripcion.fechaFin;
       const isSubscribed = this.datosCliente.suscripcion.suscrito;
       const renovacion = isSubscribed ? ' Se renovará automáticamente.' : ' Puedes volver a suscribirte desde "Mi cuenta".';
       return {
         text: `Tu suscripción termina el ${this.datePipe.transform(fechaFin, 'dd/MM/yyyy')}.${renovacion}`,
-        isUser: false,
-        buttons: this.predefinedQuestions.map(q => ({ text: q, action: q }))
+        isUser: false
       };
+    } else if (lowerInput === 'contactar con soporte') {
+      return {
+        text: 'Selecciona una opción:',
+        isUser: false,
+        buttons: [
+          { text: 'Pedido', action: 'Contactar soporte - Pedido' },
+          { text: 'Suscripción', action: 'Contactar soporte - Suscripción' },
+          { text: 'Otros', action: 'Contactar soporte - Otros' }
+        ]
+      };
+    } else if (lowerInput === 'contactar soporte - pedido') {
+      const buttons = this.datosCliente.pedidos.filter((pedido: any) => !pedido.referencia.startsWith('MISTERY')).map((pedido: any) => ({ text: pedido.referencia, action: `Soporte Pedido ${pedido.referencia}` }));
+      return { text: 'Selecciona tu pedido:', isUser: false, buttons };
+    } else if (lowerInput === 'contactar soporte - suscripción') {
+      const buttons = this.datosCliente.pedidos.filter((pedido: any) => pedido.referencia.startsWith('MISTERY')).map((pedido: any) => ({ text: pedido.referencia, action: `Soporte Suscripción ${pedido.referencia}` }));
+      return { text: 'Selecciona tu pedido Mystery Box:', isUser: false, buttons };
+    } else if (lowerInput === 'contactar soporte - otros') {
+      return { text: 'Escribe tu duda en el campo de texto y presiona enviar.', isUser: false };
+    } else if (lowerInput.startsWith('soporte pedido') || lowerInput.startsWith('soporte suscripción')) {
+      return { text: 'Escribe tu duda en el campo de texto y presiona enviar.', isUser: false };
     } else {
       return { text: 'No puedo resolver tu duda. Por favor, envía un correo a contacto.tinteka@gmail.com para obtener ayuda.', isUser: false };
     }
   }
 
+  sendSupportEmail() {
+    const selectedOption = this.messages[this.messages.length - 2].text;
+    const username = this.datosCliente.username;
+    const email = this.datosCliente.email;
+    const referencia = selectedOption.includes('Pedido') ? selectedOption.split(' ')[2] : 'Otros';
+    const mensaje = this.userInput;
+
+    this.http.post('/api/clientes/contacto', {
+      username,
+      email,
+      referencia,
+      mensaje
+    }).subscribe({
+      next: (response) => {
+        console.log('Correo enviado correctamente', response);
+        this.messages.push({ text: 'Su email se ha enviado con éxito, le responderemos lo antes posible.', isUser: false });
+      },
+      error: (err) => {
+        console.error('Error enviando correo:', err);
+        this.messages.push({ text: 'Hubo un error al enviar su email. Por favor, inténtelo de nuevo más tarde.', isUser: false });
+      }
+    });
+  }
 
   clearChat() {
     this.messages = [{ text: '¿En qué puedo ayudarte hoy?', isUser: false }];
