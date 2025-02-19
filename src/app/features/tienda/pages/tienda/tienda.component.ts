@@ -36,6 +36,7 @@ export class TiendaComponent implements OnInit {
   maxValue: number = 100;
   generos: GeneroDTO[] = [];
   allLibros: CuadroProducto[] = [];
+  loadedPages: Map<number, CuadroProducto[]> = new Map<number, CuadroProducto[]>();
   loading: boolean = false;
   showFilters:boolean = false;
   toggleFilters() {
@@ -70,22 +71,47 @@ export class TiendaComponent implements OnInit {
     }
   }
 
-  cargaLibros(): void {
-    this.libroService.getLibrosTienda(this.currentPage, this.itemsPerPage, this.filters).subscribe({
+  cargaLibros(page?: number): void {
+    const pageToLoad = page ?? this.currentPage;
+
+    if (this.loadedPages.has(pageToLoad)) {
+      this.currentPage = pageToLoad;
+      this.updateDisplayedPages();
+      return;
+    }
+
+    this.libroService.getLibrosTienda(pageToLoad, this.itemsPerPage, this.filters).subscribe({
       next: (response) => {
-        // Si no hay libros en la respuesta, no actualizar el listado
-        if (response.libros.length === 0 && this.currentPage > 1) {
+        if (response.libros.length === 0 && pageToLoad > 1) {
           this.currentPage--;
           return;
         }
 
-        this.allLibros = [...this.allLibros, ...response.libros];
+        // Almacenar la página cargada
+        this.loadedPages.set(pageToLoad, response.libros);
         this.totalPages = Math.ceil(response.total / this.itemsPerPage);
+
+        if (!page) {
+          this.currentPage = pageToLoad;
+        }
         this.updateDisplayedPages();
+
+        // Precargar páginas adyacentes
+        this.preloadAdjacentPages(pageToLoad);
       },
       error: (err) => {
         console.error('Error al cargar libros:', err);
-        if (this.currentPage > 1) this.currentPage--; // Retrocede si hay error
+        if (pageToLoad > 1) this.currentPage--;
+      }
+    });
+  }
+
+// Nuevo método para precarga
+  private preloadAdjacentPages(currentPage: number): void {
+    const pagesToPreload = [currentPage - 1, currentPage + 1];
+    pagesToPreload.forEach(page => {
+      if (page > 0 && page <= this.totalPages && !this.loadedPages.has(page)) {
+        this.libroService.getLibrosTienda(page, this.itemsPerPage, this.filters).subscribe();
       }
     });
   }
@@ -93,7 +119,7 @@ export class TiendaComponent implements OnInit {
   // Modifica los métodos que cambian los filtros
   onCategoria(numeroCategoria: number | null): void {
     this.libroService.resetCache();
-    this.allLibros = []; // Limpia libros acumulados
+    this.loadedPages.clear(); // Limpiar páginas cargadas
     this.filters.category = numeroCategoria;
     this.currentPage = 1;
     this.cargaLibros();
@@ -101,7 +127,7 @@ export class TiendaComponent implements OnInit {
 
   onSearchChange(searchTerm: string): void {
     this.libroService.resetCache();
-    this.allLibros = [];
+    this.loadedPages.clear();
     this.filters.search = searchTerm;
     this.currentPage = 1;
     this.cargaLibros();
@@ -111,7 +137,7 @@ export class TiendaComponent implements OnInit {
     this.minValue = priceRange.min;
     this.maxValue = priceRange.max;
     this.libroService.resetCache();
-    this.allLibros = [];
+    this.loadedPages.clear();
     this.filters.minPrice = priceRange.min;
     this.filters.maxPrice = priceRange.max;
     this.currentPage = 1;
@@ -122,8 +148,7 @@ export class TiendaComponent implements OnInit {
 
 
   get paginatedItems(): CuadroProducto[] {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    return this.allLibros.slice(start, start + this.itemsPerPage);
+    return this.loadedPages.get(this.currentPage) || [];
   }
 
   setPage(page: number | string): void {
@@ -140,39 +165,62 @@ export class TiendaComponent implements OnInit {
   }
 
   updateDisplayedPages() {
-    const pages: (number | string)[] = [];
     const total = this.totalPages;
     const current = this.currentPage;
-    const delta = 2; // Número de páginas a mostrar alrededor de la actual
+    const pages: (number | string)[] = [];
+    const maxVisible = 7;
 
-    // Calcular rango de páginas
-    let start = Math.max(2, current - delta);
-    let end = Math.min(total - 1, current + delta);
+    // Casos especiales
+    if (total <= 0) {
+      this.displayedPages = [];
+      return;
+    }
+    if (total === 1) {
+      this.displayedPages = [1];
+      return;
+    }
+    if (total <= maxVisible) {
+      this.displayedPages = Array.from({length: total}, (_, i) => i + 1);
+      return;
+    }
 
-    // Ajustar rango si estamos cerca de los extremos
-    if (current - delta < 2) end = Math.min(total - 1, 2 + delta * 2);
-    if (current + delta > total - 1) start = Math.max(2, total - 1 - delta * 2);
-
+    // Siempre mostrar primera y última página
     pages.push(1);
 
-    // Agregar puntos suspensivos izquierdos si es necesario
-    if (start > 2) pages.push('...');
+    // Lógica para páginas intermedias
+    const calculateMiddle = () => {
+      if (current <= 3) {
+        // Primeras 3 páginas: [1, 2, 3, 4, 5, ..., total]
+        for (let i = 2; i <= 5; i++) pages.push(i);
+        pages.push('...');
+      } else if (current >= total - 2) {
+        // Últimas 3 páginas: [1, ..., total-3, total-2, total-1, total]
+        pages.push('...');
+        for (let i = total - 4; i < total; i++) pages.push(i);
+      } else {
+        // Páginas intermedias: [1, ..., current-1, current, current+1, ..., total]
+        pages.push('...');
+        pages.push(current - 1, current, current + 1);
+        pages.push('...');
+      }
+    };
 
-    // Agregar páginas centrales
-    for (let i = start; i <= end; i++) pages.push(i);
+    calculateMiddle();
+    pages.push(total);
 
-    // Agregar puntos suspensivos derechos si es necesario
-    if (end < total - 1) pages.push('...');
-
-    // Agregar última página solo si hay más de 1
-    if (total > 1) pages.push(total);
-
-    this.displayedPages = pages;
+    // Limpiar y ajustar
+    this.displayedPages = pages.filter((page, index, arr) => {
+      // Eliminar puntos suspensivos consecutivos
+      if (page === '...' && arr[index - 1] === '...') return false;
+      // Eliminar números mayores al total
+      if (typeof page === 'number' && page > total) return false;
+      return true;
+    }).slice(0, maxVisible);
   }
 
   clearFilters() {
     this.libroService.resetCache();
-    this.allLibros = [];
+    this.loadedPages.clear();
     this.filters = {
       search: '',
       category: '',
