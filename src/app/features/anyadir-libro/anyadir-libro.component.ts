@@ -28,7 +28,7 @@ export class AnyadirLibroComponent implements OnInit{
   idiomas: IdiomaDTO[] = [];
   portadaSeleccionada: File | null = null;
   imagenPreview: string | null = null;
-  cloudinaryUrl: string | null = null;
+
 
   isEditMode: boolean = false;
   libroId: string | null = null;
@@ -99,10 +99,10 @@ export class AnyadirLibroComponent implements OnInit{
       this.libroForm.patchValue({
         titulo: libro.titulo,
         autor: libro.autor,
-        genero: libro.genero.numero,
+        genero: libro.genero,
         editorial: libro.editorial,
         isbn: libro.isbn,
-        idioma: libro.idioma.numero,
+        idioma: libro.idioma,
         fechaPublicacion: libro.fechaPublicacion.split('T')[0],
         paginas: libro.paginas,
         tapaBlanda: libro.tapaBlanda,
@@ -187,7 +187,7 @@ export class AnyadirLibroComponent implements OnInit{
         this.libroService.putLibro(this.libroId!, formData).subscribe({
           next: () => {
             alert('Libro actualizado con éxito');
-            this.router.navigate(['/admin/libros']);
+            this.router.navigate(['/admin']);
           },
           error: () => alert('Error al actualizar el libro')
         });
@@ -195,7 +195,7 @@ export class AnyadirLibroComponent implements OnInit{
         this.libroService.postLibro(formData).subscribe({
           next: () => {
             alert('Libro guardado con éxito');
-            this.router.navigate(['/admin/libros']);
+            this.router.navigate(['/admin']);
           },
           error: () => alert('Error al guardar el libro')
         });
