@@ -58,7 +58,11 @@ export class LoginComponent {
     this.http.post<{ token: string }>(this.apiUrl, this.loginForm.value).subscribe({
       next: (response) => {
         this.authService.setToken(response.token); // Almacena el token
-        this.router.navigate(['/main']); // Redirige al usuario
+        if (this.authService.isAdmin()) {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/main']);
+        }
         this.isLoading = false; // Desactiva el estado de carga
       },
       error: (error: HttpErrorResponse) => {
