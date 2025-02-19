@@ -100,7 +100,7 @@ export class ChatbotComponent implements OnInit {
     } else if (lowerInput === 'suscripción' || lowerInput === 'suscripcion') {
       userInput = 'Tengo duda/consulta sobre mi suscripción';
       lowerInput = userInput.toLowerCase();
-    }else if (lowerInput === 'soporte') {
+    } else if (lowerInput === 'soporte') {
       userInput = 'Contactar con soporte';
       lowerInput = userInput.toLowerCase();
     }
@@ -198,6 +198,20 @@ export class ChatbotComponent implements OnInit {
       return { text: 'Escribe tu duda en el campo de texto y presiona enviar.', isUser: false };
     } else if (lowerInput.startsWith('soporte pedido') || lowerInput.startsWith('soporte suscripción')) {
       return { text: 'Escribe tu duda en el campo de texto y presiona enviar.', isUser: false };
+    } else if (lowerInput.startsWith('cancelar pedido')) {
+      const pedidoReferencia = userInput.split('Cancelar pedido ')[1];
+      const pedido = this.datosCliente.pedidos.find((p: any) => p.referencia === pedidoReferencia);
+      if (pedido) {
+        if (pedido.referencia.startsWith('MISTERY')) {
+          return { text: 'Los envios de Mystery Box no se pueden cancelar, por favor contacta con soporte para más ayuda.', isUser: false };
+        } else if (pedido.estado === 1) {
+          return { text: 'Puedes cancelar tu pedido entrando en "Mi Cuenta" --> "Historial de pedidos".', isUser: false };
+        } else {
+          return { text: 'No puedes cancelar el pedido en este estado, contacta con soporte para más ayuda.', isUser: false };
+        }
+      } else {
+        return { text: 'No se encontró el pedido.', isUser: false };
+      }
     } else {
       return { text: 'No puedo resolver tu duda. Por favor, envía un correo a contacto.tinteka@gmail.com para obtener ayuda.', isUser: false };
     }
