@@ -11,6 +11,7 @@ import {NgIf} from '@angular/common';
 import {LibrosService} from './services/libros.service';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {MatIcon} from '@angular/material/icon';
+import {NotificacionesService} from '../../shared/services/notificaciones.service';
 
 @Component({
   selector: 'app-admin',
@@ -51,7 +52,8 @@ export class AdminComponent implements OnInit{
   constructor(private clienteService: ClienteService,
               private pedidoService: PedidoService,
               private librosService: LibrosService,
-              private breakpointObserver: BreakpointObserver) {
+              private breakpointObserver: BreakpointObserver,
+              private notificacionesService: NotificacionesService) {
   }
 
   ngOnInit(): void {
@@ -187,10 +189,15 @@ export class AdminComponent implements OnInit{
         error => console.error('Error al actualizar usuario', error)
       );
     } else if(this.titulo=== 'Pedidos'){
-      this.pedidoService.modificarPedido(item).subscribe(
-        reponse => console.log('Pedido actualizado', reponse),
-        error => console.error('Error al actualizar pedido', error)
-      );
+      this.pedidoService.modificarPedido(item).subscribe({
+        next: (response) => {
+          console.log('Pedido actualizado', response);
+          this.notificacionesService.actualizarCantidadNotificaciones();
+        },
+        error: (error) => {
+          console.error('Error al actualizar pedido', error);
+        }
+      });
     } else if(this.titulo=== 'Libros') {
       this.librosService.modifcarLibro(item).subscribe(
         reponse => console.log('Precio del libro actualizado', reponse),

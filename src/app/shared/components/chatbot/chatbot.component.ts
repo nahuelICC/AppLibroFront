@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { PerfilUsuarioService } from '../../../features/usuario/services/perfil-usuario.service';
 import { AuthServiceService } from '../../../core/services/auth-service.service';
 import { HttpClient } from '@angular/common/http';
+import {NotificacionesService} from '../../services/notificaciones.service';
 
 @Component({
   selector: 'app-chatbot',
@@ -35,7 +36,8 @@ export class ChatbotComponent implements OnInit {
     private authService: AuthServiceService,
     private datePipe: DatePipe,
     private cdr: ChangeDetectorRef,
-    private http: HttpClient
+    private http: HttpClient,
+    private notificacionesService: NotificacionesService
   ) {}
 
   ngOnInit() {
@@ -238,6 +240,7 @@ export class ChatbotComponent implements OnInit {
         console.log('Correo enviado correctamente', response);
         this.messages.push({ text: 'Su email se ha enviado con éxito, le responderemos lo antes posible.', isUser: false });
         this.isSendingEmail = false; // Reactiva el botón
+        this.notificacionesService.actualizarCantidadNotificaciones();
       },
       error: (err) => {
         console.error('Error enviando correo:', err);
