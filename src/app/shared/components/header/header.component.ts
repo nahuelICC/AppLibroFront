@@ -6,7 +6,7 @@ import {NgClass, NgIf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {MatBadge} from '@angular/material/badge';
 import {CarritoService} from '../../../features/carrito/services/carrito.service';
-import {Subscription} from 'rxjs';
+import {interval, Subscription} from 'rxjs';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {NotificacionesComponent} from '../notificaciones/notificaciones.component';
 import {NotificacionesService} from '../../services/notificaciones.service';
@@ -32,6 +32,7 @@ export class HeaderComponent implements OnInit, OnDestroy{
   private cartSubscription!: Subscription;
   cantidadNotificaciones = 0;
   private notificationsSubscription!: Subscription;
+  private autoUpdateSubscription!: Subscription;
   notificationsDialogRef: MatDialogRef<NotificacionesComponent> | null = null;// Cambiar dinámicamente con datos del backend
   admin: boolean = false;
 
@@ -42,28 +43,17 @@ export class HeaderComponent implements OnInit, OnDestroy{
       this.cantidadCarrito = count;
     });
 
-    // Obtener el número de notificaciones no leídas
-    this.actualizarCantidadNotificaciones();
-  }
-
-  actualizarCantidadNotificaciones(): void {
-    if (!this.isAuthenticated) {
-      this.cantidadNotificaciones = 0; // Si no está autenticado, no hay notificaciones
-      return;
-    }
-
-    this.notificationsSubscription = this.notificacionesService.obtenerIdUsuario().subscribe({
-      next: (data) => {
-        const userId = data.id_usuario;
-        this.notificacionesService.getNotificacionesDeUsuario(userId).subscribe((notificaciones) => {
-          this.cantidadNotificaciones = notificaciones.filter((notificacion) => !notificacion.leida).length;
-        });
-      },
-      error: (error) => {
-        console.error('Error al obtener ID del usuario:', error);
-        this.cantidadNotificaciones = 0; // Si hay error, no mostrar notificaciones
-      }
+    this.notificationsSubscription = this.notificacionesService.notificacionesCount$.subscribe((count) => {
+      console.log("Notificaciones actualizadas:", count);
+      this.cantidadNotificaciones = count;
     });
+
+    // Llamar a la actualización de notificaciones al iniciar
+    this.notificacionesService.actualizarCantidadNotificaciones();
+
+    // this.autoUpdateSubscription = interval(5000).subscribe(() => {
+    //   this.notificacionesService.actualizarCantidadNotificaciones();
+    // });
   }
 
 
@@ -71,7 +61,6 @@ export class HeaderComponent implements OnInit, OnDestroy{
     event.stopPropagation();
     event.preventDefault();
 
-    // Cierra el diálogo si ya está abierto
     if (this.notificationsDialogRef) {
       this.notificationsDialogRef.close();
       this.notificationsDialogRef = null;
@@ -105,17 +94,15 @@ export class HeaderComponent implements OnInit, OnDestroy{
       panelClass: 'custom-dialog-container'
     });
 
-    // Limpiar referencia cuando se cierra el diálogo
     this.notificationsDialogRef.afterClosed().subscribe(() => {
       this.notificationsDialogRef = null;
-      this.actualizarCantidadNotificaciones(); // Llamar a la función de actualización
+      this.notificacionesService.actualizarCantidadNotificaciones();
     });
   }
 
 
 
   ngOnDestroy(): void {
-    // Limpiar las suscripciones al destruir el componente
     if (this.cartSubscription) {
       this.cartSubscription.unsubscribe();
     }

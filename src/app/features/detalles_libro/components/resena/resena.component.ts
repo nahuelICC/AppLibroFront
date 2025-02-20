@@ -4,6 +4,7 @@ import {MatIcon} from '@angular/material/icon';
 import {AlertConfirmarComponent} from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
 import {NgForOf, NgIf} from '@angular/common';
 import {PerfilUsuarioService} from '../../../usuario/services/perfil-usuario.service';
+import {NotificacionesService} from '../../../../shared/services/notificaciones.service';
 
 @Component({
   selector: 'app-resena',
@@ -49,7 +50,7 @@ export class ResenaComponent implements OnInit {
     )
   }
 
-  constructor(private detallesLibroService: DetallesLibroService, private usuarioService: PerfilUsuarioService) {}
+  constructor(private detallesLibroService: DetallesLibroService, private usuarioService: PerfilUsuarioService, private notificacionesService: NotificacionesService) {}
 
   deleteResenya(): void {
     if (this.id !== undefined && this.id !== null) {
@@ -76,9 +77,11 @@ export class ResenaComponent implements OnInit {
       this.detallesLibroService.postDenuciarResenya(this.id).subscribe(
         (response: any) => {
           console.log('Reseña denunciada');
+          this.notificacionesService.actualizarCantidadNotificaciones();
         },
         (error: any) => {
           console.error('Error al denunciar la reseña', error);
+          this.notificacionesService.actualizarCantidadNotificaciones();
         }
       );
     } else {
