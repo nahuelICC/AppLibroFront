@@ -36,7 +36,6 @@ export class TiendaComponent implements OnInit {
   maxValue: number = 100;
   generos: GeneroDTO[] = [];
   allLibros: CuadroProducto[] = [];
-  loadedPages: Map<number, CuadroProducto[]> = new Map<number, CuadroProducto[]>();
   loading: boolean = false;
   showFilters:boolean = false;
   toggleFilters() {
@@ -71,47 +70,22 @@ export class TiendaComponent implements OnInit {
     }
   }
 
-  cargaLibros(page?: number): void {
-    const pageToLoad = page ?? this.currentPage;
-
-    if (this.loadedPages.has(pageToLoad)) {
-      this.currentPage = pageToLoad;
-      this.updateDisplayedPages();
-      return;
-    }
-
-    this.libroService.getLibrosTienda(pageToLoad, this.itemsPerPage, this.filters).subscribe({
+  cargaLibros(): void {
+    this.libroService.getLibrosTienda(this.currentPage, this.itemsPerPage, this.filters).subscribe({
       next: (response) => {
-        if (response.libros.length === 0 && pageToLoad > 1) {
+        // Si no hay libros en la respuesta, no actualizar el listado
+        if (response.libros.length === 0 && this.currentPage > 1) {
           this.currentPage--;
           return;
         }
 
-        // Almacenar la página cargada
-        this.loadedPages.set(pageToLoad, response.libros);
+        this.allLibros = [...this.allLibros, ...response.libros];
         this.totalPages = Math.ceil(response.total / this.itemsPerPage);
-
-        if (!page) {
-          this.currentPage = pageToLoad;
-        }
         this.updateDisplayedPages();
-
-        // Precargar páginas adyacentes
-        this.preloadAdjacentPages(pageToLoad);
       },
       error: (err) => {
         console.error('Error al cargar libros:', err);
-        if (pageToLoad > 1) this.currentPage--;
-      }
-    });
-  }
-
-// Nuevo método para precarga
-  private preloadAdjacentPages(currentPage: number): void {
-    const pagesToPreload = [currentPage - 1, currentPage + 1];
-    pagesToPreload.forEach(page => {
-      if (page > 0 && page <= this.totalPages && !this.loadedPages.has(page)) {
-        this.libroService.getLibrosTienda(page, this.itemsPerPage, this.filters).subscribe();
+        if (this.currentPage > 1) this.currentPage--; // Retrocede si hay error
       }
     });
   }
@@ -148,7 +122,8 @@ export class TiendaComponent implements OnInit {
 
 
   get paginatedItems(): CuadroProducto[] {
-    return this.loadedPages.get(this.currentPage) || [];
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    return this.allLibros.slice(start, start + this.itemsPerPage);
   }
 
   setPage(page: number | string): void {
