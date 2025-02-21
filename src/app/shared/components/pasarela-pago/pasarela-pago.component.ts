@@ -9,10 +9,11 @@ import { AlertConfirmarComponent } from '../alert-confirmar/alert-confirmar.comp
 import { AlertInfoComponent, AlertType } from '../alert-info/alert-info.component';
 import { DetallesLibroService } from '../../../features/detalles_libro/services/detalles-libro.service';
 import {AuthServiceService} from '../../../core/services/auth-service.service';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-pasarela-pago',
-  imports: [NgIf, FormsModule, BotonComponent, AlertConfirmarComponent, AlertInfoComponent],
+  imports: [NgIf, FormsModule, BotonComponent, AlertConfirmarComponent, AlertInfoComponent, MatProgressSpinner],
   templateUrl: './pasarela-pago.component.html',
   standalone: true,
   styleUrl: './pasarela-pago.component.css'
@@ -43,6 +44,8 @@ export class PasarelaPagoComponent implements OnInit {
   cardNumberError: boolean = false;
   expiryError: boolean = false;
   cvvError: boolean = false;
+
+  isLoading: boolean = false;
 
   constructor(
     private carritoService: CarritoService,
@@ -183,8 +186,10 @@ export class PasarelaPagoComponent implements OnInit {
   }
 
   sendOrderToBackend() {
+    this.isLoading = true;
     if (this.cartItems.length === 0) {
       this.showConfirmEdit = false;
+      this.isLoading = false;
       this.alertMessage = 'No hay productos en el carrito.';
       this.alertType = 'warning';
       this.isAlertVisible = true;
@@ -196,11 +201,13 @@ export class PasarelaPagoComponent implements OnInit {
 
     this.carritoService.postPedido(this.cartItems, this.totalBooksPrice, this.direccion).subscribe({
       next: (response: any) => {
+        this.isLoading = false;
         this.showConfirmEdit = false;
         this.clearCart();
         this.showAlertConfirmar = true; // Mostrar la alerta de confirmación
       },
       error: (error: any) => {
+        this.isLoading = false;
         console.error('Error al enviar el pedido:', error);
         this.showConfirmEdit = false;
         this.alertMessage = 'Error al enviar el pedido.';
@@ -264,6 +271,7 @@ export class PasarelaPagoComponent implements OnInit {
   }
 
   crear() {
+    this.isLoading = true;
     if (this.genero && this.idTipo) {
       const tipoSuscripcion = parseInt(this.idTipo, 10);
       const direccion = `${this.formData.calle}, ${this.formData.codigoPostal}, ${this.formData.localidad}, ${this.formData.provincia}`;
@@ -278,6 +286,7 @@ export class PasarelaPagoComponent implements OnInit {
       this.pasarelaPagoService.crearSuscripcion(this.idCliente, tipoSuscripcion, data)
         .subscribe({
           next: (response) => {
+            this.isLoading = false;
             console.log('Suscripción creada con éxito:', response);
             this.isAlertVisible = true;
             this.alertMessage = 'Suscripción contratada';
@@ -290,9 +299,11 @@ export class PasarelaPagoComponent implements OnInit {
             this.showAlertConfirmar = true; // Mostrar la alerta de confirmación
           },
           error: (error) => {
+            this.isLoading = false;
             console.error('Error al crear la suscripción:', error);
 
             if (error.status === 400) {
+              this.isLoading = false;
               this.alertMessage = 'Ya tiene una suscripción activa';
               this.alertType = 'warning';
               localStorage.removeItem('generoSeleccionado');
@@ -308,6 +319,7 @@ export class PasarelaPagoComponent implements OnInit {
           }
         });
     } else {
+      this.isLoading = false;
       console.error('Faltan datos en localStorage para crear la suscripción.');
     }
   }
