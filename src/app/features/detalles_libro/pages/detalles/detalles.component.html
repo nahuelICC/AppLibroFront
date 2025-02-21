@@ -12,9 +12,7 @@
       <div class="md:w-2/3 pl-6 mt-4">
         <h1 class="text-2xl font-bold">{{ libro?.titulo }}</h1>
         <h2 class="text-gray-500 text-lg mt-2">{{ libro?.autor }}</h2>
-        <p class="text-gray-500">{{ libro?.genero }}</p>
-
-        <!-- Resumen de reseñas -->
+        <p class="text-gray-500">{{ libro?.genero?.replace("_"," ")}}</p>        <!-- Resumen de reseñas -->
         <div class="flex items-center mt-3 cursor-pointer" (click)="scrollToReviews()">
           <h3 class="text-3xl font-bold mr-2">{{ averageRating }}</h3>
           <div class="flex">
