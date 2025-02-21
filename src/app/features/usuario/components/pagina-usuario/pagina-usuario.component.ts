@@ -155,168 +155,190 @@ export class PaginaUsuarioComponent implements OnInit {
 
   generarPDF(detalles: any, pedido: any, datosCliente: any): void {
     const div = document.createElement('div');
-    div.innerHTML = `
-  <div class="container">
-    <div class="header">
-      <div class="image-container">
-        <img src="assets/Logo.png" alt="Tinteka">
+    let htmlContent = '';
+
+    if (!pedido.esMistery || pedido.estado === 5 || pedido.estado === 6) {
+      htmlContent = `
+      <div class="container">
+        <div class="header">
+          <div class="image-container">
+            <img src="assets/Logo.png" alt="Tinteka">
+          </div>
+          <h1>Factura del Pedido</h1>
+          <p>Número de Factura: ${pedido.referencia}</p>
+          <p>Fecha del Pedido: ${new Date(pedido.fecha).toLocaleDateString()}</p>
+        </div>
+        <div>
+          <h3>Datos del Cliente</h3>
+          <p>${datosCliente.nombre} ${datosCliente.apellido}</p>
+          <p>Dirección de Envío: ${pedido.direccion}</p>
+        </div>
+        <div class="details">
+          <h3>Detalles del Pedido</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Libro</th>
+                <th>Cantidad</th>
+                <th>Precio (IVA incl.)</th>
+                <th>Precio (IVA excl.)</th>
+                <th>IVA (4%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${detalles.map((linea: any) => `
+                <tr>
+                  <td>${linea.titulo}</td>
+                  <td>${linea.cantidad}</td>
+                  <td>${linea.precio} €</td>
+                  <td>${(linea.precio * 0.96).toFixed(2)} €</td>
+                  <td>${(linea.precio - (linea.precio * 0.96)).toFixed(2)} €</td>
+                </tr>
+              `).join('')}
+              <tr>
+                <td class="total" colspan="4">Gastos de Envío (IVA incl.):</td>
+                <td>${pedido.total < 5 ? 5 : 0} €</td>
+              </tr>
+              <tr>
+                <td class="total" colspan="4">Total (IVA incl.):</td>
+                <td>${pedido.total} €</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <h3>Datos del Vendedor</h3>
+          <p>Tinteka</p>
+          <p>Email: <a href="mailto:contacto.tinteka@gmail.com">contacto.tinteka@gmail.com</a></p>
+        </div>
+        <div class="footer">
+          <p>Si tienes alguna pregunta, contacta con nosotros en <a href="mailto:contacto.tinteka@gmail.com">contacto.tinteka@gmail.com</a>.</p>
+        </div>
       </div>
-      <h1>Factura del Pedido</h1>
-      <p>Número de Factura: ${pedido.referencia}</p>
-      <p>Fecha del Pedido: ${new Date(pedido.fecha).toLocaleDateString()}</p>
-    </div>
-    <div>
-      <h3>Datos del Cliente</h3>
-      <p>${datosCliente.nombre} ${datosCliente.apellido}</p>
-      <p>Dirección de Envío: ${pedido.direccion}</p>
-    </div>
-    <div class="details">
-      <h3>Detalles del Pedido</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Libro</th>
-            <th>Cantidad</th>
-            <th>Precio (IVA incl.)</th>
-            <th>Precio (IVA excl.)</th>
-            <th>IVA (4%)</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${detalles.map((linea: any) => `
-            <tr>
-              <td>${linea.titulo}</td>
-              <td>${linea.cantidad}</td>
-              <td>${linea.precio} €</td>
-              <td>${(linea.precio * 0.96).toFixed(2)} €</td>
-              <td>${(linea.precio - (linea.precio * 0.96)).toFixed(2)} €</td>
-            </tr>
-          `).join('')}
-          <tr>
-            <td class="total" colspan="4">Gastos de Envío (IVA incl.):</td>
-            <td>${pedido.total < 5 ? 5 : 0} €</td>
-          </tr>
-          <tr>
-            <td class="total" colspan="4">Total (IVA incl.):</td>
-            <td>${pedido.total} €</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div>
-      <h3>Datos del Vendedor</h3>
-      <p>Tinteka</p>
-      <p>Email: <a href="mailto:contacto.tinteka@gmail.com">contacto.tinteka@gmail.com</a></p>
-    </div>
-    <div class="footer">
-      <p>Si tienes alguna pregunta, contacta con nosotros en <a href="mailto:contacto.tinteka@gmail.com">contacto.tinteka@gmail.com</a>.</p>
-    </div>
-  </div>
-`;
+    `;
+    } else {
+      htmlContent = `
+      <div class="container">
+        <div class="header">
+           <img src="assets/Logo.png" alt="Tinteka" style="display: block; margin: 0 auto;">
+          <h1>TIENES UN NUEVO ENVÍO MISTERY</h1>
+          <h2>Detalles del Pedido Mistery</h2>
+          <p>Pedido: ${pedido.referencia}</p>
+          <p>Fecha: ${new Date(pedido.fecha).toLocaleString()}</p>
+        </div>
+        <div class="details">
+          <p>Suscripción: <b>${ datosCliente.suscripcion.tipo }</b></p>
+          <p>Libros enviados: ${detalles.length}</p>
+          <p>Género: ${pedido.genero}</p>
+        </div>
+        <div class="footer">
+          <p>Si tienes alguna pregunta, no dudes en contactarnos en <a href="mailto:contacto.tinteka@gmail.com">contacto.tinteka@gmail.com</a>.</p>
+        </div>
+      </div>
+    `;
+    }
+
+    div.innerHTML = htmlContent;
 
     // Estilos
     const styles = document.createElement('style');
     styles.innerHTML = `
-  body {
-    font-family: 'Work Sans', sans-serif;
-    background-color: #f8f9fa;
-    padding: 20px;
-  }
-  .container {
-    max-width: 700px;
-    margin: 0 auto;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  .header {
-    text-align: center;
-  }
-  .image-container {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
-  .header img {
-    height: 50px;
-  }
-  .header h1 {
-    font-size: 22px;
-    font-weight: bold;
-    color: #232323;
-  }
-  h3 {
-    font-size: 18px;
-    font-weight: bold;
-    color: #232323;
-    margin-top: 20px;
-  }
-  .details table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-  }
-  .details th, .details td {
-    padding: 8px;
-    border: 1px solid #ddd;
-    text-align: left;
-  }
-  .details th {
-    background-color: #f4f4f4;
-  }
-  .total {
-    text-align: right;
-    font-weight: bold;
-  }
-  .footer {
-    text-align: center;
-    font-size: 14px;
-    margin-top: 20px;
-    color: #555;
-  }
-  .footer a {
-    color: #078080;
-    text-decoration: none;
-  }
-`;
+    body {
+      font-family: 'Work Sans', sans-serif;
+      background-color: #f8f9fa;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      text-align: center;
+    }
+    .image-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .header img {
+      height: 50px;
+    }
+    .header h1 {
+      font-size: 22px;
+      font-weight: bold;
+      color: #232323;
+    }
+    h3 {
+      font-size: 18px;
+      font-weight: bold;
+      color: #232323;
+      margin-top: 20px;
+    }
+    .details table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    .details th, .details td {
+      padding: 8px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    .details th {
+      background-color: #f4f4f4;
+    }
+    .total {
+      text-align: right;
+      font-weight: bold;
+    }
+    .footer {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 20px;
+      color: #555;
+    }
+    .footer a {
+      color: #078080;
+      text-decoration: none;
+    }
+  `;
 
     div.appendChild(styles);
     document.body.appendChild(div);
 
     // Generación del PDF
     html2canvas(div, {
-      scale: 3, // Aumentamos la calidad de renderizado
+      scale: 3,
       useCORS: true,
-      windowWidth: 794, // Ancho equivalente a 210mm (A4) en pixels (210mm * 3.78px/mm)
-      windowHeight: div.scrollHeight * 3, // Alto proporcional
-      scrollY: -window.scrollY // Elimina espacios blancos no deseados
+      windowWidth: 794,
+      windowHeight: div.scrollHeight * 3,
+      scrollY: -window.scrollY
     }).then((canvas) => {
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const pageWidth = 210; // Ancho A4 en mm
-      const pageHeight = 297; // Alto A4 en mm
-      const margin = 10; // Márgenes de 10mm
+      const pageWidth = 210;
+      const pageHeight = 297;
+      const margin = 10;
 
-      // Calculamos dimensiones manteniendo relación de aspecto
       const imgWidth = pageWidth - (margin * 2);
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-      let position = 0; // Posición inicial vertical
+      let position = 0;
 
-      // Dividimos en páginas
       while (position < imgHeight) {
-        if (position > 0) pdf.addPage(); // Nueva página excepto la primera
+        if (position > 0) pdf.addPage();
 
         const sectionHeight = Math.min(pageHeight - margin * 2, imgHeight - position);
 
-        // Creamos un canvas temporal para cada sección
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
 
         tempCanvas.width = canvas.width;
         tempCanvas.height = (sectionHeight / imgHeight) * canvas.height;
 
-        // Dibujamos la sección correspondiente
         tempCtx!.drawImage(
           canvas,
           0, (position / imgHeight) * canvas.height,
@@ -325,12 +347,11 @@ export class PaginaUsuarioComponent implements OnInit {
           canvas.width, tempCanvas.height
         );
 
-        // Añadimos al PDF con márgenes
         pdf.addImage(
           tempCanvas,
           'PNG',
-          margin, // Margen izquierdo
-          margin, // Margen superior
+          margin,
+          margin,
           imgWidth,
           sectionHeight,
           undefined,

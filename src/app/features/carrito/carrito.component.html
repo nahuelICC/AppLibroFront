@@ -30,7 +30,7 @@
         <span class="text-gray-500">{{ totalBooksPrice | currency:'€' }}</span>
       </div>
       <div class="flex justify-between md:mb-4 mb-2">
-        <span class="text-gray-500">Descuento (opcional)</span>
+        <span class="text-gray-500">Descuento ({{ tipoSuscripcion === 1 ? '5%' : tipoSuscripcion === 2 ? '10%' : tipoSuscripcion === 3 ? '15%' : 'opcional' }})</span>
         <span class="text-gray-500">{{ discount | currency:'€' }}</span>
       </div>
       <div class="flex justify-between mb-4 md:mb-8">
@@ -42,7 +42,7 @@
         <span class="text-gray-500">{{ cartItems.length === 0 ? '€0.00' : (totalBooksPrice - discount + shippingCost) | currency:'€' }}</span>
       </div>
       <p class="text-sm md:text-md text-[var(--color-rojo-resaltar)] mb-2 md:mb-4">
-        Nota: envío gratis con suscripción, con compras superiores a 50€
+        Nota: Envío gratis con suscripción o con compras superiores a 50€
       </p>
       <!-- Botón para enviar el pedido -->
       <ng-container *ngIf="cartItems.length > 0; else desactivado">
