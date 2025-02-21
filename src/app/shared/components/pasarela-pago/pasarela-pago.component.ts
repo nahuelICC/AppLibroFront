@@ -40,6 +40,10 @@ export class PasarelaPagoComponent implements OnInit {
   showAlertConfirmar: boolean = false;
   alertMessageConfirmar: string = 'Gracias por su compra';
 
+  cardNumberError: boolean = false;
+  expiryError: boolean = false;
+  cvvError: boolean = false;
+
   constructor(
     private carritoService: CarritoService,
     private router: Router,
@@ -223,10 +227,17 @@ export class PasarelaPagoComponent implements OnInit {
 
       case 3:
         if (this.selectedPaymentMethod === 'credit-card') {
-          return /^\d{13,19}$/.test(this.formData.cardNumber) &&
+          const isValid = /^(\d{4})\s(\d{4})\s(\d{4})\s(\d{4})$/.test(this.formData.cardNumber) &&
             /^(0[1-9]|1[0-2])\/[0-9]{2}$/.test(this.formData.expiry) &&
             /^\d{3,4}$/.test(this.formData.cvv) &&
             !!this.formData.cardholder;
+
+          // Actualizar estados de error
+          this.cardNumberError = !/^\d{13,19}$/.test(this.formData.cardNumber);
+          this.expiryError = !/^(0[1-9]|1[0-2])\/[0-9]{2}$/.test(this.formData.expiry);
+          this.cvvError = !/^\d{3,4}$/.test(this.formData.cvv);
+
+          return isValid;
         }
         if (this.selectedPaymentMethod === 'paypal') {
           return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(this.formData.paypalEmail) &&
@@ -310,4 +321,36 @@ export class PasarelaPagoComponent implements OnInit {
   onCancel() {
     this.showAlertConfirmar = false;
   }
+
+  formatCardNumber() {
+
+    this.formData.cardNumber = this.formData.cardNumber
+      .replace(/\D/g, '')
+      .replace(/(.{4})/g, '$1 ')
+      .trim();
+
+  }
+
+
+// Función para formatear fecha de expiración
+  formatExpiryDate(event: Event) {
+    const input = event.target as HTMLInputElement;
+    let value = input.value.replace(/\D/g, '');
+
+    if (value.length > 2) {
+      value = value.slice(0, 2) + '/' + value.slice(2, 4);
+    }
+
+    input.value = value;
+    this.formData.expiry = value;
+
+    // Validación en tiempo real
+    this.expiryError = !/^(0[1-9]|1[0-2])\/\d{2}$/.test(value);
+  }
+
+// Función para validar CVV
+  validateCVV() {
+    this.cvvError = !/^\d{3,4}$/.test(this.formData.cvv);
+  }
+
 }

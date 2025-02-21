@@ -144,7 +144,7 @@ export class CarritoComponent implements OnInit {
   }
 
   updateShippingCost() {
-    if (this.totalBooksPrice > 50) {
+    if (this.totalBooksPrice > 50 || this.totalBooksPrice === 0 || this.tipoSuscripcion !== 0) {
       this.shippingCost = 0;
     } else {
       this.shippingCost = 5;
