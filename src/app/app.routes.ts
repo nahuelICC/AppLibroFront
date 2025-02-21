@@ -17,6 +17,7 @@ import {CambioPasswordComponent} from './features/cambio_password/cambio-passwor
 import {
   FormularioCambioPasswordComponent
 } from './features/cambio_password/formulario-cambio-password/formulario-cambio-password.component';
+import {AdminGuard} from './core/guards/admin.guard';
 
 export const routes: Routes = [
   {path : '', redirectTo: '/main', pathMatch: 'full'},
@@ -29,7 +30,7 @@ export const routes: Routes = [
   { path: 'main', component: InicioComponent },
   { path: 'pago', component: PasarelaPagoComponent, canActivate:[AuthGuard]},
   { path: 'activar/:token', component: ActivacionComponent },
-  { path: 'admin', component: AdminComponent },
+  { path: 'admin', component: AdminComponent, canActivate:[AdminGuard] },
   { path: 'admin/anyadirLibro', component: AnyadirLibroComponent },
   { path: 'admin/anyadirLibro/:id', component: AnyadirLibroComponent },
   { path: 'activar/:token', component: ActivacionComponent },
