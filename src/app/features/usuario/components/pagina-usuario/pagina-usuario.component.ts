@@ -10,6 +10,7 @@ import { AlertInfoComponent, AlertType } from '../../../../shared/components/ale
 import { jsPDF } from "jspdf";
 import html2canvas from 'html2canvas';
 import { Router, RouterLink } from '@angular/router';
+import {NombreGeneroPipe} from '../../../tienda/pipes/nombre-genero.pipe';
 
 @Component({
   selector: 'app-pagina-usuario',
@@ -25,7 +26,8 @@ import { Router, RouterLink } from '@angular/router';
     AlertInfoComponent,
     MatIcon,
     TitleCasePipe,
-    RouterLink
+    RouterLink,
+    NombreGeneroPipe
   ],
   templateUrl: './pagina-usuario.component.html',
   standalone: true,
