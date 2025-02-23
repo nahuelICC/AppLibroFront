@@ -11,6 +11,7 @@ import { DetallesLibroService } from '../../services/detalles-libro.service';
 import { Resenya } from '../../DTOs/Resenya';
 import { Paginacion } from '../../DTOs/Paginacion';
 import { RatingDistribution } from '../../DTOs/RatingDistribution';
+import {NombreGeneroPipe} from '../../../tienda/pipes/nombre-genero.pipe';
 
 @Component({
   selector: 'app-detalles',
@@ -21,7 +22,8 @@ import { RatingDistribution } from '../../DTOs/RatingDistribution';
     ResenaComponent,
     DetallePrecioComponent,
     NgIf,
-    MatIcon
+    MatIcon,
+    NombreGeneroPipe
   ],
   templateUrl: './detalles.component.html',
   standalone: true,

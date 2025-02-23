@@ -16,7 +16,7 @@
           <button type="button"
                   (click)="menuAbierto = !menuAbierto"
                   class="w-full text-left border rounded-lg p-3 text-gray-700 bg-white focus:ring-2 focus:ring-[#E53935] flex justify-between items-center">
-            <span>{{ getGeneroText() || 'Selecciona una opción' }}</span>
+            <span>{{ getGeneroText() || 'Selecciona una opción' | nombreGenero }}</span>
             <svg class="w-5 h-5 transform transition-transform duration-200"
                  [class.rotate-180]="menuAbierto"
                  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
