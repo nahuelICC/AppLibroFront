@@ -5,7 +5,7 @@
     class="flex-none w-80 md:w-96 lg:w-[350px] xl:w-[400px] flex flex-col gap-1 cursor-pointer transition-transform transform md:hover:scale-105 md:hover:shadow-xl rounded-2xl px-3 h-full snap-center bg-[#f4f4f4]"
     [routerLink]="['/detallelibro', book.id]"
   >
-    <div class="w-full h-72 bg-center bg-no-repeat bg-contain rounded-xl overflow-hidden">
+    <div class="w-full h-72 bg-center bg-no-repeat bg-contain rounded-xl overflow-hidden pt-4">
       <img
         [src]="book.portada || ''"
         alt="{{ book.titulo || 'Título desconocido' }}"
