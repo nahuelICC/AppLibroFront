@@ -12,13 +12,15 @@ import {LibrosService} from './services/libros.service';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {MatIcon} from '@angular/material/icon';
 import {NotificacionesService} from '../../shared/services/notificaciones.service';
+import {AlertInfoComponent, AlertType} from '../../shared/components/alert-info/alert-info.component';
 
 @Component({
   selector: 'app-admin',
   imports: [
     TablaComponent,
     NgIf,
-    MatIcon
+    MatIcon,
+    AlertInfoComponent
   ],
   templateUrl: './admin.component.html',
   standalone: true,
@@ -48,6 +50,11 @@ export class AdminComponent implements OnInit{
 
   isMenuOpen = true;
   isMobile = false;
+
+  //alerta
+  alertaVisible: boolean = false;
+  tipoAlerta: AlertType = 'success';
+  mensajeAlerta: string = '';
 
   constructor(private clienteService: ClienteService,
               private pedidoService: PedidoService,
@@ -160,8 +167,9 @@ export class AdminComponent implements OnInit{
   private cargarLibros() {
     this.librosColumnas = [
       { titulo: 'Titulo', campo: 'titulo', editable: false, isEstado: false},
-      { titulo: 'Precio', campo: 'precio', editable: true, isEstado: false},
-      { titulo: 'Tapa', campo: 'tipoTapa', editable: false, isEstado: false}
+      { titulo: 'Autor', campo: 'autor', editable: false, isEstado: false},
+      { titulo: 'ISBN', campo: 'isbn', editable: false, isEstado: false},
+      { titulo: 'En venta', campo: 'enVenta', editable: false, isEstado: false}
     ];
 
     this.librosValidadores = {
@@ -184,27 +192,46 @@ export class AdminComponent implements OnInit{
 
   actualizarRegistro(item: any) {
     if (this.titulo === 'Clientes') {
-      this.clienteService.modificarCliente(item).subscribe(
-        response => console.log('Usuario actualizado', response),
-        error => console.error('Error al actualizar usuario', error)
-      );
+      this.clienteService.modificarCliente(item).subscribe({
+        next: (response) => {
+          console.log('Usuario actualizado', response);
+          this.alertaVisible = true;
+          this.tipoAlerta = 'success';
+          this.mensajeAlerta = 'Cliente actualizado con éxito.';
+      },
+        error: (error) => {
+          console.error('Error al actualizar usuario', error);
+          this.alertaVisible = true;
+          this.tipoAlerta = 'error';
+          this.mensajeAlerta = 'Error al actualizar cliente.';
+        }
+      });
     } else if(this.titulo=== 'Pedidos'){
       this.pedidoService.modificarPedido(item).subscribe({
         next: (response) => {
           console.log('Pedido actualizado', response);
           this.notificacionesService.actualizarCantidadNotificaciones();
+          this.alertaVisible = true;
+          this.tipoAlerta = 'success';
+          this.mensajeAlerta = 'Pedido actualizado con éxito.';
         },
         error: (error) => {
           console.error('Error al actualizar pedido', error);
+          this.alertaVisible = true;
+          this.tipoAlerta = 'error';
+          this.mensajeAlerta = 'Error al actualizar pedido.'
         }
       });
     } else if(this.titulo=== 'Libros') {
-      this.librosService.modifcarLibro(item).subscribe(
-        reponse => console.log('Precio del libro actualizado', reponse),
-        error => console.error('Error al actualizar precio', error)
-      );
+
     }else {
 
     }
+
+    setTimeout(() => {
+      this.alertaVisible = false;
+    }, 2000);
+
   }
+
 }

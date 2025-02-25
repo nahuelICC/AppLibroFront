@@ -6,14 +6,10 @@ import {Observable} from 'rxjs';
   providedIn: 'root'
 })
 export class LibrosService {
-  private apiUrl = '/api/libroTipo';
+  private apiUrl = '/api/libros';
   constructor(private http: HttpClient) { }
 
   getLibrosTabla(): Observable<any[]>{
-    return this.http.get<any[]>(`${this.apiUrl}/admin/libroTipoTabla`);
-  }
-
-  modifcarLibro(item:any): Observable<any>{
-    return this.http.put(`${this.apiUrl}/admin/modLibroTipo`, item);
+    return this.http.get<any[]>(`${this.apiUrl}/admin/librosTabla`);
   }
 }

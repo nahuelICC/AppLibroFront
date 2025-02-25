@@ -13,6 +13,7 @@ import { MatIcon } from '@angular/material/icon';
 import { FiltroBuscadorPipe } from '../../pipes/filtro-buscador.pipe';
 import { PedidoService } from "../../services/pedido.service";
 import { RouterLink } from '@angular/router';
+import {AlertInfoComponent} from '../../../../shared/components/alert-info/alert-info.component';
 
 @Component({
   selector: 'app-tabla',
@@ -25,7 +26,8 @@ import { RouterLink } from '@angular/router';
     NgClass,
     MatIcon,
     FiltroBuscadorPipe,
-    RouterLink
+    RouterLink,
+    AlertInfoComponent
   ],
   templateUrl: './tabla.component.html',
   styleUrls: ['./tabla.component.css']
@@ -49,8 +51,9 @@ export class TablaComponent implements OnInit, OnChanges {
   totalPages: number = 1;
   displayedPages: (number | string)[] = [];
 
-  // Instanciamos el pipe de búsqueda para usarlo en TS
   private filtroPipe: FiltroBuscadorPipe = new FiltroBuscadorPipe();
+
+
 
   constructor(private fb: FormBuilder, private pedidoService: PedidoService) {}
 
@@ -159,7 +162,8 @@ export class TablaComponent implements OnInit, OnChanges {
   editRow(index: number): void {
     if (this.editingRow !== null) return; // Evitar edición múltiple
 
-    this.originalData = { ...this.datos[index] };
+    const globalIndex = this.getGlobalIndex(index);
+    this.originalData = { ...this.datos[globalIndex] };
     const formConfig: { [key: string]: any } = {};
 
     this.columnas.forEach(col => {
@@ -246,6 +250,7 @@ export class TablaComponent implements OnInit, OnChanges {
   }
 
   // Objeto auxiliar para usar en el HTML de paginación
+
   get paginacion() {
     return {
       currentPage: this.currentPage,

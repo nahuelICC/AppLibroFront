@@ -121,7 +121,7 @@
           <ng-container *ngIf="editingRow !== getGlobalIndex(i); else editButtons">
             <!-- Botón Editar para Libros (redirige) -->
             <a *ngIf="tablaActiva === 'libros'"
-               [routerLink]="['/admin/anyadirLibro', item.idLibro]"
+               [routerLink]="['/admin/anyadirLibro', item.id]"
                class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded cursor-pointer">
               Editar
             </a>
