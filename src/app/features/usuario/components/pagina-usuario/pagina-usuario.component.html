@@ -209,7 +209,7 @@
               </p>
               <div class="flex justify-between w-full">
               <p class="text-sm md:text-base mt-1 mb-4" [style.color]="'var(--color-texto)'">
-                Estado de pedido: <b>{{ pedido.estadoNombre }}</b>
+                Estado de pedido: <b>{{ pedido.estadoNombre | nombreGenero }}</b>
               </p>
               <div class="flex flex-col items-end gap-4">
                 <mat-icon  (click)="descargarDetalles(pedido.id); $event.stopPropagation()">download</mat-icon>

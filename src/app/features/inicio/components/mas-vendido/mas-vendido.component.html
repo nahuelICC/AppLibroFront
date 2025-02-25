@@ -5,7 +5,7 @@
       class="flex-none w-64 sm:w-72 md:w-[250px] lg:w-64 flex flex-col gap-1.5 cursor-pointer transition-transform transform md:hover:scale-105 md:hover:shadow-xl rounded-2xl px-2 h-full snap-center bg-[#f4f4f4]"
       [routerLink]="['/detallelibro', book.id]"
     >
-      <div class="w-full h-48 bg-center bg-no-repeat bg-contain rounded-xl overflow-hidden">
+      <div class="w-full h-48 bg-center bg-no-repeat bg-contain rounded-xl overflow-hidden pt-4">
         <img [src]="book.portada || ''" alt="{{ book.titulo || 'Título desconocido' }}" class="w-full h-full object-contain" />
       </div>
       <div class="flex flex-col flex-1 px-1 text-center">
@@ -15,7 +15,7 @@
           </p>
         </div>
         <p class="text-[#608a8a] text-sm font-normal leading-tight line-clamp-1 mb-1">{{ book.autor || 'Autor desconocido' }}</p>
-        <p class="text-[#608a8a] text-sm font-normal leading-tight line-clamp-1 mb-1">{{ book.genero || 'Género desconocido' }}</p>
+        <p class="text-[#608a8a] text-sm font-normal leading-tight line-clamp-1 mb-1">{{ book.genero || 'Género desconocido' | nombreGenero }}</p>
       </div>
     </div>
   </div>

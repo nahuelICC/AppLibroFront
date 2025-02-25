@@ -6,6 +6,7 @@ import { CuadroProducto } from '../../../tienda/DTOs/CuadroProducto';
 import { LibroServiceService } from '../../../../core/services/libro/libro-service.service';
 import {LibroInicio} from '../../DTOs/LibroInicio';
 import {RouterLink} from '@angular/router';
+import {NombreGeneroPipe} from '../../../tienda/pipes/nombre-genero.pipe';
 
 @Component({
   selector: 'app-mas-vendido',
@@ -13,7 +14,8 @@ import {RouterLink} from '@angular/router';
     NgForOf,
     NgIf,
     AsyncPipe,
-    RouterLink
+    RouterLink,
+    NombreGeneroPipe
   ],
   templateUrl: './mas-vendido.component.html',
   standalone: true,
