@@ -158,25 +158,31 @@ export class TablaComponent implements OnInit, OnChanges {
     return estado ? estado : 'Desconocido';
   }
 
-  // Nota: se recibe el índice global (no el relativo de la página)
-  editRow(index: number): void {
-    if (this.editingRow !== null) return; // Evitar edición múltiple
+  editRow(paginatedIndex: number): void {
+    if (this.editingRow !== null) return;
 
-    const globalIndex = this.getGlobalIndex(index);
-    this.originalData = { ...this.datos[globalIndex] };
+    // Obtener el item real de los datos filtrados
+    const item = this.paginatedData[paginatedIndex];
+
+    // Buscar el índice en el array original
+    const originalIndex = this.datos.indexOf(item);
+
+    if (originalIndex === -1) return;
+
+    this.originalData = { ...this.datos[originalIndex] };
     const formConfig: { [key: string]: any } = {};
 
     this.columnas.forEach(col => {
       if (col.editable) {
         formConfig[col.campo] = [
-          this.datos[index][col.campo],
+          this.datos[originalIndex][col.campo],
           this.validadores[col.campo] || []
         ];
       }
     });
 
     this.editingForm = this.fb.group(formConfig);
-    this.editingRow = index;
+    this.editingRow = originalIndex;
   }
 
   saveRow(): void {
