@@ -11,6 +11,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { BotonComponent } from '../../../../shared/components/boton/boton.component';
 
+/**
+ * Componente para el login
+ */
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -45,6 +48,9 @@ export class LoginComponent {
     });
   }
 
+  /**
+   * Función para hacer login
+   */
   onSubmit() {
     if (this.loginForm.invalid) {
       this.errorMessage = 'Por favor, completa el formulario correctamente.';
@@ -71,6 +77,11 @@ export class LoginComponent {
     });
   }
 
+  /**
+   * Función para manejar errores del login
+   * @param error
+   * @private
+   */
   private handleError(error: HttpErrorResponse) {
     if (error.status === 401) {
       if (error.error.message === 'Tu cuenta no está activa.') {

@@ -13,6 +13,9 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 import {RouterLink} from '@angular/router';
 
+/**
+ * Componente para la tienda
+ */
 @Component({
   selector: 'app-tienda',
   imports: [FiltroComponent, CuadroProductoComponent, NgForOf, NgIf, MatIcon, BuscadorComponent, CategoriasComponent, RangoPrecioComponent, MatProgressSpinner, NgClass, BotonComponent, RouterLink],
@@ -51,6 +54,9 @@ export class TiendaComponent implements OnInit {
     this.cargaGenero();
   }
 
+  /**
+   * Carga los generos
+   */
   cargaGenero(): void{
     this.libroService.getGeneros().subscribe({
       next: (data) => this.generos = data,
@@ -58,6 +64,9 @@ export class TiendaComponent implements OnInit {
     });
   }
 
+  /**
+   * Avanza a la siguiente página
+   */
   nextPage(): void {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
@@ -70,6 +79,9 @@ export class TiendaComponent implements OnInit {
     }
   }
 
+  /**
+   * Carga los libros
+   */
   cargaLibros(): void {
     this.libroService.getLibrosTienda(this.currentPage, this.itemsPerPage, this.filters).subscribe({
       next: (response) => {
@@ -90,6 +102,10 @@ export class TiendaComponent implements OnInit {
     });
   }
 
+  /**
+   * Filtra por categoría
+   * @param numeroCategoria
+   */
   // Modifica los métodos que cambian los filtros
   onCategoria(numeroCategoria: number | null): void {
     this.libroService.resetCache();
@@ -99,6 +115,10 @@ export class TiendaComponent implements OnInit {
     this.cargaLibros();
   }
 
+  /**
+   * Filtra por búsqueda
+   * @param searchTerm
+   */
   onSearchChange(searchTerm: string): void {
     this.libroService.resetCache();
     this.allLibros = [];
@@ -107,6 +127,10 @@ export class TiendaComponent implements OnInit {
     this.cargaLibros();
   }
 
+  /**
+   * Filtra por rango de precios
+   * @param priceRange
+   */
   onPriceChange(priceRange: { min: number; max: number }): void {
     this.minValue = priceRange.min;
     this.maxValue = priceRange.max;
@@ -118,20 +142,29 @@ export class TiendaComponent implements OnInit {
     this.cargaLibros();
   }
 
-  // Actualiza el getter para usar allLibros
 
-
+  /**
+   * Obtiene los libros paginados
+   */
   get paginatedItems(): CuadroProducto[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     return this.allLibros.slice(start, start + this.itemsPerPage);
   }
 
+  /**
+   * Establece la página actual
+   * @param page
+   */
   setPage(page: number | string): void {
     if (typeof page === 'number') {
       this.currentPage = page;
       this.cargaLibros();
     }
   }
+
+  /**
+   * Retrocede a la página anterior
+   */
   previousPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
@@ -139,6 +172,9 @@ export class TiendaComponent implements OnInit {
     }
   }
 
+  /**
+   * Actualiza las páginas a mostrar en el paginador
+   */
   updateDisplayedPages() {
     const pages: (number | string)[] = [];
     const total = this.totalPages;
@@ -170,6 +206,9 @@ export class TiendaComponent implements OnInit {
     this.displayedPages = pages;
   }
 
+  /**
+   * Limpia los filtros y recarga los libros
+   */
   clearFilters() {
     this.libroService.resetCache();
     this.allLibros = [];
