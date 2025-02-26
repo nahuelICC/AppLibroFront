@@ -9,6 +9,9 @@ import { AlertConfirmarComponent } from '../../../../shared/components/alert-con
 import { MatTooltip } from '@angular/material/tooltip';
 import {AuthServiceService} from '../../../../core/services/auth-service.service';
 
+/**
+ * Componente que muestra la información de las cajas mistery
+ */
 @Component({
   selector: 'app-info-cajas',
   imports: [
@@ -56,15 +59,25 @@ export class InfoCajasComponent implements OnInit {
     });
   }
 
+  /**
+   * Selecciona una suscripción
+   * @param suscripcion
+   */
   seleccionarSuscripcion(suscripcion: SuscripcionInicio) {
     this.suscripcionSeleccionada = suscripcion;
     this.modificarSuscripcion = this.tipo === Number(suscripcion.id_tipo);
   }
 
+  /**
+   * Muestra la alerta de confirmacion de querer suscribirse
+   */
   confirmarSuscripcion() {
     this.mostrarAlerta = true;
   }
 
+  /**
+   * Confirma que los datos son correctos y redirige a la página de pago al pulsar confirmar en la alerta
+   */
   onConfirm() {
     this.mostrarAlerta = false;
     if (this.suscripcionSeleccionada) {
@@ -90,10 +103,17 @@ export class InfoCajasComponent implements OnInit {
     }
   }
 
+  /**
+   * Cierra la alerta si cancelas el confirmar suscripción
+   */
   onCancel() {
     this.mostrarAlerta = false;
   }
 
+  /**
+   * Obtiene la descripción de una caja
+   * @param descripcion
+   */
   getDescripcionParts(descripcion?: string): string[] {
     if (!descripcion) {
       return [];
@@ -102,6 +122,10 @@ export class InfoCajasComponent implements OnInit {
     return descripcion.split('.').map(part => part.trim() + '.').filter(part => part !== '.');
   }
 
+  /**
+   * Establece la etiqueta de una caja
+   * @param nombre
+   */
   getEtiqueta(nombre: string): string {
     const etiquetas: { [key: string]: string } = {
       'Estandar': 'Económico',
@@ -111,14 +135,23 @@ export class InfoCajasComponent implements OnInit {
     return etiquetas[nombre] || 'Destacado';
   }
 
+  /**
+   * Comprueba si el usuario está logueado
+   */
   isLogged(): boolean {
     return this.authService.isLogged();
   }
 
+  /**
+   * Comprueba si el usuario está suscrito
+   */
   isSuscribed(): boolean {
     return this.suscrito;
   }
 
+  /**
+   * Obtiene el tipo de suscripción
+   */
   getSubscriptionType(): number | null {
     return this.subscriptionType;
   }

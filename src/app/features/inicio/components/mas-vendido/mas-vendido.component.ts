@@ -8,6 +8,9 @@ import {LibroInicio} from '../../DTOs/LibroInicio';
 import {RouterLink} from '@angular/router';
 import {NombreGeneroPipe} from '../../../tienda/pipes/nombre-genero.pipe';
 
+/**
+ * Componente que muestra los libros más vendidos
+ */
 @Component({
   selector: 'app-mas-vendido',
   imports: [

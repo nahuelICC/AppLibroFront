@@ -5,6 +5,9 @@ import {LibroNovedad} from '../../DTOs/LibroNovedad';
 import {RouterLink} from '@angular/router';
 import {AsyncPipe, NgForOf, NgIf} from '@angular/common';
 
+/**
+ * Componente que muestra las novedades
+ */
 @Component({
   selector: 'app-novedades',
   imports: [

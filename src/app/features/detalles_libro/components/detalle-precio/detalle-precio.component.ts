@@ -7,6 +7,10 @@ import {DetallesLibroService} from '../../services/detalles-libro.service';
 import {AlertInfoComponent, AlertType} from '../../../../shared/components/alert-info/alert-info.component';
 import {CarritoService} from '../../../carrito/services/carrito.service';
 
+
+/**
+ * Componente que muestra el precio y permite añadir al carrito
+ */
 @Component({
   selector: 'app-detalle-precio',
   imports: [
@@ -47,6 +51,10 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
 
   }
 
+  /**
+   * Actualiza el precio al cambiar el tipo de tapa
+   * @param changes
+   */
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['tiposTapa'] && this.tiposTapa.length > 0) {
       this.selectedTipoTapa = this.tiposTapa[0];
@@ -54,6 +62,10 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
     }
   }
 
+  /**
+   * Actualiza la cantidad de libros
+   * @param amount
+   */
   updateQuantity(amount: number) {
     if (this.quantity + amount > 0 && this.quantity + amount <= 10) {
       this.quantity += amount;
@@ -64,6 +76,10 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
     }
   }
 
+  /**
+   * Selecciona el tipo de tapa
+   * @param tipo
+   */
   selectCover(tipo: any) {
     this.selectedTipoTapa = { ...tipo };
     console.log('Tipo de tapa seleccionado:', this.selectedTipoTapa);
@@ -72,6 +88,9 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
 
   }
 
+  /**
+   * Actualiza el precio según el tipo de tapa seleccionado
+   */
   updatePrice() {
 
     const tipoTapaActual = this.libro?.tiposTapa?.find(
@@ -83,6 +102,9 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
 
   }
 
+  /**
+   * Añade el libro al carrito
+   */
   anadirAlCarrito() {
     if (!this.libroId || !this.selectedTipoTapa) {
 

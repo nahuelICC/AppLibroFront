@@ -8,6 +8,9 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {MatIcon} from '@angular/material/icon';
 import {BotonComponent} from '../../shared/components/boton/boton.component';
 
+/**
+ * Componente que gestiona el carrito
+ */
 @Component({
   selector: 'app-carrito',
   imports: [
@@ -54,6 +57,10 @@ export class CarritoComponent implements OnInit {
     );
   }
 
+  /**
+   * Actualiza la cantidad y el precio de productos en el carrito
+   * @param event
+   */
   onQuantityUpdated(event: { id: number; cantidad: number }) {
     const { id, cantidad } = event;
     this.carritoService.updateItemQuantity(id, cantidad);
@@ -61,6 +68,9 @@ export class CarritoComponent implements OnInit {
     this.calculateTotalPrice(); // Recalcular precios tras cambiar la cantidad
   }
 
+  /**
+   * Carga el carrito desde el local storage
+   */
   loadCartFromLocalStorage() {
     const cartData = localStorage.getItem('cart');
     if (cartData) {
@@ -75,6 +85,11 @@ export class CarritoComponent implements OnInit {
     }
   }
 
+  /**
+   * Actualiza la cantidad de un producto en el carrito
+   * @param idTipo
+   * @param cantidad
+   */
   updateProductQuantity(idTipo: number, cantidad: number) {
     const productIndex = this.products.findIndex((product) => product.id_tipo === idTipo);
     if (productIndex !== -1) {
@@ -89,6 +104,9 @@ export class CarritoComponent implements OnInit {
     }
   }
 
+  /**
+   * Calcula el precio total de los productos del carrito
+   */
   calculateTotalPrice() {
     this.totalBooksPrice = 0;
 
@@ -104,6 +122,10 @@ export class CarritoComponent implements OnInit {
     this.updateShippingCost();
   }
 
+  /**
+   * Calcula el descuento a aplicar según el tipo de suscripción
+   * @private
+   */
   private calculadescuento() {
     this.discount = 0;
 
@@ -116,6 +138,9 @@ export class CarritoComponent implements OnInit {
     }
   }
 
+  /**
+   * Obtiene los detalles de los productos del carrito
+   */
   fetchProductDetails() {
     this.products = [];
     this.totalBooksPrice = 0;
@@ -143,6 +168,9 @@ export class CarritoComponent implements OnInit {
     });
   }
 
+  /**
+   * Actualiza el precio de envío
+   */
   updateShippingCost() {
     if (this.totalBooksPrice > 50 || this.totalBooksPrice === 0 || this.tipoSuscripcion !== 0) {
       this.shippingCost = 0;
@@ -154,6 +182,9 @@ export class CarritoComponent implements OnInit {
     localStorage.setItem('total', JSON.stringify(this.totalBooksPrice));
   }
 
+  /**
+   * Elimina los elementos del carrito
+   */
   clearCart() {
     this.cartItems = [];
     this.products = [];
