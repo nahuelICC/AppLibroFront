@@ -238,7 +238,7 @@ export class ChatbotComponent implements OnInit {
     }).subscribe({
       next: (response) => {
         console.log('Correo enviado correctamente', response);
-        this.messages.push({ text: 'Su email se ha enviado con éxito, le responderemos lo antes posible.', isUser: false });
+        this.messages.push({ text: 'Se ha enviado un email a soporta con su consulta, le responderemos lo antes posible.', isUser: false });
         this.isSendingEmail = false; // Reactiva el botón
         this.notificacionesService.actualizarCantidadNotificaciones();
       },
