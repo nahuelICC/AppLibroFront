@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, tap, BehaviorSubject } from 'rxjs';
 import { CuadroProducto } from '../DTOs/CuadroProducto';
 import { GeneroDTO } from '../DTOs/GeneroDTO';
+import {environment} from '../../../../environments/environment';
 
 /**
  * Servicio para los libros de la pagina principal
@@ -12,6 +13,7 @@ import { GeneroDTO } from '../DTOs/GeneroDTO';
 })
 export class LibroServiceService {
   private apiUrl = '/api/libros';
+  private baseUrl = environment.baseURL;
   private cache = new Map<string, { libros: CuadroProducto[], total: number }>();
   private loadingSubject = new BehaviorSubject<boolean>(false);
   public loading$ = this.loadingSubject.asObservable();
@@ -61,7 +63,7 @@ export class LibroServiceService {
       });
     }
 
-    return this.http.get<{ libros: CuadroProducto[], total: number }>(`${this.apiUrl}/librosTienda`, { params }).pipe(
+    return this.http.get<{ libros: CuadroProducto[], total: number }>(`${this.baseUrl}${this.apiUrl}/librosTienda`, { params }).pipe(
       tap({
         next: (response) => {
           const totalPages = Math.ceil(response.total / itemsPerPage);
@@ -94,6 +96,6 @@ export class LibroServiceService {
    * @returns
    */
   getGeneros(): Observable<GeneroDTO[]> {
-    return this.http.get<GeneroDTO[]>(`${this.apiUrl}/generos`);
+    return this.http.get<GeneroDTO[]>(`${this.baseUrl}${this.apiUrl}/generos`);
   }
 }

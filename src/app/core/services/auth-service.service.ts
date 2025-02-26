@@ -3,11 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
+import {environment} from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthServiceService {
+  private baseUrl = environment.baseURL;
   private tokenKey = 'token';
   private loggedKey = 'logged';
   private apiClienteSuscripcionUrl = '/api/ClienteSuscripcion';
@@ -59,7 +61,7 @@ export class AuthServiceService {
   }
 
   isSuscribed(): Observable<number> {
-    return this.http.get<number>(`${this.apiClienteSuscripcionUrl}/compruebaSuscripcion`).pipe(
+    return this.http.get<number>(`${this.baseUrl}${this.apiClienteSuscripcionUrl}/compruebaSuscripcion`).pipe(
       map(response => {
         localStorage.setItem('isSuscribed', response !== 0 ? 'true' : 'false');
         if (response !== 0) {

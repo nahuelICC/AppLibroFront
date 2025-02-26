@@ -31,7 +31,7 @@ import { BotonComponent } from '../../../../shared/components/boton/boton.compon
 })
 export class LoginComponent {
   loginForm: FormGroup;
-  apiUrl = '/api/login_check';
+  apiUrl = 'https://applibro.onrender.com/api/login_check';
   errorMessage: string | null = null;
   isLoading = false;
 

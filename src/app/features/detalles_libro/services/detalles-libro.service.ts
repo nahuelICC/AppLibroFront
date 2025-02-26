@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs';
+import {environment} from '../../../../environments/environment';
 
 
 /**
@@ -13,7 +14,7 @@ export class DetallesLibroService {
 
   private apiUrlResenya = '/api/resenya';
   private apiUrlCliente = '/api/clientes';
-  private apiUrlTapa= 'api/tipoTapa';
+  private baseUrl = environment.baseURL;
   private apiUrlNotificaciones = '/api/notificaciones';
 
   constructor(private http: HttpClient) { }
@@ -23,7 +24,7 @@ export class DetallesLibroService {
    * @param libroId
    */
   getMediaResenya(libroId: number): Observable<{ average_rating: number }> {
-    return this.http.get<{ average_rating: number }>(`${this.apiUrlResenya}/mediaresenya/${libroId}`);
+    return this.http.get<{ average_rating: number }>(`${this.baseUrl}${this.apiUrlResenya}/mediaresenya/${libroId}`);
   }
 
   /**
@@ -31,7 +32,7 @@ export class DetallesLibroService {
    * @param libroId
    */
   getResenyas(libroId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrlResenya}/${libroId}`);
+    return this.http.get<any[]>(`${this.baseUrl}${this.apiUrlResenya}/${libroId}`);
   }
 
   /**
@@ -40,7 +41,7 @@ export class DetallesLibroService {
    */
   addResenya(resenya: any): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.http.post(`${this.apiUrlResenya}/nuevaresenya`, resenya, { headers });
+    return this.http.post(`${this.baseUrl}${this.apiUrlResenya}/nuevaresenya`, resenya, { headers });
   }
 
   /**
@@ -48,14 +49,14 @@ export class DetallesLibroService {
    * @param id
    */
   deleteResenya(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrlResenya}/eliminar/${id}`);
+    return this.http.delete(`${this.baseUrl}${this.apiUrlResenya}/eliminar/${id}`);
   }
 
   /**
    * Obtiene el id del cliente
    */
   obtenerIdCliente(): Observable<{ id_cliente: number }> {
-    return this.http.get<{ id_cliente: number }>(`${this.apiUrlCliente}/id`);
+    return this.http.get<{ id_cliente: number }>(`${this.baseUrl}${this.apiUrlCliente}/id`);
   }
 
   /**
@@ -63,7 +64,7 @@ export class DetallesLibroService {
    * @param id
    */
   postDenuciarResenya(id: number): Observable<any> {
-    return this.http.post(`${this.apiUrlNotificaciones}/notificacionDenuncia`, {id_resenya: id});
+    return this.http.post(`${this.baseUrl}${this.apiUrlNotificaciones}/notificacionDenuncia`, {id_resenya: id});
   }
 
 

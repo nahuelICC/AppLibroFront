@@ -27,7 +27,7 @@ export class ActivacionComponent implements OnInit {
   ngOnInit() {
     const token = this.route.snapshot.paramMap.get('token');
     if (token) {
-      this.http.get<{ message: string }>(`/api/clientes/activar/${token}`)
+      this.http.get<{ message: string }>(`https://applibro.onrender.com/api/clientes/activar/${token}`)
         .subscribe(response => {
           this.message = response.message;
           this.isError = false;

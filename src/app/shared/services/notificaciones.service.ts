@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {NotificacionesDTO} from '../DTOs/NotificacionesDTO';
 import {AuthServiceService} from '../../core/services/auth-service.service';
+import {environment} from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,7 @@ import {AuthServiceService} from '../../core/services/auth-service.service';
 export class NotificacionesService {
 
   private apiUrl = '/api/notificaciones';
+  private baseUrl = environment.baseURL;
   private apiUrlCliente = '/api/clientes';
   private notificacionesCountSubject = new BehaviorSubject<number>(0);
   notificacionesCount$ = this.notificacionesCountSubject.asObservable();
@@ -17,14 +19,14 @@ export class NotificacionesService {
   constructor(private  http: HttpClient, private authService: AuthServiceService) { }
 
   getNotificacionesDeUsuario(id_usuario: number): Observable<NotificacionesDTO[]> {
-    return this.http.get<NotificacionesDTO[]>(`${this.apiUrl}/cliente/${id_usuario}`);
+    return this.http.get<NotificacionesDTO[]>(`${this.baseUrl}${this.apiUrl}/cliente/${id_usuario}`);
   }
 
   obtenerIdUsuario(): Observable<{ id_usuario: number }> {
-    return this.http.get<{ id_usuario: number }>(`${this.apiUrlCliente}/usuario/id`);
+    return this.http.get<{ id_usuario: number }>(`${this.baseUrl}${this.apiUrlCliente}/usuario/id`);
   }
   marcarTodasComoLeidas(id_usuario: number): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/marcarleidas/${id_usuario}`, {});
+    return this.http.put<void>(`${this.baseUrl}${this.apiUrl}/marcarleidas/${id_usuario}`, {});
   }
 
   actualizarCantidadNotificaciones(): void {

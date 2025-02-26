@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, Observable} from 'rxjs';
+import {environment} from '../../../../environments/environment';
 
 /**
  * Servicio que gestiona el carrito de la compra
@@ -11,6 +12,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 export class CarritoService {
 
   private apiUrl = '/api/libroTipo';
+  private baseUrl = environment.baseURL;
   private apiPedidoUrl = '/api/pedido';
   private apiClienteSuscripcionUrl = '/api/ClienteSuscripcion';
   cartItems: any[] = [];
@@ -24,7 +26,7 @@ export class CarritoService {
    * @param id
    */
   getLibroTipo(id:number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/getCarrito/${id}`);
+    return this.http.get(`${this.baseUrl}${this.apiUrl}/getCarrito/${id}`);
   }
 
   /**
@@ -34,7 +36,7 @@ export class CarritoService {
    * @param direccion
    */
   postPedido(pedido: any, total:number,direccion:string): Observable<any> {
-    return this.http.post(this.apiPedidoUrl, {total: total.toString(), direccion: direccion, pedido: pedido});
+    return this.http.post(this.baseUrl+this.apiPedidoUrl, {total: total.toString(), direccion: direccion, pedido: pedido});
   }
 
 
@@ -122,7 +124,7 @@ export class CarritoService {
    * Comprueba si el usuario tiene suscripción y el tipo que es
    */
   compruebaSuscrito(): Observable<any> {
-    return this.http.get(`${this.apiClienteSuscripcionUrl}/compruebaSuscripcion`);
+    return this.http.get(`${this.baseUrl}${this.apiClienteSuscripcionUrl}/compruebaSuscripcion`);
   }
 
 

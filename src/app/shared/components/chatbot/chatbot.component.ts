@@ -230,7 +230,7 @@ export class ChatbotComponent implements OnInit {
     const referencia = selectedOption.includes('Pedido') ? selectedOption.split(' ')[2] : 'Otros';
     const mensaje = this.userInput;
 
-    this.http.post('/api/clientes/contacto', {
+    this.http.post('https://applibro.onrender.com/api/clientes/contacto', {
       username,
       email,
       referencia,

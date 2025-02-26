@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {FormControl, ɵValue} from '@angular/forms';
+import {environment} from '../../../../environments/environment';
 
 
 /**
@@ -13,6 +14,7 @@ import {FormControl, ɵValue} from '@angular/forms';
 
 export class CambioPasswordService {
   private apiUrl = '/api/usuario';
+  private baseUrl = environment.baseURL;
 
   constructor(private http:HttpClient) { }
 
@@ -21,7 +23,7 @@ export class CambioPasswordService {
    * @param email
    */
   solicitarCambioPassword(email: ɵValue<FormControl<string | null>> | undefined) {
-    return this.http.post(`${this.apiUrl}/solicitaCambio`, { email });
+    return this.http.post(`${this.baseUrl}${this.apiUrl}/solicitaCambio`, { email });
   }
 
   /**
@@ -30,7 +32,7 @@ export class CambioPasswordService {
    */
   validaToken(token: string): Observable<{ valid: boolean }> {
     return this.http.get<{ valid: boolean }>(
-      `${this.apiUrl}/validarToken/${encodeURIComponent(token)}` // Codifica el token por seguridad
+      `${this.baseUrl}${this.apiUrl}/validarToken/${encodeURIComponent(token)}` // Codifica el token por seguridad
     );
   }
 
@@ -41,7 +43,7 @@ export class CambioPasswordService {
    * @param confirmPassword
    */
   resetPassword(token: string, password: ɵValue<FormControl<string | null>> | undefined, confirmPassword: ɵValue<FormControl<string | null>> | undefined): Observable<any> {
-    return this.http.post(`${this.apiUrl}/cambioContrasenyaToken`, { token, password, confirmPassword });
+    return this.http.post(`${this.baseUrl}${this.apiUrl}/cambioContrasenyaToken`, { token, password, confirmPassword });
   }
 
 

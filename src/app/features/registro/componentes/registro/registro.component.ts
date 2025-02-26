@@ -30,7 +30,7 @@ import { AlertType } from '../../../../shared/components/alert-info/alert-info.c
 })
 export class RegistroComponent implements OnInit {
   registroForm!: FormGroup;
-  apiUrl = '/api/clientes/registro';
+  apiUrl = 'https://applibro.onrender.com/api/clientes/registro';
   errorMessage: string | null = null;
   isLoading = false;
   currentStep = 1;
