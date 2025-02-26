@@ -13,6 +13,9 @@ import { Paginacion } from '../../DTOs/Paginacion';
 import { RatingDistribution } from '../../DTOs/RatingDistribution';
 import {NombreGeneroPipe} from '../../../tienda/pipes/nombre-genero.pipe';
 
+/**
+ * Componente que muestra los detalles de un libro
+ */
 @Component({
   selector: 'app-detalles',
   imports: [
@@ -87,6 +90,9 @@ export class DetallesComponent implements OnInit {
     }
   }
 
+  /**
+   * Verifica si el cliente ha comprado el libro y si ha dejado una reseña
+   */
   verificarCompra(): void {
     this.libroService.verificarCompra(this.libroId, this.clienteIdActual).subscribe((result) => {
       this.haComprado = result.haComprado; // Verifica si el cliente ha comprado el libro
@@ -101,6 +107,9 @@ export class DetallesComponent implements OnInit {
     });
   }
 
+  /**
+   * Obtiene las reseñas del libro
+   */
   fetchResenyas(): void {
     this.detallesLibroService.getResenyas(this.libroId).subscribe(
       (data) => {
@@ -130,6 +139,9 @@ export class DetallesComponent implements OnInit {
     );
   }
 
+  /**
+   * Calcula las estadísticas de distribución de valoraciones
+   */
   calcularEstadisticas() {
     if (!this.resenyas || this.resenyas.length === 0) {
       this.ratingDistribution = this.ratingDistribution.map(entry => new RatingDistribution(entry.stars!, 0, 0));
@@ -158,6 +170,9 @@ export class DetallesComponent implements OnInit {
     this.cdRef.detectChanges();
   }
 
+  /**
+   * Obtiene el promedio de las reseñas del libro
+   */
   fetchAverageRating(): void {
     this.detallesLibroService.getMediaResenya(this.libroId).subscribe(
       (data) => {
@@ -176,6 +191,10 @@ export class DetallesComponent implements OnInit {
       }
     );
   }
+
+  /**
+   * Conecta el apartado de la valoracion con la sección de reseñas
+   */
   scrollToReviews() {
     const reviewsSection = document.getElementById('reseñas');
     if (reviewsSection) {
@@ -183,7 +202,9 @@ export class DetallesComponent implements OnInit {
     }
   }
 
-
+  /**
+   * Permite a un cliente dejar una reseña
+   */
   submitReview() {
     this.detallesLibroService.addResenya(this.nuevaResenya).subscribe(
       response => {
@@ -212,10 +233,16 @@ export class DetallesComponent implements OnInit {
     );
   }
 
+  /**
+   * Muestra u oculta el formulario de reseñas
+   */
   toggleFormulario() {
     this.mostrarFormulario = !this.mostrarFormulario;
   }
 
+  /**
+   * Calcula el número total de páginas y actualiza las reseñas paginadas
+   */
   calculateTotalPages(): void {
     if (!this.resenyas || this.resenyas.length === 0) {
       this.paginacion.totalPages = 0;
@@ -236,6 +263,9 @@ export class DetallesComponent implements OnInit {
     this.updateDisplayedPages();
   }
 
+  /**
+   * Actualiza las reseñas paginadas
+   */
   updatePaginatedResenyas(): void {
     if (!this.resenyas || this.resenyas.length === 0) {
       this.paginatedResenyas = [];
@@ -246,6 +276,9 @@ export class DetallesComponent implements OnInit {
     this.paginatedResenyas = this.resenyas.slice(startIndex, startIndex + this.paginacion.itemsPerPage);
   }
 
+  /**
+   * Actualiza las páginas visibles en la paginación
+   */
   updateDisplayedPages(): void {
     const pages: (number | string)[] = [];
     const total = this.paginacion.totalPages;
@@ -267,6 +300,10 @@ export class DetallesComponent implements OnInit {
     this.paginacion.displayedPages = pages;
   }
 
+  /**
+   * Cambia la página actual
+   * @param page
+   */
   setPage(page: number | string) {
     if (typeof page === 'number') {
       this.paginacion.currentPage = page;
@@ -275,6 +312,9 @@ export class DetallesComponent implements OnInit {
     }
   }
 
+  /**
+   * Muestra la página anterior
+   */
   previousPage() {
     if (this.paginacion.currentPage > 1) {
       this.paginacion.currentPage--;
@@ -283,6 +323,9 @@ export class DetallesComponent implements OnInit {
     }
   }
 
+  /**
+   * Muestra la página siguiente
+   */
   nextPage() {
     if (this.paginacion.currentPage < this.paginacion.totalPages) {
       this.paginacion.currentPage++;
@@ -291,22 +334,21 @@ export class DetallesComponent implements OnInit {
     }
   }
 
+  /**
+   * Obtiene las reseñas, calcula la estadistica, actualiza la paginación y verifica la compra tras eliminar una reseña
+   * @param id
+   */
   onResenyaDeleted(id: number): void {
-    // Eliminar la reseña localmente
     this.resenyas = this.resenyas.filter(resena => resena.id !== id);
 
-    // Recargar el promedio de las reseñas
     this.fetchAverageRating();
 
-    // Recalcular las estadísticas de distribución de valoraciones
     this.calcularEstadisticas();
 
-    // Actualizar la paginación
     this.calculateTotalPages();
     this.updatePaginatedResenyas();
     this.verificarCompra();
 
-    // Forzar la actualización de la vista
     this.cdRef.detectChanges();
   }
 }

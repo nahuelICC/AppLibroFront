@@ -10,6 +10,9 @@ import { PerfilUsuarioService } from '../../usuario/services/perfil-usuario.serv
 import { AlertConfirmarComponent } from '../../../shared/components/alert-confirmar/alert-confirmar.component';
 import { AuthServiceService } from '../../../core/services/auth-service.service';
 
+/**
+ * Componente que gestiona el carrito de una suscripción
+ */
 @Component({
   selector: 'app-carrito-suscripcion',
   imports: [
@@ -63,6 +66,9 @@ export class CarritoSuscripcionComponent implements OnInit {
     });
   }
 
+  /**
+   * Confirma que los datos son correctos y redirige a la página de pago
+   */
   confirmarCompra() {
     if (!this.editarGenero) {
       if (this.generoSeleccionado && this.idTipo !== null && this.idTipo !== undefined) {
@@ -91,12 +97,18 @@ export class CarritoSuscripcionComponent implements OnInit {
     }
   }
 
-
+  /**
+   * Selecciona un género
+   * @param genero
+   */
   seleccionarGenero(genero: number) {
     this.generoSeleccionado = genero.toString();
     this.menuAbierto = false;
   }
 
+  /**
+   * Obtiene el texto del género seleccionado
+   */
   getGeneroText(): string {
     const genero = this.generos.find(g => g.numero.toString() === this.generoSeleccionado);
     return genero ? genero.nombre : '';

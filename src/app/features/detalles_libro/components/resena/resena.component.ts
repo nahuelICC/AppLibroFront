@@ -6,6 +6,9 @@ import {NgForOf, NgIf} from '@angular/common';
 import {PerfilUsuarioService} from '../../../usuario/services/perfil-usuario.service';
 import {NotificacionesService} from '../../../../shared/services/notificaciones.service';
 
+/**
+ * Componente que gestiona las reseñas
+ */
 @Component({
   selector: 'app-resena',
   templateUrl: './resena.component.html',
@@ -52,6 +55,9 @@ export class ResenaComponent implements OnInit {
 
   constructor(private detallesLibroService: DetallesLibroService, private usuarioService: PerfilUsuarioService, private notificacionesService: NotificacionesService) {}
 
+  /**
+   * Muestra el diálogo de confirmación para eliminar la reseña
+   */
   deleteResenya(): void {
     if (this.id !== undefined && this.id !== null) {
       this.detallesLibroService.deleteResenya(this.id).subscribe(
@@ -68,10 +74,9 @@ export class ResenaComponent implements OnInit {
     }
   }
 
-  cancelDelete(): void {
-    this.showConfirmDelete = false;
-  }
-
+  /**
+   * Denuncia la reseña
+   */
   denunciaResenya(): void {
     if (this.id !== undefined && this.id !== null) {
       this.detallesLibroService.postDenuciarResenya(this.id).subscribe(

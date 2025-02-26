@@ -1,6 +1,10 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {CurrencyPipe} from '@angular/common';
 
+
+/**
+ * Componente que gestiona los elementos del carrito
+ */
 @Component({
   selector: 'app-cuadro-carrito',
   imports: [
@@ -21,10 +25,17 @@ export class CuadroCarritoComponent {
 
   @Output() quantityUpdated = new EventEmitter<{ id: number; cantidad: number }>();
 
+  /**
+   * Actualiza la cantidad de producto del carrito
+   * @private
+   */
   private emitQuantityUpdate() {
-    this.quantityUpdated.emit({ id: this.id, cantidad: this.cantidad }); // ✅ Usar id
+    this.quantityUpdated.emit({ id: this.id, cantidad: this.cantidad });
   }
 
+  /**
+   * Incrementa la cantidad de producto del carrito
+   */
   incrementQuantity() {
     if (this.cantidad < 10) {
       this.cantidad++;
@@ -32,6 +43,9 @@ export class CuadroCarritoComponent {
     }
   }
 
+  /**
+   * Decrementa la cantidad de producto del carrito
+   */
   decrementQuantity() {
     if (this.cantidad > 1) {
       this.cantidad--;

@@ -8,6 +8,9 @@ import {NgForOf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {RouterLink} from '@angular/router';
 
+/**
+ * Componente que muestra la información de las cajas mistery
+ */
 @Component({
   selector: 'app-precio-cajas',
   imports: [
@@ -31,16 +34,22 @@ export class PrecioCajasComponent implements OnInit{
     });
   }
 
+  /**
+   * Obtiene la descripción de una caja
+   * @param descripcion
+   */
   getDescripcionParts(descripcion?: string): string[] {
     if (!descripcion) {
       return [];
     }
-    // Reemplazamos los saltos de línea y normalizamos los espacios
     descripcion = descripcion.replace(/\s+/g, ' ').trim();
-    // Dividimos por puntos y los dejamos al final de cada frase
     return descripcion.split('.').map(part => part.trim() + '.').filter(part => part !== '.');
   }
 
+  /**
+   * Obtiene la etiqueta de una caja
+   * @param nombre
+   */
   getEtiqueta(nombre: string): string {
     const etiquetas: { [key: string]: string } = {
       'Estandar': 'Económico',
