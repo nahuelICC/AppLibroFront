@@ -11,7 +11,7 @@ import { GeneroDTO } from '../DTOs/GeneroDTO';
   providedIn: 'root',
 })
 export class LibroServiceService {
-  private apiUrl = 'http://localhost:8000/api/libros';
+  private apiUrl = '/api/libros';
   private cache = new Map<string, { libros: CuadroProducto[], total: number }>();
   private loadingSubject = new BehaviorSubject<boolean>(false);
   public loading$ = this.loadingSubject.asObservable();
