@@ -1,11 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {NgForOf, NgIf} from '@angular/common';
+import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {LibroService} from './services/libro.service';
 import {GeneroDTO} from '../tienda/DTOs/GeneroDTO';
 import {NombreGeneroPipe} from '../tienda/pipes/nombre-genero.pipe';
 import {IdiomaDTO} from './DTO/IdiomaDTO';
 import {ActivatedRoute, Router} from '@angular/router';
+import {AlertInfoComponent, AlertType} from '../../shared/components/alert-info/alert-info.component';
 
 declare var cloudinary: any;
 
@@ -15,7 +16,9 @@ declare var cloudinary: any;
     ReactiveFormsModule,
     NgIf,
     NgForOf,
-    NombreGeneroPipe
+    NombreGeneroPipe,
+    NgClass,
+    AlertInfoComponent
   ],
   templateUrl: './anyadir-libro.component.html',
   standalone: true,
@@ -33,6 +36,11 @@ export class AnyadirLibroComponent implements OnInit{
   isEditMode: boolean = false;
   libroId: string | null = null;
   existingPortadaUrl: string | null = null;
+  enVenta: boolean = false;
+
+  alertaVisible: boolean = false;
+  tipoAlerta: AlertType = 'success';
+  mensajeAlerta: string = '';
 
   constructor(private fb: FormBuilder, private libroService: LibroService, private route: ActivatedRoute, private router: Router) {
     this.libroForm = this.fb.group({
@@ -115,6 +123,7 @@ export class AnyadirLibroComponent implements OnInit{
       this.existingPortadaUrl = libro.portada;
       this.imagenPreview = libro.portada;
       this.portadaSubida = true;
+      this.enVenta = libro.en_venta;
     });
   }
 
@@ -184,20 +193,27 @@ export class AnyadirLibroComponent implements OnInit{
       };
 
       if (this.isEditMode) {
+        formData.en_venta = this.enVenta;
         this.libroService.putLibro(this.libroId!, formData).subscribe({
           next: () => {
-            alert('Libro actualizado con éxito');
             this.router.navigate(['/admin']);
           },
-          error: () => alert('Error al actualizar el libro')
+          error: () =>{
+            this.alertaVisible = true;
+            this.tipoAlerta = 'error';
+            this.mensajeAlerta = 'Error al actualizar libro.'
+          }
         });
       } else {
         this.libroService.postLibro(formData).subscribe({
           next: () => {
-            alert('Libro guardado con éxito');
             this.router.navigate(['/admin']);
           },
-          error: () => alert('Error al guardar el libro')
+          error: () => {
+            this.alertaVisible = true;
+            this.tipoAlerta = 'error';
+            this.mensajeAlerta = 'Error al crear libro.'
+          }
         });
       }
     };
@@ -212,6 +228,8 @@ export class AnyadirLibroComponent implements OnInit{
   }
 
 
-
+  cambioEnVenta() {
+    this.enVenta = !this.enVenta;
+  }
 }
 

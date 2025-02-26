@@ -65,5 +65,11 @@
                [validadores]="librosValidadores"
                (actualizarFila)="actualizarRegistro($event)">
     </app-tabla>
+    <app-alert-info
+      [isVisible] = "alertaVisible"
+      [type]="tipoAlerta"
+      [message]="mensajeAlerta"
+    >
+    </app-alert-info>
   </main>
 </div>

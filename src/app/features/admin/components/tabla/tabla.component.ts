@@ -13,6 +13,7 @@ import { MatIcon } from '@angular/material/icon';
 import { FiltroBuscadorPipe } from '../../pipes/filtro-buscador.pipe';
 import { PedidoService } from "../../services/pedido.service";
 import { RouterLink } from '@angular/router';
+import {AlertInfoComponent} from '../../../../shared/components/alert-info/alert-info.component';
 
 @Component({
   selector: 'app-tabla',
@@ -25,7 +26,8 @@ import { RouterLink } from '@angular/router';
     NgClass,
     MatIcon,
     FiltroBuscadorPipe,
-    RouterLink
+    RouterLink,
+    AlertInfoComponent
   ],
   templateUrl: './tabla.component.html',
   styleUrls: ['./tabla.component.css']
@@ -49,8 +51,9 @@ export class TablaComponent implements OnInit, OnChanges {
   totalPages: number = 1;
   displayedPages: (number | string)[] = [];
 
-  // Instanciamos el pipe de búsqueda para usarlo en TS
   private filtroPipe: FiltroBuscadorPipe = new FiltroBuscadorPipe();
+
+
 
   constructor(private fb: FormBuilder, private pedidoService: PedidoService) {}
 
@@ -155,24 +158,31 @@ export class TablaComponent implements OnInit, OnChanges {
     return estado ? estado : 'Desconocido';
   }
 
-  // Nota: se recibe el índice global (no el relativo de la página)
-  editRow(index: number): void {
-    if (this.editingRow !== null) return; // Evitar edición múltiple
+  editRow(paginatedIndex: number): void {
+    if (this.editingRow !== null) return;
 
-    this.originalData = { ...this.datos[index] };
+    // Obtener el item real de los datos filtrados
+    const item = this.paginatedData[paginatedIndex];
+
+    // Buscar el índice en el array original
+    const originalIndex = this.datos.indexOf(item);
+
+    if (originalIndex === -1) return;
+
+    this.originalData = { ...this.datos[originalIndex] };
     const formConfig: { [key: string]: any } = {};
 
     this.columnas.forEach(col => {
       if (col.editable) {
         formConfig[col.campo] = [
-          this.datos[index][col.campo],
+          this.datos[originalIndex][col.campo],
           this.validadores[col.campo] || []
         ];
       }
     });
 
     this.editingForm = this.fb.group(formConfig);
-    this.editingRow = index;
+    this.editingRow = originalIndex;
   }
 
   saveRow(): void {
@@ -246,6 +256,7 @@ export class TablaComponent implements OnInit, OnChanges {
   }
 
   // Objeto auxiliar para usar en el HTML de paginación
+
   get paginacion() {
     return {
       currentPage: this.currentPage,

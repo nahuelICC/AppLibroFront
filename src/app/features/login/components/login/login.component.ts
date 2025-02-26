@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { BotonComponent } from '../../../../shared/components/boton/boton.component';
+import {NotificacionesService} from '../../../../shared/services/notificaciones.service';
 
 /**
  * Componente para el login
@@ -41,6 +42,7 @@ export class LoginComponent {
     private http: HttpClient,
     private router: Router,
     private snackBar: MatSnackBar,
+    private notificacionesService: NotificacionesService
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
@@ -68,6 +70,7 @@ export class LoginComponent {
         } else {
           this.router.navigate(['/main']);
         }
+        this.notificacionesService.actualizarCantidadNotificaciones();
         this.isLoading = false; // Desactiva el estado de carga
       },
       error: (error: HttpErrorResponse) => {

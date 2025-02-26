@@ -6,7 +6,6 @@
       <span class="text-gray-500 mr-2 flex">
         <mat-icon class="self-center">search</mat-icon>
       </span>
-      <!-- Al cambiar la búsqueda se reinicia la página actual -->
       <input type="text" placeholder="Buscar" [(ngModel)]="buscador" (ngModelChange)="onSearchChange()"
              class="w-full outline-none bg-transparent">
     </div>
@@ -33,14 +32,11 @@
       </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
-      <!-- Se recorre la data paginada. La variable "i" es el índice relativo en la página;
-           para obtener el índice global se usa la función getGlobalIndex(i) -->
       <tr *ngFor="let item of paginatedData; let i = index" class="hover:bg-gray-50 transition-colors">
         <td *ngFor="let col of columnas"
             class="p-3 text-sm text-gray-700 whitespace-nowrap w-[200px] min-w-[200px] max-w-[200px]">
           <div class="relative overflow-visible">
-            <!-- Modo visualización normal -->
-            <ng-container *ngIf="editingRow !== getGlobalIndex(i); else editField">
+            <ng-container *ngIf="editingRow !== datos.indexOf(item); else editField">
               <div class="truncate">
                 <ng-container *ngIf="isBoolean(item[col.campo]); else textField">
                     <span class="flex items-center">
@@ -55,7 +51,6 @@
               </div>
             </ng-container>
 
-            <!-- Modo edición -->
             <ng-template #editField>
               <ng-container *ngIf="col.editable; else nonEditable">
                 <ng-container *ngIf="isBoolean(item[col.campo]); else editTextField">
@@ -71,7 +66,6 @@
                   </label>
                 </ng-container>
 
-                <!-- Campo de texto editable -->
                 <ng-template #editTextField>
                   <div class="relative w-full">
                     <ng-container *ngIf="col.isEstado; else standardTextInput">
@@ -91,13 +85,11 @@
                              class="w-full border p-1 rounded focus:outline-none focus:border-blue-500 truncate">
                     </ng-template>
 
-                    <!-- Tooltip de error posicionado fuera del flujo normal -->
                     <div *ngIf="getFormControl(col.campo)?.invalid && getFormControl(col.campo)?.touched"
                          class="absolute left-0 -top-2 transform -translate-y-full
                                     bg-white text-red-500 text-xs px-3 py-1 border border-red-300
                                     rounded shadow-lg z-[9999] min-w-[200px]">
                       {{ getControlError(col.campo) }}
-                      <!-- Flecha del tooltip -->
                       <div class="absolute top-full left-4 w-0 h-0
                                       border-l-8 border-l-transparent
                                       border-r-8 border-r-transparent
@@ -116,19 +108,16 @@
           </div>
         </td>
 
-        <!-- Columna de acciones -->
         <td class="p-3 text-sm text-gray-700 whitespace-nowrap w-[150px] min-w-[150px] space-x-2">
-          <ng-container *ngIf="editingRow !== getGlobalIndex(i); else editButtons">
-            <!-- Botón Editar para Libros (redirige) -->
+          <ng-container *ngIf="editingRow !== datos.indexOf(item); else editButtons">
             <a *ngIf="tablaActiva === 'libros'"
-               [routerLink]="['/admin/anyadirLibro', item.idLibro]"
+               [routerLink]="['/admin/anyadirLibro', item.id]"
                class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded cursor-pointer">
               Editar
             </a>
 
-            <!-- Botón Editar normal para otras tablas -->
             <button *ngIf="tablaActiva !== 'libros'"
-                    (click)="editRow(getGlobalIndex(i))"
+                    (click)="editRow(i)"
                     class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded">
               Editar
             </button>
