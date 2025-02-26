@@ -1,3 +1,6 @@
+*{
+  font-family: "Georgia", serif;
+}
 .range-slider-container {
   position: relative;
   height: 48px;

@@ -184,7 +184,7 @@ export class AdminComponent implements OnInit{
         this.librosCargados = true;
       },
       error: (err) => {
-        console.error('Error cargando pedidos:', err);
+        console.error('Error cargando libros:', err);
         this.librosCargados = false;
       }
     });
