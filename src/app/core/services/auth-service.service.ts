@@ -74,7 +74,6 @@ export class AuthServiceService {
     if (!token) {
       return false;
     }
-    // Assuming the token contains user roles in its payload
     const payload = JSON.parse(atob(token.split('.')[1]));
     return payload.roles && payload.roles.includes('ROLE_ADMIN');
   }

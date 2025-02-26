@@ -147,7 +147,4 @@ export class DetallePrecioComponent implements OnChanges, OnInit {
     }, 2000);
   }
 
-
-
-
 }
