@@ -5,6 +5,9 @@ import {MasVendidoComponent} from '../../components/mas-vendido/mas-vendido.comp
 import {NovedadesComponent} from '../../components/novedades/novedades.component';
 import {PrecioCajasComponent} from '../../components/precio-cajas/precio-cajas.component';
 
+/**
+ * Componente para la página de inicio
+ */
 @Component({
   selector: 'app-inicio',
   imports: [
@@ -20,6 +23,9 @@ import {PrecioCajasComponent} from '../../components/precio-cajas/precio-cajas.c
 })
 export class InicioComponent {
 
+  /**
+   * Función para hacer scroll hasta la sección de suscripciones
+   */
   scrollToSection(id: string): void {
     const element = document.getElementById(id);
     if (element) {

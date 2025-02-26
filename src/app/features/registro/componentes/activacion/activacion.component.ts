@@ -4,10 +4,14 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { BotonComponent } from '../../../../shared/components/boton/boton.component';
 import {NgClass} from '@angular/common';
 
+/**
+ * Componente para la activación de la cuenta
+ */
 @Component({
   selector: 'app-activacion',
   templateUrl: './activacion.component.html',
   imports: [BotonComponent, NgClass],
+  standalone: true,
   styleUrls: ['./activacion.component.css']
 })
 export class ActivacionComponent implements OnInit {
@@ -37,6 +41,9 @@ export class ActivacionComponent implements OnInit {
     }
   }
 
+  /**
+   * Función para redirigir al login
+   */
   redirectToLogin() {
     this.router.navigate(['/login']);
   }

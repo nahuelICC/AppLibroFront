@@ -3,6 +3,9 @@ import {FormsModule} from '@angular/forms';
 import {debounceTime, distinctUntilChanged, Subject} from 'rxjs';
 import {MatIcon} from '@angular/material/icon';
 
+/**
+ * Componente para el buscador de la tienda
+ */
 @Component({
   selector: 'app-buscador',
   imports: [
@@ -25,6 +28,10 @@ export class BuscadorComponent {
     ).subscribe(query => this.searchChange.emit(query));
   }
 
+  /**
+   * Función para buscar
+   * @param query
+   */
   onSearchInput(query: string): void {
     this.searchSubject.next(query);
   }

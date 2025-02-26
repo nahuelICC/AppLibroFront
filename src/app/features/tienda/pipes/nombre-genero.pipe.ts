@@ -1,5 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
+/**
+ * Pipe para convertir un nombre de género en un formato más legible
+ */
 @Pipe({
   standalone: true,
   name: 'nombreGenero'
