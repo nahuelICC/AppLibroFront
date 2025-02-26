@@ -5,7 +5,9 @@ import {FormsModule} from '@angular/forms';
 import {NgxSliderModule} from '@angular-slider/ngx-slider';
 import {Options} from '@angular-slider/ngx-slider';
 
-
+/**
+ * Componente para el rango de precios del buscador de la tienda
+ */
 @Component({
   selector: 'app-rango-precio',
   templateUrl: './rango-precio.component.html',
@@ -21,21 +23,34 @@ export class RangoPrecioComponent {
   private _minValue: number = 0;
   private _maxValue: number = 100;
 
+  /**
+   * Valor mínimo del rango
+   * @param val
+   */
   @Input()
   set minValue(val: number) {
     this._minValue = val;
-    // Si es necesario, puedes agregar lógica para reiniciar el slider aquí
-    // Por ejemplo, actualizar alguna variable interna o llamar a una función de reinicialización
   }
+
+  /**
+   * Obtiene el valor mínimo del rango
+   */
   get minValue(): number {
     return this._minValue;
   }
 
+  /**
+   * Valor máximo del rango
+   * @param val
+   */
   @Input()
   set maxValue(val: number) {
     this._maxValue = val;
-    // Lógica similar para maxValue
   }
+
+  /**
+   * Obtiene el valor máximo del rango
+   */
   get maxValue(): number {
     return this._maxValue;
   }
@@ -48,6 +63,9 @@ export class RangoPrecioComponent {
     animate: false,
   };
 
+  /**
+   * Función para emitir el cambio de precio
+   */
   onUserChangeEnd(): void {
     this.priceChange.emit({
       min: this.minValue,

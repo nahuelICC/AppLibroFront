@@ -3,6 +3,9 @@ import {CurrencyPipe, NgForOf, NgIf, NgOptimizedImage} from '@angular/common';
 import {SplitPricePipe} from '../../split-decimals.pipe';
 import {NombreGeneroPipe} from '../../pipes/nombre-genero.pipe';
 
+/**
+ * Componente para el cuadro de producto de la tienda
+ */
 @Component({
   selector: 'app-cuadro-producto',
   imports: [

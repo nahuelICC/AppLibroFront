@@ -5,6 +5,9 @@ import {FormsModule} from '@angular/forms';
 import {CategoriasComponent} from '../categorias/categorias.component';
 import {BuscadorComponent} from '../buscador/buscador.component';
 
+/**
+ * Componente para el filtro de la tienda
+ */
 @Component({
   selector: 'app-filtro',
   imports: [
@@ -20,7 +23,6 @@ import {BuscadorComponent} from '../buscador/buscador.component';
 export class FiltroComponent implements OnInit{
   @Output() filtersChanged = new EventEmitter<any>();
   searchText: string = '';
-
   private searchSubject = new Subject<string>();
   ngOnInit() {
     this.searchSubject.pipe(
@@ -29,16 +31,26 @@ export class FiltroComponent implements OnInit{
     ).subscribe(query => this.onSearch(query));
   }
 
+  /**
+   * Función para buscar
+   * @param query
+   */
   onSearchInput(query: string): void {
     this.searchSubject.next(query);
   }
 
-  // Ejemplo: Filtro por categoría
+  /**
+   * Función para filtrar por rango de precios
+   * @param category
+   */
   onCategorySelected(category: string): void {
     this.filtersChanged.emit({ category });
   }
 
-  // Ejemplo: Filtro por búsqueda
+  /**
+   * Función para buscar
+   * @param query
+   */
   onSearch(query: string): void {
     this.filtersChanged.emit({ q: query });
   }

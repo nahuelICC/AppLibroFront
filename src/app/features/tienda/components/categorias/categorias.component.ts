@@ -4,6 +4,9 @@ import {NgForOf} from '@angular/common';
 import {NombreGeneroPipe} from '../../pipes/nombre-genero.pipe';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 
+/**
+ * Componente para las categorías (generos)
+ */
 @Component({
   selector: 'app-categorias',
   imports: [
@@ -21,6 +24,10 @@ export class CategoriasComponent {
   @Input() categoriaSeleccionada: number | null = null;
 
 
+  /**
+   * Función para seleccionar una categoría
+   * @param numero
+   */
   onCategoria(numero: number): void {
     this.categorySelected.emit(numero === this.categoriaSeleccionada ? null : numero);
   }

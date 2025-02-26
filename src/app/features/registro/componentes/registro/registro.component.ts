@@ -10,6 +10,9 @@ import { AlertConfirmarComponent } from '../../../../shared/components/alert-con
 import { BotonComponent } from '../../../../shared/components/boton/boton.component';
 import { AlertType } from '../../../../shared/components/alert-info/alert-info.component';
 
+/**
+ * Componente para el registro
+ */
 @Component({
   selector: 'app-registro',
   templateUrl: './registro.component.html',
@@ -61,11 +64,19 @@ export class RegistroComponent implements OnInit {
     }, { validator: this.passwordMatchValidator });
   }
 
+  /**
+   * Validador personalizado para comparar las contraseñas
+   * @param form
+   */
   passwordMatchValidator(form: FormGroup) {
     return form.get('password')?.value === form.get('confirmPassword')?.value
       ? null : { mismatch: true };
   }
 
+  /**
+   * Verifica si el formulario es válido en el paso actual
+   * @param step
+   */
   isStepValid(step: number): boolean {
     if (step === 1) {
       return (this.registroForm.get('nombre')?.valid ?? false) &&
@@ -85,6 +96,9 @@ export class RegistroComponent implements OnInit {
     return false;
   }
 
+  /**
+   * Avanza al siguiente paso si el formulario es válido
+   */
   nextStep() {
     if (this.isStepValid(this.currentStep)) {
       this.errorMessage = null; // Limpia el mensaje de error
@@ -93,6 +107,9 @@ export class RegistroComponent implements OnInit {
     }
   }
 
+  /**
+   * Retrocede al paso anterior
+   */
   prevStep() {
     if (this.currentStep > 1) {
       this.errorMessage = null; // Limpia el mensaje de error
@@ -101,6 +118,9 @@ export class RegistroComponent implements OnInit {
     }
   }
 
+  /**
+   * Envía el formulario de registro
+   */
   onSubmit() {
     if (this.isLoading) {
       return; // Evita múltiples solicitudes simultáneas
@@ -151,6 +171,11 @@ export class RegistroComponent implements OnInit {
     });
   }
 
+  /**
+   * Maneja los errores de la solicitud HTTP
+   * @param error
+   * @private
+   */
   private handleError(error: HttpErrorResponse) {
     console.log('Error en el servidor:', error);
 
@@ -163,11 +188,20 @@ export class RegistroComponent implements OnInit {
     }
   }
 
+  /**
+   * Muestra una alerta con un mensaje
+   * @param message
+   * @param type
+   * @private
+   */
   private showAlert(message: string, type: AlertType) {
     this.alertMessage = message;
     this.showAlertConfirmar = true;
   }
 
+  /**
+   * Navega a la página de inicio al confirmar la alerta
+   */
   onConfirm() {
     this.showAlertConfirmar = false;
     if (this.isRegistrationSuccessful) {
@@ -175,6 +209,9 @@ export class RegistroComponent implements OnInit {
     }
   }
 
+  /**
+   * Cierra la alerta al cancelar
+   */
   onCancel() {
     this.showAlertConfirmar = false;
   }
