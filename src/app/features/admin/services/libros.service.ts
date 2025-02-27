@@ -7,15 +7,11 @@ import {environment} from '../../../../environments/environment';
   providedIn: 'root'
 })
 export class LibrosService {
-  private apiUrl = '/api/libroTipo';
   private baseUrl = environment.baseURL;
+  private apiUrl = '/api/libros';
   constructor(private http: HttpClient) { }
 
   getLibrosTabla(): Observable<any[]>{
-    return this.http.get<any[]>(`${this.baseUrl}${this.apiUrl}/admin/libroTipoTabla`);
-  }
-
-  modifcarLibro(item:any): Observable<any>{
-    return this.http.put(`${this.baseUrl}${this.apiUrl}/admin/modLibroTipo`, item);
+    return this.http.get<any[]>(`${this.baseUrl}${this.apiUrl}/admin/librosTabla`);
   }
 }
