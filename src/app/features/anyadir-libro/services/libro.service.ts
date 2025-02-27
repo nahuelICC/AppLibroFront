@@ -29,6 +29,6 @@ export class LibroService {
   }
 
   putLibro(id: string, data: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/admin/actualizarLibro/${id}`, data);
+    return this.http.put(`${this.baseUrl}${this.apiUrl}/admin/actualizarLibro/${id}`, data);
   }
 }
