@@ -144,7 +144,9 @@ export class PasarelaPagoComponent implements OnInit {
   // Método seleccionado
   selectedPaymentMethod: string | null = null;
 
-  // Función para avanzar al siguiente paso
+  /**
+  * Método para avanzar al siguiente paso
+   */
   nextStep() {
     if (!this.isCurrentStepValid()) return;
 
@@ -154,24 +156,33 @@ export class PasarelaPagoComponent implements OnInit {
     }
   }
 
-  // Función para retroceder al paso anterior
+  /**
+  * Método para retroceder al paso anterior
+   */
   prevStep() {
     if (this.currentStep > 1) {
       this.currentStep--;
     }
   }
 
-  // Función para guardar los datos del formulario
+  /**
+  * Método para guardar los datos de un paso
+   */
   saveData(step: keyof typeof this.formData, value: any) {
     this.formData[step] = value;
   }
 
-  // Función para seleccionar un método de pago
+  /**
+  * Método para seleccionar el método de pago
+   */
   selectPaymentMethod(method: string) {
     this.selectedPaymentMethod = method; // Guarda el método seleccionado
     this.nextStep(); // Avanza al siguiente paso
   }
 
+  /**
+  * Método para cargar el carrito desde localStorage
+   */
   loadCartFromLocalStorage() {
     const cartData = localStorage.getItem('cart');
     if (cartData) {
@@ -185,6 +196,9 @@ export class PasarelaPagoComponent implements OnInit {
     }
   }
 
+  /**
+  * Método para enviar el pedido al backend
+   */
   sendOrderToBackend() {
     this.isLoading = true;
     if (this.cartItems.length === 0) {
@@ -217,6 +231,9 @@ export class PasarelaPagoComponent implements OnInit {
     });
   }
 
+  /**
+  * Método para limpiar el carrito
+   */
   clearCart() {
     this.cartItems = [];
     this.carritoService.clearCart();
@@ -260,6 +277,9 @@ export class PasarelaPagoComponent implements OnInit {
     }
   }
 
+  /**
+  * Método para finalizar la compra
+   */
   onFinalizar() {
     if (this.esSuscripcion) {
       // Si es suscripción, llamamos al servicio para crear la suscripción
@@ -270,6 +290,9 @@ export class PasarelaPagoComponent implements OnInit {
     }
   }
 
+  /**
+  * Método para crear la suscripción
+   */
   crear() {
     this.isLoading = true;
     if (this.genero && this.idTipo) {
@@ -334,6 +357,9 @@ export class PasarelaPagoComponent implements OnInit {
     this.showAlertConfirmar = false;
   }
 
+  /**
+  * Método para formatear el número de tarjeta
+   */
   formatCardNumber() {
 
     this.formData.cardNumber = this.formData.cardNumber
@@ -344,7 +370,9 @@ export class PasarelaPagoComponent implements OnInit {
   }
 
 
-// Función para formatear fecha de expiración
+  /**
+  * Método para validar el número de tarjeta
+   */
   formatExpiryDate(event: Event) {
     const input = event.target as HTMLInputElement;
     let value = input.value.replace(/\D/g, '');

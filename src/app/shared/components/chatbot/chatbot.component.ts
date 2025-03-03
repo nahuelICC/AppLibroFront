@@ -49,7 +49,9 @@ export class ChatbotComponent implements OnInit {
       }
     });
   }
-
+  /**
+  * Cargar datos del cliente
+   */
   cargarDatosCliente() {
     this.perfilUsuarioService.getDatosCliente().subscribe({
       next: (data) => {
@@ -60,14 +62,20 @@ export class ChatbotComponent implements OnInit {
     });
   }
 
+  /**
+  * Alternar visibilidad del chat
+   */
   toggleChat() {
     this.isChatOpen = !this.isChatOpen;
     if (this.isChatOpen && this.messages.length === 0) {
-      this.messages.push({ text: '¿En qué puedo ayudarte hoy?', isUser: false });
+      this.messages.push({ text: '¿En qué puedo ayudarte hoy? Selecciona las preguntas por defecto o escribe "pedido","suscripción" o "soporte" ', isUser: false });
     }
     this.scrollToBottom();
   }
 
+  /**
+  * Método para enviar un mensaje
+   */
   sendMessage() {
     if (this.userInput.trim() === '') return;
 
@@ -86,6 +94,9 @@ export class ChatbotComponent implements OnInit {
     }
   }
 
+  /**
+  * Método para manejar el click de un botón
+   */
   handleButtonClick(action: string) {
     this.messages.push({ text: action, isUser: true });
     const response = this.getResponse(action);
@@ -93,6 +104,9 @@ export class ChatbotComponent implements OnInit {
     this.scrollToBottom();
   }
 
+  /**
+  * Obtener respuesta del chatbot
+   */
   getResponse(userInput: string): { text: string, isUser: boolean, buttons?: { text: string, action: string }[] } {
     let lowerInput = userInput.toLowerCase();
 
@@ -219,10 +233,13 @@ export class ChatbotComponent implements OnInit {
     }
   }
 
+  /**
+  * Método para enviar un email a soporte
+   */
   sendSupportEmail() {
     if (!this.userInput.trim()) return;
 
-    this.isSendingEmail = true; // Desactiva el botón y cambia el texto
+    this.isSendingEmail = true;
 
     const selectedOption = this.messages[this.messages.length - 2]?.text || 'Otros';
     const username = this.datosCliente?.username || 'Desconocido';
@@ -239,19 +256,23 @@ export class ChatbotComponent implements OnInit {
       next: (response) => {
         console.log('Correo enviado correctamente', response);
         this.messages.push({ text: 'Se ha enviado un email a soporta con su consulta, le responderemos lo antes posible.', isUser: false });
-        this.isSendingEmail = false; // Reactiva el botón
+        this.isSendingEmail = false;
         this.notificacionesService.actualizarCantidadNotificaciones();
       },
       error: (err) => {
         console.error('Error enviando correo:', err);
         this.messages.push({ text: 'Hubo un error al enviar su email. Por favor, inténtelo de nuevo más tarde.', isUser: false });
-        this.isSendingEmail = false; // Reactiva el botón aunque haya error
+        this.isSendingEmail = false;
       }
     });
 
-    this.userInput = ''; // Limpiar campo de entrada
+    this.userInput = '';
   }
 
+
+  /**
+  * Limpiar chat
+   */
   clearChat() {
     this.messages = [{ text: '¿En qué puedo ayudarte hoy?', isUser: false }];
     this.selectedQuestion = '';
@@ -260,6 +281,9 @@ export class ChatbotComponent implements OnInit {
     this.scrollToBottom();
   }
 
+  /**
+  * Seleccionar pregunta predefinida
+   */
   selectQuestion() {
     if (this.selectedQuestion) {
       this.userInput = this.selectedQuestion;
@@ -268,6 +292,10 @@ export class ChatbotComponent implements OnInit {
     }
   }
 
+
+  /**
+  * Método para hacer scroll al final
+   */
   scrollToBottom() {
     setTimeout(() => {
       try {

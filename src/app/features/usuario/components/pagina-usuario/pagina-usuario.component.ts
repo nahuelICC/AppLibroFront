@@ -76,24 +76,36 @@ export class PaginaUsuarioComponent implements OnInit {
     this.cargarDatosCliente();
   }
 
+  /**
+    * Devuelve los pedidos que se mostrarán en la página actual.
+   */
   get pedidosMostrados() {
     return this.datosCliente.pedidos.slice(0, this.currentPage * this.itemsPerPage);
   }
-
+  /**
+    * Devuelve el número total de páginas que se mostrarán en la paginación.
+   */
   get totalPaginas(): number {
     return Math.ceil(this.datosCliente.pedidos.length / this.itemsPerPage);
   }
-
+  /**
+    * Devuelve si se puede cargar la página anterior.
+   */
   cargarMenosPedidos() {
     if (this.currentPage > 1) {
       this.currentPage--;
     }
   }
-
+  /**
+    * Devuelve si se puede cargar la página siguiente.
+   */
   cargarMasPedidos() {
     this.currentPage++;
   }
 
+  /**
+    * Carga los datos del cliente.
+   */
   private cargarDatosCliente(): void {
     this.perfilUsuarioService.getDatosCliente().subscribe({
       next: (data) => {
@@ -114,7 +126,10 @@ export class PaginaUsuarioComponent implements OnInit {
       error: (err) => console.error('Error cargando datos:', err)
     });
   }
-
+  /**
+    * Muestra u oculta los detalles de un pedido.
+    * @param pedido El pedido cuyos detalles se mostrarán u ocultarán.
+   */
   toggleDropdown(pedido: any): void {
     const pedidoId = pedido.id;
 
@@ -125,7 +140,10 @@ export class PaginaUsuarioComponent implements OnInit {
 
     this.pedidosAbiertos[pedidoId] = !this.pedidosAbiertos[pedidoId];
   }
-
+  /**
+    * Carga los detalles de un pedido.
+    * @param pedidoId El identificador del pedido cuyos detalles se cargarán.
+   */
   private cargarDetallesPedido(pedidoId: number): void {
     this.perfilUsuarioService.getDetallesPedido(pedidoId).subscribe({
       next: (detalles) => {
@@ -138,7 +156,10 @@ export class PaginaUsuarioComponent implements OnInit {
       error: (err) => console.error('Error cargando detalles:', err)
     });
   }
-
+  /*
+    * Descarga los detalles de un pedido.
+    * @param pedidoId El identificador del pedido cuyos detalles se descargarán.
+   */
   descargarDetalles(pedidoId: number): void {
     this.perfilUsuarioService.getDetallesPedido(pedidoId).subscribe({
       next: (detalles) => {
@@ -154,7 +175,12 @@ export class PaginaUsuarioComponent implements OnInit {
       error: (err) => console.error('Error al descargar detalles:', err)
     });
   }
-
+  /*
+    * Genera un PDF con los detalles de un pedido.
+    * @param detalles Los detalles del pedido.
+    * @param pedido El pedido.
+    * @param datosCliente Los datos del cliente.
+   */
   generarPDF(detalles: any, pedido: any, datosCliente: any): void {
     const div = document.createElement('div');
     let htmlContent = '';
@@ -374,6 +400,9 @@ export class PaginaUsuarioComponent implements OnInit {
     }, 0);
   }
 
+  /**
+    * Muestra u oculta el formulario de edición de perfil.
+   */
   toggleEditarPerfil() {
     if (this.editandoPerfil) {
       this.guardarCambios();
@@ -383,6 +412,9 @@ export class PaginaUsuarioComponent implements OnInit {
     this.editandoPerfil = !this.editandoPerfil;
   }
 
+  /**
+    * Guarda los cambios realizados en el perfil del usuario.
+   */
   guardarCambios() {
     this.datosEdicion.nombre = this.datosCliente.nombre;
     this.datosEdicion.apellido = this.datosCliente.apellido;
@@ -417,9 +449,11 @@ export class PaginaUsuarioComponent implements OnInit {
     }, 5000);
   }
 
+  /**
+    * Muestra u oculta el formulario de edición de dirección.
+   */
   toggleEditarDireccion() {
     if (this.editandoDireccion) {
-      // Verifica que todos los campos estén completos
       if (this.direccionPartes.some(part => part === "")) {
         console.log('Todos los campos son obligatorios');
         return;
@@ -451,14 +485,18 @@ export class PaginaUsuarioComponent implements OnInit {
     }
     this.editandoDireccion = !this.editandoDireccion;
   }
-
+  /**
+    * Muestra u oculta el formulario de edición de género.
+   */
   toggleCambioContrasena() {
     this.mostrandoCambioContrasena = !this.mostrandoCambioContrasena;
     if (!this.mostrandoCambioContrasena) {
       this.cambioContrasenaForm.reset();
     }
   }
-
+  /**
+    * Muestra u oculta el formulario de edición de género.
+   */
   enviarCambioContrasena() {
     if (this.cambioContrasenaForm.invalid) return;
 
@@ -483,14 +521,13 @@ export class PaginaUsuarioComponent implements OnInit {
         this.alertMessage = 'Error al cambiar la contraseña';
         this.alertType = 'warning';
         this.isAlertVisible = true;
-        // Opcional: mantener el formulario abierto en caso de error
       }
 
     });
     setTimeout(() => {
       this.zone.run(() => {
         this.isAlertVisible = false;
-        this.cdRef.detectChanges(); // Asegura que Angular detecte el cambio
+        this.cdRef.detectChanges(); // Para asegurar que Angular detecte el cambio
       });
     }, 5000);
   }
@@ -498,7 +535,9 @@ export class PaginaUsuarioComponent implements OnInit {
   get nuevaContrasena() {
     return this.cambioContrasenaForm.get('nueva');
   }
-
+  /**
+    * Muestra u oculta el formulario de edición de la suscripción.
+   */
   editarEstadoSuscripcion() {
     if (this.estadoSuscripcion) {
       this.perfilUsuarioService.putEditarEstado(this.estadoSuscripcion).subscribe({
@@ -550,7 +589,9 @@ export class PaginaUsuarioComponent implements OnInit {
     }, 5000);
 
   }
-
+  /**
+    * Muestra u oculta el formulario de edición de género.
+   */
   cambiarGenero() {
     let genero = Number(this.generoSeleccionado) + 1;
     this.perfilUsuarioService.putEditarGenero(genero).subscribe({
@@ -575,7 +616,9 @@ export class PaginaUsuarioComponent implements OnInit {
       });
     }, 5000);
   }
-
+  /**
+    *Navega a la página de suscripción para gestionar el cambio.
+   */
   cambiarSuscripcion() {
     if (this.renovadoTipo !== ""){
       this.router.navigate(['/infocajas', this.renovadoTipo]).then(r => {
@@ -592,7 +635,10 @@ export class PaginaUsuarioComponent implements OnInit {
   showConfirmCancelPedido(pedidoId: number): void {
     this.showConfirmCancelPedidoId = pedidoId;
   }
-
+  /**
+    * Cancela un pedido.
+    * @param pedidoId El identificador del pedido a cancelar.
+   */
   cancelarPedido(pedidoId: number): void {
     this.perfilUsuarioService.cancelarPedido(pedidoId).subscribe({
       next: (response) => {

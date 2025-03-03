@@ -16,13 +16,22 @@ export class NotificacionesService {
 
   constructor(private  http: HttpClient, private authService: AuthServiceService) { }
 
+  /**
+  * Obtener notificaciones de un usuario
+   */
   getNotificacionesDeUsuario(id_usuario: number): Observable<NotificacionesDTO[]> {
     return this.http.get<NotificacionesDTO[]>(`${this.apiUrl}/cliente/${id_usuario}`);
   }
 
+  /*
+  * obtener id de usuario
+   */
   obtenerIdUsuario(): Observable<{ id_usuario: number }> {
     return this.http.get<{ id_usuario: number }>(`${this.apiUrlCliente}/usuario/id`);
   }
+  /*
+  * Marcar todas las notificaciones como leídas
+   */
   marcarTodasComoLeidas(id_usuario: number): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/marcarleidas/${id_usuario}`, {});
   }

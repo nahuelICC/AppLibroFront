@@ -23,12 +23,17 @@ export class AlertConfirmarComponent {
   @Output() confirm: EventEmitter<void> = new EventEmitter<void>();
   @Output() cancel: EventEmitter<void> = new EventEmitter<void>();
 
-  // Emitir evento de confirmación
+
+  /**
+  * Emitir evento de confirmación
+   */
   onConfirm(): void {
     this.confirm.emit();
   }
 
-  // Emitir evento de cancelación
+  /**
+  * Emitir evento de cancelación
+   */
   onCancel(): void {
     this.cancel.emit();
   }

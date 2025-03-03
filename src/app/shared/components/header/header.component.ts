@@ -37,8 +37,9 @@ export class HeaderComponent implements OnInit, OnDestroy{
   admin: boolean = false;
 
 
+
+
   ngOnInit(): void {
-    // Suscribirse al contador del carrito
     this.cartSubscription = this.carritoService.cartItemCount$.subscribe((count) => {
       this.cantidadCarrito = count;
     });
@@ -57,6 +58,9 @@ export class HeaderComponent implements OnInit, OnDestroy{
   }
 
 
+  /**
+  * Abrir o cerrar menú móvil
+   */
   openNotifications(event: MouseEvent): void {
     event.stopPropagation();
     event.preventDefault();
@@ -111,9 +115,11 @@ export class HeaderComponent implements OnInit, OnDestroy{
     }
   }
 
+  /**
+  * Cerrar sesión
+   */
   logout(): void {
     this.authService.logout();
-    // Redirect to main page after logout
     window.location.href = '/main';
   }
 
