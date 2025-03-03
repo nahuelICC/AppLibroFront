@@ -14,10 +14,17 @@ export class PasarelaPagoService {
 
   constructor(private  http: HttpClient) { }
 
+
+  /**
+   * Obtener la dirección y el teléfono del cliente
+   */
   getDireccionTelefono(): Observable<any> {
     return this.http.get(`${this.baseUrl}${this.apiUrl}/getDataDireccion`);
   }
 
+  /**
+   * crear una nueva suscripción
+   */
   crearSuscripcion(idCliente: number, tipoSuscripcion: number, data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}${this.apiUrlSuscripcion}/nueva/${idCliente}/${tipoSuscripcion}`, data);
   }

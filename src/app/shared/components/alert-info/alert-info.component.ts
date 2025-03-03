@@ -24,6 +24,9 @@ export class AlertInfoComponent implements OnInit, OnChanges {
     this.autoCloseAlert();
   }
 
+  /**
+  * Detectar cambios en las propiedades de entrada
+   */
   ngOnChanges(changes: SimpleChanges): void {
     console.log('Cambios en AlertInfoComponent:', changes);
     if (changes['isVisible'] && changes['isVisible'].currentValue) {
@@ -31,6 +34,9 @@ export class AlertInfoComponent implements OnInit, OnChanges {
     }
   }
 
+  /**
+  * Cerrar alerta
+   */
   autoCloseAlert() {
     if (this.isVisible) {
       setTimeout(() => {

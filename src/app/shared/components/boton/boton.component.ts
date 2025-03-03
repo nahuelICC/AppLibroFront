@@ -16,6 +16,11 @@ export class BotonComponent {
   @Input() label: string = 'Button';
   @Input() color: string = '#078080';
 
+
+  /**
+  *Metodo para obtener la clase de tamaño
+   */
+
   getSizeClass(): string {
     switch (this.size) {
       case 'small':

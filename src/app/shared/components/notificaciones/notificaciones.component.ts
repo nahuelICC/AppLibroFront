@@ -42,6 +42,9 @@ export class NotificacionesComponent implements OnInit {
     });
   }
 
+  /**
+  * Cargar notificaciones de usuario
+   */
   cargarNotificaciones(id_usuario: number) {
     this.notificacionesService.getNotificacionesDeUsuario(id_usuario).subscribe({
       next: (notifs: NotificacionesDTO[]) => {
@@ -63,7 +66,9 @@ export class NotificacionesComponent implements OnInit {
     });
   }
 
-
+  /**
+   * Marcar todas las notificaciones como leídas
+   */
   marcarNotificacionesComoLeidas() {
     if (this.notificacionesNoLeidas.length > 0) {
       this.notificacionesService.marcarTodasComoLeidas(this.idUsuario).subscribe({
@@ -84,7 +89,9 @@ export class NotificacionesComponent implements OnInit {
     }
   }
 
-
+  /**
+   * Cerrar el diálogo
+   */
   cerrarDialogo() {
     this.dialogRef.close();
   }
