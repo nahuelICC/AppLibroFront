@@ -7,6 +7,9 @@ import {NgIf} from '@angular/common';
 import {AlertConfirmarComponent} from "../../../shared/components/alert-confirmar/alert-confirmar.component";
 import {AlertInfoComponent, AlertType} from "../../../shared/components/alert-info/alert-info.component";
 
+/**
+ * Componente que muestra el formulario para cambiar la contraseña
+ */
 @Component({
   selector: 'app-cambio-password',
   imports: [
@@ -32,6 +35,9 @@ export class CambioPasswordComponent {
   });
   constructor(private router: Router, private cambioPasswordService:CambioPasswordService) { }
 
+  /**
+   * Método que se ejecuta al enviar el formulario
+   */
   onSubmit() {
     this.cambioPasswordService.solicitarCambioPassword(this.form.value.email).subscribe({
       next: () => this.showAlertConfirmar = true,
@@ -42,6 +48,9 @@ export class CambioPasswordComponent {
     });
   }
 
+  /**
+   * Método que se ejecuta al confirmar la alerta
+   */
   onConfirm() {
     this.showAlertConfirmar = false;
     this.router.navigate(['/login']);

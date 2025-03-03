@@ -10,6 +10,9 @@ import {AlertInfoComponent, AlertType} from '../../shared/components/alert-info/
 
 declare var cloudinary: any;
 
+/**
+ * Componente que muestra el formulario para añadir un libro
+ */
 @Component({
   selector: 'app-anyadir-libro',
   imports: [
@@ -76,6 +79,9 @@ export class AnyadirLibroComponent implements OnInit{
     });
   }
 
+  /**
+   * Inicializa el componente
+   */
   ngOnInit(): void {
     this.libroId = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.libroId;
@@ -102,6 +108,9 @@ export class AnyadirLibroComponent implements OnInit{
     })
   }
 
+  /**
+   * Carga los datos de un libro existente
+   */
   cargarLibroExistente(): void {
     this.libroService.getLibroById(this.libroId!).subscribe(libro => {
       this.libroForm.patchValue({
@@ -128,16 +137,26 @@ export class AnyadirLibroComponent implements OnInit{
   }
 
 
-
+  /**
+   * Comprueba si un campo es inválido
+   * @param campo
+   */
   campoInvalido(campo: string) {
     return this.libroForm.get(campo)?.invalid && this.libroForm.get(campo)?.touched;
   }
 
+  /**
+   * Comprueba si un campo es válido
+   * @param control
+   */
   validarFecha(control: any) {
     return new Date(control.value) > new Date() ? { fechaInvalida: true } : null;
   }
 
-
+  /**
+   * Sube una imagen a Cloudinary
+   * @param file
+   */
   uploadImageToCloudinary(file: File): Promise<string> {
     const formData = new FormData();
     formData.append('file', file);
@@ -162,6 +181,10 @@ export class AnyadirLibroComponent implements OnInit{
     });
   }
 
+  /**
+   * Selecciona un archivo
+   * @param event
+   */
   onFileSelect(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -177,6 +200,10 @@ export class AnyadirLibroComponent implements OnInit{
     }
   }
 
+  /**
+   * Envía el formulario
+   * @param event
+   */
   enviarFormulario(event: Event): void {
     event.preventDefault();
     if (this.libroForm.invalid || (!this.portadaSubida && !this.isEditMode)) {
@@ -227,7 +254,9 @@ export class AnyadirLibroComponent implements OnInit{
     }
   }
 
-
+  /**
+   * Cambia el estado de enVenta
+   */
   cambioEnVenta() {
     this.enVenta = !this.enVenta;
   }

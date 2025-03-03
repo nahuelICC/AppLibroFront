@@ -14,6 +14,9 @@ import {MatIcon} from '@angular/material/icon';
 import {NotificacionesService} from '../../shared/services/notificaciones.service';
 import {AlertInfoComponent, AlertType} from '../../shared/components/alert-info/alert-info.component';
 
+/**
+ * Componente que muestra la vista de administrador
+ */
 @Component({
   selector: 'app-admin',
   imports: [
@@ -63,6 +66,9 @@ export class AdminComponent implements OnInit{
               private notificacionesService: NotificacionesService) {
   }
 
+  /**
+   * Carga los clientes
+   */
   ngOnInit(): void {
     this.cargarClientes();
     this.breakpointObserver.observe([
@@ -74,10 +80,18 @@ export class AdminComponent implements OnInit{
     });
   }
 
+  /**
+   * Muestra u oculta el menú
+   */
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
   }
 
+  /**
+   * Muestra la tabla seleccionada
+   * @param tablaId
+   * @param btnActual
+   */
   muestraTabla(tablaId: string, btnActual: EventTarget | null): void {
     this.idTablaActiva = tablaId;
 
@@ -97,6 +111,11 @@ export class AdminComponent implements OnInit{
     this.estiloBotones(btnActual);
   }
 
+  /**
+   * Estilo de los botones
+   * @param btnActual
+   * @private
+   */
   private estiloBotones(btnActual: EventTarget | null | HTMLElement) {
     document.getElementById('btnUsuarios')?.classList.remove('bg-gray-200');
     document.getElementById('btnPedidos')?.classList.remove('bg-gray-200',);
@@ -106,7 +125,9 @@ export class AdminComponent implements OnInit{
     }
   }
 
-//carga de tabla Ususarios
+  /**
+   * Carga los clientes
+   */
   private cargarClientes() {
     this.clientesColumnas = [
       { titulo: 'Usuario', campo: 'usuario', editable: false, isEstado: false},
@@ -138,7 +159,10 @@ export class AdminComponent implements OnInit{
     });
   }
 
-  //carga de tabla pedidos
+  /**
+   * Carga los pedidos
+   * @private
+   */
   private cargarPedidos() {
     this.pedidosColumnas = [
       { titulo: 'Usuario', campo: 'usuario', editable: false, isEstado: false},
@@ -163,7 +187,10 @@ export class AdminComponent implements OnInit{
     });
   }
 
-  //carga de tabla pedidos
+  /**
+   * Carga los libros
+   * @private
+   */
   private cargarLibros() {
     this.librosColumnas = [
       { titulo: 'Titulo', campo: 'titulo', editable: false, isEstado: false},
@@ -190,6 +217,10 @@ export class AdminComponent implements OnInit{
     });
   }
 
+  /**
+   * Actualiza la fila
+   * @param item
+   */
   actualizarRegistro(item: any) {
     if (this.titulo === 'Clientes') {
       this.clienteService.modificarCliente(item).subscribe({

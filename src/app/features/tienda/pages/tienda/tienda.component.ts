@@ -179,9 +179,9 @@ export class TiendaComponent implements OnInit {
     const pages: (number | string)[] = [];
     const total = this.totalPages;
     const current = this.currentPage;
-    const delta = 2; // Número de páginas a mostrar alrededor de la actual
+    const delta = 2;
 
-    // Calcular rango de páginas
+
     let start = Math.max(2, current - delta);
     let end = Math.min(total - 1, current + delta);
 
@@ -191,16 +191,12 @@ export class TiendaComponent implements OnInit {
 
     pages.push(1);
 
-    // Agregar puntos suspensivos izquierdos si es necesario
     if (start > 2) pages.push('...');
 
-    // Agregar páginas centrales
     for (let i = start; i <= end; i++) pages.push(i);
 
-    // Agregar puntos suspensivos derechos si es necesario
     if (end < total - 1) pages.push('...');
 
-    // Agregar última página solo si hay más de 1
     if (total > 1) pages.push(total);
 
     this.displayedPages = pages;
@@ -218,7 +214,7 @@ export class TiendaComponent implements OnInit {
       minPrice: null,
       maxPrice: null
     };
-    this.minValue = 0;  // Reseteamos el valor mínimo
+    this.minValue = 0;
     this.maxValue = 100;
     this.cdRef.detectChanges();
     this.currentPage = 1;
