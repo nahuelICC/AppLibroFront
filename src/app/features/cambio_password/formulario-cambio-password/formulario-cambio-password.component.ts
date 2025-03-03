@@ -7,6 +7,9 @@ import {BotonComponent} from '../../../shared/components/boton/boton.component';
 import {AlertConfirmarComponent} from '../../../shared/components/alert-confirmar/alert-confirmar.component';
 import {AlertInfoComponent, AlertType} from '../../../shared/components/alert-info/alert-info.component';
 
+/**
+ * Componente que muestra el formulario para cambiar la contraseña
+ */
 @Component({
   selector: 'app-formulario-cambio-password',
   imports: [
@@ -44,6 +47,9 @@ export class FormularioCambioPasswordComponent implements OnInit {
     private router: Router
   ) {}
 
+  /**
+   * Método que se ejecuta al enviar el formulario
+   */
   ngOnInit() {
     this.token = this.route.snapshot.queryParamMap.get('token');
     console.log(this.token);
@@ -55,6 +61,9 @@ export class FormularioCambioPasswordComponent implements OnInit {
     }
   }
 
+  /**
+   * Método que se ejecuta al enviar el formulario
+   */
   onSubmit() {
     if (this.form.valid && this.token) {
       this.cambioPasswordService.resetPassword(
@@ -78,6 +87,9 @@ export class FormularioCambioPasswordComponent implements OnInit {
     }
   }
 
+  /**
+   * Método que se ejecuta al confirmar la alerta
+   */
   onConfirm() {
     this.showAlertConfirmar = false;
     this.router.navigate(['/login']);

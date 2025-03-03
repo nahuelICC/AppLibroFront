@@ -4,6 +4,11 @@ import { Observable } from 'rxjs';
 import { inject } from '@angular/core';
 import { AuthServiceService } from '../services/auth-service.service';
 
+/**
+ * Interceptor que añade el token de autenticación a las peticiones
+ * @param request
+ * @param next
+ */
 export const authInterceptorInterceptor = (
   request: HttpRequest<any>,
   next: HttpHandlerFn,
@@ -11,7 +16,6 @@ export const authInterceptorInterceptor = (
   const authService = inject(AuthServiceService);
   const token = authService.getToken();
 
-  // Evita modificar las solicitudes preflight (OPTIONS)
   if (request.method !== 'OPTIONS' && token) {
     request = request.clone({
       setHeaders: {

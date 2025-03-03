@@ -19,7 +19,7 @@ import {BotonComponent} from '../../../../shared/components/boton/boton.componen
   styleUrl: './categorias.component.css'
 })
 export class CategoriasComponent {
-  @Input() categories: GeneroDTO[] = []; // Recibe las categorías desde el padre
+  @Input() categories: GeneroDTO[] = [];
   @Output() categorySelected = new EventEmitter<number | null>();
   @Input() categoriaSeleccionada: number | null = null;
 
