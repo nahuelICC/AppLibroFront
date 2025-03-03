@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from "rxjs";
 import {EditaUsuarioDTO} from '../DTOs/EditaUsuarioDTO';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +13,9 @@ export class PerfilUsuarioService {
   private apiUrlUsuario = '/api/usuario';
   private apiUrlClienteSuscripcion = '/api/ClienteSuscripcion';
   private apiUrlCancelar = 'api/pedido';
+
+  private datosClienteSubject = new BehaviorSubject<any>(null);
+  datosCliente$ = this.datosClienteSubject.asObservable();
 
   constructor(private http: HttpClient) { }
 
@@ -80,5 +83,18 @@ export class PerfilUsuarioService {
   rolUsuario(): Observable<any> {
     return this.http.get(`${this.apiUrlUsuario}/rol`);
   }
+
+  /**
+   * Metodo que actualiza los datos del cliente cuando hace alguna modificacion.
+   */
+
+  actualizarDatosCliente() {
+    this.getDatosCliente().subscribe({
+      next: (data) => this.datosClienteSubject.next(data),
+      error: (err) => console.error('Error actualizando datos del cliente:', err)
+    });
+  }
+
+
 
 }

@@ -48,18 +48,18 @@ export class ChatbotComponent implements OnInit {
         this.cargarDatosCliente();
       }
     });
+
+    this.perfilUsuarioService.datosCliente$.subscribe((data: any) => {
+      this.datosCliente = data;
+      console.log('Datos del cliente actualizados:', this.datosCliente);
+    });
   }
+
   /**
-  * Cargar datos del cliente
+   * Método para cargar los datos del cliente
    */
   cargarDatosCliente() {
-    this.perfilUsuarioService.getDatosCliente().subscribe({
-      next: (data) => {
-        this.datosCliente = data;
-        console.log('Datos del cliente cargados:', this.datosCliente);
-      },
-      error: (err) => console.error('Error cargando datos:', err)
-    });
+    this.perfilUsuarioService.actualizarDatosCliente();
   }
 
   /**
