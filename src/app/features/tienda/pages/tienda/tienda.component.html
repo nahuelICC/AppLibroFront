@@ -91,21 +91,19 @@
 <!--  paginador-->
   <div class="flex justify-center items-center gap-2 py-6">
     <button (click)="previousPage()" [disabled]="currentPage === 1" class="px-3 py-1 rounded-lg text-[#111818] hover:bg-[#f0f5f5] disabled:opacity-50 disabled:cursor-not-allowed">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8l8 8l1.41-1.41L7.83 13H20z"/></svg>    </button>
 
     <div class="flex items-center gap-1">
       <ng-container *ngFor="let page of displayedPages">
-        <button *ngIf="page !== '...'"
-                [class.bg-[#f0f5f5]]="currentPage === page" class="w-8 h-8 rounded-full flex items-center justify-center text-sm hover:bg-[#f0f5f5] transition-colors"
+        <button *ngIf="page === currentPage"
+                [class.bg-[#f0f5f5]]="currentPage === page" class="w-8 h-8 rounded-full flex items-center justify-center text-sm transition-colors"
                 [class.font-bold]="currentPage === page">{{ page }}</button>
         <span *ngIf="page === '...'" class="px-2">...</span>
       </ng-container>
     </div>
 
     <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="px-3 py-1 rounded-lg text-[#111818] hover:bg-[#f0f5f5] disabled:opacity-50 disabled:cursor-not-allowed">
-      <mat-icon>arrow_forward</mat-icon>
-    </button>
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>    </button>
   </div>
 </div>
 </body>

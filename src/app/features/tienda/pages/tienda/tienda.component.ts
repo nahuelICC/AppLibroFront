@@ -4,7 +4,7 @@ import { CuadroProductoComponent } from '../../components/cuadro-producto/cuadro
 import { CuadroProducto } from '../../DTOs/CuadroProducto';
 import {LibroServiceService} from '../../services/libro-service.service';
 import {NgClass, NgForOf, NgIf} from '@angular/common';
-import {MatIcon} from '@angular/material/icon';
+import {MatIcon, MatIconModule} from '@angular/material/icon';
 import {BuscadorComponent} from '../../components/buscador/buscador.component';
 import {GeneroDTO} from '../../DTOs/GeneroDTO';
 import {CategoriasComponent} from '../../components/categorias/categorias.component';
@@ -18,7 +18,7 @@ import {RouterLink} from '@angular/router';
  */
 @Component({
   selector: 'app-tienda',
-  imports: [FiltroComponent, CuadroProductoComponent, NgForOf, NgIf, MatIcon, BuscadorComponent, CategoriasComponent, RangoPrecioComponent, MatProgressSpinner, NgClass, BotonComponent, RouterLink],
+  imports: [MatIconModule, MatIcon, FiltroComponent, CuadroProductoComponent, NgForOf, NgIf, BuscadorComponent, CategoriasComponent, RangoPrecioComponent, MatProgressSpinner, NgClass, BotonComponent, RouterLink ],
   templateUrl: './tienda.component.html',
   standalone: true,
   styleUrl: './tienda.component.css'
