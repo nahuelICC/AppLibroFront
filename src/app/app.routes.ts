@@ -12,6 +12,7 @@ import {ActivacionComponent} from './features/registro/componentes/activacion/ac
 import {AdminComponent} from './features/admin/admin.component';
 import {AnyadirLibroComponent} from './features/anyadir-libro/anyadir-libro.component';
 import {InfoCajasComponent} from './features/info-caja/pages/info-cajas/info-cajas.component';
+import {PoliticaComponent} from './shared/components/politica/politica.component';
 import {CarritoSuscripcionComponent} from './features/info-caja/carrito-suscripcion/carrito-suscripcion.component';
 import {CambioPasswordComponent} from './features/cambio_password/cambio-password/cambio-password.component';
 import {
@@ -38,4 +39,5 @@ export const routes: Routes = [
   { path: 'carritosuscripcion', component: CarritoSuscripcionComponent },
   { path: 'resetPassword', component: CambioPasswordComponent },
   { path: 'formResetPassword', component: FormularioCambioPasswordComponent },
+  { path :'politica',component:PoliticaComponent}
 ];
