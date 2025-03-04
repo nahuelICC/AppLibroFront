@@ -17,7 +17,7 @@
     <!-- Botón Menú Móvil -->
     <div class="md:hidden flex items-center gap-3">
 <!--      Aqui las notificaciones del movil-->
-      <a (click)="openNotifications($event)" matBadge="{{cantidadNotificaciones}}">
+      <a *ngIf="isAuthenticated" (click)="openNotifications($event)" matBadge="{{cantidadNotificaciones}}">
         <div class="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full cursor-pointer hover:bg-gray-300">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
