@@ -1,59 +1,73 @@
-# AppLibro
+# Tinteka
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.3.
+Esto proyecto ha sido generdo con [Angular CLI](https://github.com/angular/angular-cli) version 18.2.11.
 
-## Development server
+# Frontend de la Aplicación de Librería con opciones de suscripción
 
-To start a local development server, run:
+Este es el frontend de una aplicación web dedicada a la venta de libros de una libreria, con opciones de suscripción para el envio periódico de libros del género eligido, además de administración completa de la página a través de administrador.
 
-```bash
-ng serve
-```
+## Características
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- **Interfaz de usuario moderna**: Diseñada con Angular Material y Tailwind.
+- **Tienda Completa**: Tienda completa con catálogo con varios filtros, que permite la compra con varias opciones de pago.
+- **Gestión completa**: A través de su perfil el usuario puede gestionar todos los datos de su cuenta, incluida contraseña, datos personales, pedidos y suscripción.
+- **Comentarios**: Sistema para añadir y gestionar comentarios.
+- **Subida de imágenes**: Interfaz para subir imágenes que servirán de portadas para los libros.
+- **Autenticación basada en roles**: Diferentes vistas según el rol del usuario (cliente o administrador).
 
-## Code scaffolding
+## Tecnologías Utilizadas
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- **Angular**: Framework principal para el desarrollo del frontend.
+- **Angular Material**: Componentes estilizados para una mejor experiencia de usuario.
+- **Tailwind**: Componentes adicionales para diseño responsive.
+- **Cloudinary**: Gestión y almacenamiento de imágenes.
+- **Html2Canvas**: Utilizado para los PDF de las compras en el frontend.
+- **Jspdf**: Librería para generar Pdfs en Javascript.
+- **JWT (JSON Web Tokens)**: Autenticación y autorización segura con el backend.
 
-```bash
-ng generate component component-name
-```
+## Instalación
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+1. **Clonar el repositorio**:
+   ```bash
+   https://github.com/nahuelICC/AppLibroFront.git
 
-```bash
-ng generate --help
-```
+2. **Instalar dependencias**:
+   
+   ```bash
+   npm install
+   
 
-## Building
+3. **Ejecutar la aplicación**:
+   ```bash
+   ng serve
+   
+  - Accede a la aplicación en http://localhost:4200
 
-To build the project run:
+4. **Acceder a Compodoc**:
+   Para consultar la documentación se puede acceder a Compodoc.
+   
+   ```bash
+   npm run compodoc:serve
 
-```bash
-ng build
-```
+5. **Acceder a aplicación desplegada**:
+   Para acceder a la aplicación desplegada.
+   
+   ```bash
+   https://applibrofront.onrender.com
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
-## Running unit tests
+## Contribución
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+1. **Realiza un fork del repositorio.**
 
-```bash
-ng test
-```
+2. **Crea tu rama para tu funcionalidad**
+   
+   ```bash
+   git checkout -b feature/nueva-funcionalidad
+   
+4. **Realiza un pull request con tus cambios.**
+ 
 
-## Running end-to-end tests
+## Más ayuda
 
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Para obtener más ayuda usa `ng help` o visita [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli).
