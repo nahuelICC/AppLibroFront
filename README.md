@@ -36,7 +36,6 @@ Este es el frontend de una aplicación web dedicada a la venta de libros de una 
    ```bash
    npm install
    
-
 3. **Ejecutar la aplicación**:
    ```bash
    ng serve
