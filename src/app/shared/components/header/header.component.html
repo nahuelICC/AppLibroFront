@@ -100,7 +100,8 @@
   <div *ngIf="mobileMenuOpen" class="md:hidden bg-[#fafaf8] border-t border-gray-300">
     <div class="px-4 py-3 space-y-2 text-center">
       <a href="/tienda" class="block font-bold text-sm text-[#111818] hover:text-[#078080]">Tienda</a>
-      <a href="#" class="block text-sm font-medium text-[#f45d48] hover:text-[#ff7562]">Suscripciones</a>
+      <a href="/admin" *ngIf="authService.isAdmin()" class="block font-bold text-sm text-[#111818] hover:text-[#078080]">Admin</a>
+      <a [routerLink]="['/infocajas/1']" class="block text-sm font-medium text-[#f45d48] hover:text-[#ff7562]">Suscripciones</a>
 
       <!-- Opciones de Usuario -->
       <ng-container *ngIf="isAuthenticated; else mobileLoginRegisterButtons">
