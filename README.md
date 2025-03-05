@@ -50,6 +50,8 @@ Este es el frontend de una aplicación web dedicada a la venta de libros de una 
 
 5. **Acceder a aplicación desplegada**:
    Para acceder a la aplicación desplegada.
+
+   - Para entrar como administrador accede con el usuario/contraseña: rafa/Contrasena1_
    
    https://applibrofront.onrender.com
 
